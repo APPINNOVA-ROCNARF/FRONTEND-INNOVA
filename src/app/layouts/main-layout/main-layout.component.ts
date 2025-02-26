@@ -4,6 +4,9 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { RouterOutlet } from '@angular/router';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectSidebarState } from '../../state/ui/selectors';
 
 @Component({
   selector: 'app-main-layout',
@@ -13,5 +16,9 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './main-layout.component.less'
 })
 export class MainLayoutComponent {
+  isCollapsed$: Observable<boolean>;
 
+  constructor(private store: Store) {
+    this.isCollapsed$ = this.store.select(selectSidebarState);
+  }
 }
