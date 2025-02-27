@@ -7,6 +7,7 @@ import { RouterOutlet } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectSidebarState } from '../../state/ui/selectors';
+import { collapseSidebar, expandSidebar } from '../../state/ui/actions';
 
 @Component({
   selector: 'app-main-layout',
@@ -21,4 +22,10 @@ export class MainLayoutComponent {
   constructor(private store: Store) {
     this.isCollapsed$ = this.store.select(selectSidebarState);
   }
+
+
+  onCollapseChange(collapsed: boolean) {
+    this.store.dispatch(collapsed ? collapseSidebar() : expandSidebar());
+  }
+  
 }

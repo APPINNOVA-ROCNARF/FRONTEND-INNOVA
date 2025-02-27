@@ -10,7 +10,11 @@ export const routes: Routes = [
       { 
         path: 'welcome',
         loadChildren: () => import('./pages/welcome/welcome.routes').then(m => m.WELCOME_ROUTES)
-      }
+      },
+      { 
+        path: 'viaticos',
+        loadChildren: () => import('./modules/viaticos/viaticos.routes').then(m => m.VIATICOS_ROUTES)
+      },
     ]
   }
 ];
