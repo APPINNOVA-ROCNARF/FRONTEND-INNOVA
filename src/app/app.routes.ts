@@ -4,7 +4,7 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout.component
 export const routes: Routes = [
   {
     path: '',
-    component: MainLayoutComponent, // 🔹 Envuelve toda la app con sidebar y header
+    component: MainLayoutComponent, // 
     children: [
       { path: '', pathMatch: 'full', redirectTo: '/welcome' },
       { 

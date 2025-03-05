@@ -16,6 +16,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { reducers } from './state/app.state';
+import {es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
+
 
 registerLocaleData(es);
 
@@ -28,5 +30,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(),
-    provideNzIcons(icons)
+    provideNzIcons(icons),
+    provideNzI18n(es_ES),
   ]};

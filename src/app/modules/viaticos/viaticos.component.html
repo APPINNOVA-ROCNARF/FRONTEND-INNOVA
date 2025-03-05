@@ -1,1 +1,59 @@
-<p>viaticos works!</p>
+<nz-card nzTitle="Buscar Viáticos">
+    <form nz-form>
+      <div nz-row [nzGutter]="16">
+        <!-- Selector de Asesor -->
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzFor="asesor">Asesor</nz-form-label>
+            <nz-form-control>
+                <nz-select
+                [(ngModel)]="asesorSeleccionado"
+                nzPlaceHolder="Seleccione un asesor"
+                nzShowSearch
+                nzAllowClear
+                style="width: 100%">
+                <nz-option *ngFor="let nombre of listaAsesores" [nzValue]="nombre" [nzLabel]="nombre">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <!-- Selector de Ciclo (Mes) -->
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzFor="periodo">Periodo</nz-form-label>
+            <nz-form-control>
+              <nz-date-picker
+                name="periodo"
+                nzMode="month"
+                nzFormat="MMMM yyyy"
+                style="width: 100%"
+              ></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <!-- Selector de Estado -->
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzFor="estado">Estado</nz-form-label>
+            <nz-form-control>
+              <nz-radio-group nzButtonStyle="solid">
+                <label nz-radio-button nzValue="enviado">Enviado</label>
+                <label nz-radio-button nzValue="rechazado">Rechazado</label>
+                <label nz-radio-button nzValue="aprobado">Aprobado</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+  
+      <!-- Botón de búsqueda -->
+      <div style="text-align: right; margin-top: 10px;">
+        <button nz-button nzType="primary" nzIcon="search">Buscar</button>
+      </div>
+    </form>
+  </nz-card>
+
+  
