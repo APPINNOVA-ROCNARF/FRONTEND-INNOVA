@@ -10,7 +10,7 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     title: 'Viaticos',
-    icon: 'form',
+    icon: 'dollar',
     children: [
       { title: 'Administrar viaticos',icon:'', route: '/viaticos' }
     ]
