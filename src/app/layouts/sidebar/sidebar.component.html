@@ -1,5 +1,5 @@
 <nz-sider class="menu-sidebar"
-    nzTheme="light"
+    nzTheme="dark"
     nzCollapsible
     nzWidth="256px"
     nzBreakpoint="md"
@@ -7,15 +7,15 @@
     [nzTrigger]="null">
   <div class="sidebar-logo">
     <a href="https://ng.ant.design/" target="_blank">
-      <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
+      <img src="img/logo.png" alt="logo">
       <h1>APP INNOVA</h1>
     </a>
   </div>
   <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed$ | async">
     <li *ngFor="let item of menuItems" nz-submenu nzClosed [nzTitle]="item.title" [nzIcon]="item.icon">
       <ul>
-        <li *ngFor="let child of item.children" nz-menu-item [nzMatchRouter]="true">
-          <a *ngIf="child.route; else noRoute" [routerLink]="child.route">{{ child.title }}</a>
+        <li *ngFor="let child of item.children" nz-menu-item  [nzMatchRouter]="true" >
+          <a *ngIf="child.route; else noRoute" [routerLink]="child.route" >{{ child.title }}</a>
           <ng-template #noRoute>{{ child.title }}</ng-template>
         </li>
       </ul>

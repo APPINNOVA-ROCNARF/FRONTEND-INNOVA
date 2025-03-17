@@ -5,9 +5,7 @@ import { HeaderComponent } from '../header/header.component';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { RouterOutlet } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { selectSidebarState } from '../../state/ui/selectors';
-import { collapseSidebar, expandSidebar } from '../../state/ui/actions';
+import { UiService } from '../../core/services/ui-service/ui.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -19,13 +17,13 @@ import { collapseSidebar, expandSidebar } from '../../state/ui/actions';
 export class MainLayoutComponent {
   isCollapsed$: Observable<boolean>;
 
-  constructor(private store: Store) {
-    this.isCollapsed$ = this.store.select(selectSidebarState);
+  constructor(private uiService: UiService) {
+    this.isCollapsed$ = this.uiService.sidebarOpen$;
   }
 
 
   onCollapseChange(collapsed: boolean) {
-    this.store.dispatch(collapsed ? collapseSidebar() : expandSidebar());
+    this.uiService.setSidebarState(collapsed);
   }
   
 }

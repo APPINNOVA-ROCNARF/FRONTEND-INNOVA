@@ -1,0 +1,115 @@
+/* login.component.less */
+:host {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+
+    .login-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #0097A6 0%, #00565e 100%);
+        z-index: -1;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        margin: 24px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-radius: 8px;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 24px;
+
+        .logo {
+            margin-bottom: 16px;
+
+            img {
+                height: 64px;
+            }
+        }
+
+        h1 {
+            font-size: 24px;
+            color: rgba(0, 0, 0, 0.85);
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.45);
+        }
+    }
+
+    .login-form {
+        .ant-form-item {
+            margin-bottom: 24px;
+        }
+
+        &-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        &-forgot {
+            float: right;
+        }
+
+ &-button {
+     width: 100%;
+     background-color: #000000;
+     border-color: #000000;
+
+     &:hover,
+     &:focus {
+         background-color: #333333;
+         border-color: #333333;
+     }
+
+     &[disabled] {
+         background-color: #d9d9d9;
+         border-color: #d9d9d9;
+     }
+ }
+    }
+
+    .additional-links {
+        margin-top: 24px;
+        text-align: center;
+
+        p {
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 14px;
+        }
+    }
+
+    .login-footer {
+        text-align: center;
+        margin: 32px 0;
+
+        p {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 14px;
+        }
+    }
+
+    nz-alert {
+        margin-bottom: 24px;
+    }
+}

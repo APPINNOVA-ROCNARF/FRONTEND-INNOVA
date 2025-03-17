@@ -6,16 +6,16 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { AsesoresService } from '../../shared/services/asesores.service';
+import { AsesoresService } from '../../../../shared/services/asesores.service';
 import { CommonModule } from '@angular/common';
 @Component({
-  selector: 'app-viaticos',
+  selector: 'app-administrar-viaticos',
   standalone: true,
   imports: [FormsModule, NzSelectModule, CommonModule, NzCardModule, NzFormModule, NzDatePickerModule, NzRadioModule, NzButtonModule],
-  templateUrl: './viaticos.component.html',
-  styleUrl: './viaticos.component.less'
+  templateUrl: './administrar-viaticos.component.html',
+  styleUrl: './administrar-viaticos.component.less'
 })
-export class ViaticosComponent {
+export class AdministrarViaticosComponent {
   listaAsesores: string[] = []; 
   asesorSeleccionado: string | null = null;
 

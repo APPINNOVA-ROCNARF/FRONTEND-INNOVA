@@ -1,0 +1,48 @@
+<!-- login.component.html -->
+<div class="login-container">
+    <div class="login-background"></div>
+
+    <nz-card class="login-card">
+        <div class="login-header">
+            <div class="logo">
+                <img src="img/logo2.png" alt="Company Logo" />
+            </div>
+            <h1>APP INNOVA</h1>
+            <p>Introduzca sus credenciales para acceder al sistema</p>
+        </div>
+
+        <nz-alert *ngIf="error" nzType="error" [nzMessage]="error" nzCloseable></nz-alert>
+
+        <form nz-form [formGroup]="loginForm" class="login-form" (ngSubmit)="submitForm()">
+            <nz-form-item>
+                <nz-form-control nzErrorTip="Por favor ingrese su correo">
+                    <nz-input-group nzPrefixIcon="user">
+                        <input type="text" nz-input formControlName="email" placeholder="Correo" />
+                    </nz-input-group>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-control nzErrorTip="Por favor ingrese su contraseña">
+                    <nz-input-group [nzSuffix]="passwordTemplate">
+                        <input [type]="passwordVisible ? 'text' : 'password'" nz-input formControlName="password"
+                            placeholder="Contraseña" />
+                    </nz-input-group>
+                    <ng-template #passwordTemplate>
+                        <i nz-icon [nzType]="passwordVisible ? 'eye' : 'eye-invisible'"
+                            (click)="passwordVisible = !passwordVisible"></i>
+                    </ng-template>
+                </nz-form-control>
+            </nz-form-item>
+
+            <button nz-button class="login-form-button" [nzType]="'primary'" [nzLoading]="isLoading"
+                [disabled]="!loginForm.valid">
+                Iniciar Sesión 
+            </button>
+        </form>
+    </nz-card>
+
+    <div class="login-footer">
+        <p>© 2025 Rocnarf. Todos los derechos reservados.</p>
+    </div>
+</div>
