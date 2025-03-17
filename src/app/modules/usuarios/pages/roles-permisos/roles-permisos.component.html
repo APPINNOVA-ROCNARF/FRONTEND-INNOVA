@@ -1,1 +1,25 @@
-<p>roles-permisos works!</p>
+<div class="role-management-container">
+    <nz-card>
+      <div class="header-actions">
+        <h2 nz-typography>Gestión de Roles</h2>
+        <button nz-button nzType="primary" (click)="showRoleModal()">
+          <i nz-icon nzType="plus"></i>Nuevo Rol
+        </button>
+      </div>
+      
+<!--Tabla de Roles y Permisos-->
+<app-tabla-roles
+[roles]="roles"
+[loading]="loading"
+(editRole)="openEditRoleModal($event)"
+(deleteRole)="deleteRole($event)"
+></app-tabla-roles>
+    </nz-card>
+
+<!--Formulario Registro/Editar Rol-->
+<app-formulario-roles
+[(visible)]="isRoleModalVisible"
+[role]="selectedRole"
+(formSubmit)="onFormSubmit($event)"
+(cancel)="onFormCancel()"
+></app-formulario-roles>

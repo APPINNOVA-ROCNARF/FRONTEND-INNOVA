@@ -1,0 +1,95 @@
+/* src/app/features/role-management/components/role-form/role-form.component.less */
+.permission-filters {
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .permission-actions-top {
+    display: flex;
+    margin-left: auto;
+    gap: 8px;
+  }
+  
+  .module-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .module-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .permission-switch-cell {
+    text-align: center;
+  }
+  
+  /* Estilos globales para los componentes de NG-Zorro */
+  :global {
+    .custom-collapse {
+      .ant-collapse-item {
+        margin-bottom: 8px;
+        border-radius: 2px;
+        border: 1px solid #f0f0f0;
+        
+        .ant-collapse-header {
+          background-color: #fafafa;
+        }
+        
+        .ant-collapse-content {
+          border-top: 1px solid #f0f0f0;
+        }
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+    
+    .ant-modal-body {
+      padding: 20px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    .ant-table-small {
+      .ant-table-thead > tr > th {
+        background-color: #fafafa;
+        padding: 8px 16px;
+      }
+      
+      .ant-table-tbody > tr > td {
+        padding: 8px 16px;
+      }
+    }
+    
+    .ant-tag {
+      margin-right: 0;
+    }
+    
+    .ant-collapse-content-box {
+      padding: 16px !important;
+    }
+    
+    .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+      padding: 8px 16px;
+    }
+    
+    .ant-divider-inner-text {
+      font-weight: 500;
+      
+      .anticon {
+        margin-right: 6px;
+      }
+    }
+    
+    .ant-btn-link {
+      padding: 0;
+    }
+  }

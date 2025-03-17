@@ -1,0 +1,43 @@
+<nz-table #rolesTable [nzData]="roles" [nzPageSize]="pageSize" [nzLoading]="loading">
+    <thead>
+      <tr>
+        <th nzWidth="25%">Nombre</th>
+        <th nzWidth="55%">Descripción</th>
+        <th nzWidth="20%">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let role of rolesTable.data">
+        <td>{{ role.name }}</td>
+        <td>{{ role.description }}</td>
+        <td>
+          <div class="actions-container">
+            <button 
+              *ngIf="showEditButton"
+              nz-button 
+              nzType="primary" 
+              nzSize="small" 
+              (click)="onEditRole(role)"
+              nzTooltipTitle="Editar rol y permisos"
+              nz-tooltip
+            >
+              <i nz-icon nzType="edit"></i>
+            </button>
+            <button 
+              *ngIf="showDeleteButton"
+              nz-button 
+              nzSize="small" 
+              nz-popconfirm
+              nzPopconfirmTitle="¿Está seguro de eliminar este rol?"
+              nzPopconfirmPlacement="top"
+              (nzOnConfirm)="onDeleteRole(role.id)"
+              nzTooltipTitle="Eliminar"
+              nz-tooltip
+            >
+              <i nz-icon nzType="delete"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>

@@ -1,0 +1,144 @@
+<!-- src/app/features/role-management/components/role-form/role-form.component.html -->
+<nz-modal
+  [(nzVisible)]="visible"
+  [nzTitle]="role ? 'Editar Rol' : 'Nuevo Rol'"
+  (nzOnCancel)="closeModal()"
+  nzMaskClosable="false"
+  nzWidth="800px"
+  [nzFooter]="modalFooter"
+>
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="closeModal()">Cancelar</button>
+    <button 
+      nz-button 
+      nzType="primary" 
+      [disabled]="roleForm.invalid"
+      (click)="submitForm()"
+    >
+      {{ role ? 'Actualizar' : 'Crear' }}
+    </button>
+  </ng-template>
+
+  <ng-container *nzModalContent>
+    <!-- Formulario del rol -->
+    <form nz-form [formGroup]="roleForm">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Nombre</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24" nzErrorTip="¡Por favor ingrese el nombre del rol!">
+          <input nz-input formControlName="name" placeholder="Nombre del rol" />
+        </nz-form-control>
+      </nz-form-item>
+      
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24">Descripción</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <textarea 
+            nz-input 
+            formControlName="description" 
+            placeholder="Descripción del rol" 
+            [nzAutosize]="{ minRows: 2, maxRows: 4 }"
+          ></textarea>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+
+    <!-- Separador -->
+    <nz-divider>
+      <i nz-icon nzType="key" nzTheme="outline"></i> Permisos
+    </nz-divider>
+
+    <!-- Filtros y búsqueda de permisos -->
+    <div class="permission-filters">
+      <nz-input-group [nzSuffix]="suffixIconSearch" [nzSize]="'default'">
+        <input type="text" nz-input placeholder="Buscar permisos" [(ngModel)]="permissionSearchText" />
+      </nz-input-group>
+      <ng-template #suffixIconSearch>
+        <i nz-icon nzType="search"></i>
+      </ng-template>
+      
+      <nz-select 
+        [(ngModel)]="selectedModuleFilter" 
+        (ngModelChange)="filterPermissionsByModule()" 
+        nzPlaceHolder="Filtrar por módulo"
+        style="min-width: 150px; margin-left: 8px;"
+        [nzSize]="'default'"
+      >
+        <nz-option [nzValue]="0" nzLabel="Todos los módulos"></nz-option>
+        <nz-option *ngFor="let module of modules" [nzValue]="module.id" [nzLabel]="module.name"></nz-option>
+      </nz-select>
+      
+      <div class="permission-actions-top">
+        <button 
+          nz-button 
+          [nzSize]="'default'"
+          nzType="default" 
+          (click)="toggleShowOnlyAssigned()" 
+          [nzType]="showOnlyAssigned ? 'primary' : 'default'"
+        >
+          <i nz-icon [nzType]="showOnlyAssigned ? 'eye' : 'eye-invisible'"></i>
+          {{ showOnlyAssigned ? 'Ver todos' : 'Ver asignados' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Acordeón de módulos -->
+    <nz-collapse [nzBordered]="false" class="custom-collapse">
+      <nz-collapse-panel 
+        *ngFor="let module of filteredModules" 
+        [nzHeader]="moduleHeader" 
+        [nzActive]="expandedPanels[module.id]"
+        (nzActiveChange)="expandedPanels[module.id] = $event"
+      >
+        <ng-template #moduleHeader>
+          <div class="module-header">
+            <span>{{ module.name }}</span>
+            <div class="module-actions">
+              <nz-tag [nzColor]="getAssignedPermissionsCount(module) > 0 ? 'blue' : 'default'">
+                {{ getAssignedPermissionsCount(module) }} / {{ module.permissions.length }}
+              </nz-tag>
+              <button 
+                nz-button 
+                nzType="link" 
+                [nzSize]="'small'"
+                (click)="$event.stopPropagation(); toggleAllPermissionsInModule(module, getAssignedPermissionsCount(module) < module.permissions.length)"
+              >
+                {{ getAssignedPermissionsCount(module) < module.permissions.length ? 'Asignar todos' : 'Quitar todos' }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+
+        <nz-table 
+          [nzData]="getFilteredPermissions(module.id)" 
+          [nzShowPagination]="false"
+          [nzSize]="'small'"
+          [nzBordered]="true"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="40%">Permiso</th>
+              <th nzWidth="45%">Descripción</th>
+              <th nzWidth="15%">Activo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let permission of getFilteredPermissions(module.id)">
+              <td>{{ permission.name }}</td>
+              <td>{{ permission.action }}</td>
+              <td class="permission-switch-cell">
+                <nz-switch
+                  [ngModel]="hasPermission(getOrCreateTempRole(), permission.id)"
+                  (ngModelChange)="togglePermission(permission.id)"
+                  [nzCheckedChildren]="checkedTemplate"
+                  [nzUnCheckedChildren]="unCheckedTemplate"
+                ></nz-switch>
+                <ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
+                <ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </ng-container>
+</nz-modal>
