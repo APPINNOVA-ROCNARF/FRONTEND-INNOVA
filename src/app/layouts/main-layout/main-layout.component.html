@@ -3,7 +3,7 @@
     nzCollapsible
     nzWidth="256px"
     nzBreakpoint="md"
-    [nzCollapsed]="isCollapsed$ | async"
+    [nzCollapsed]="(isCollapsed$ | async)!"
     [nzTrigger]="null"
     (nzCollapsedChange)="onCollapseChange($event)">
     <app-sidebar></app-sidebar>

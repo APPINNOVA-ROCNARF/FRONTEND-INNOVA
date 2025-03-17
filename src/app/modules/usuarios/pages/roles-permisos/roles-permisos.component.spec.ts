@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViaticosComponent } from './viaticos.component';
+import { RolesPermisosComponent } from './roles-permisos.component';
 
-describe('ViaticosComponent', () => {
-  let component: ViaticosComponent;
-  let fixture: ComponentFixture<ViaticosComponent>;
+describe('RolesPermisosComponent', () => {
+  let component: RolesPermisosComponent;
+  let fixture: ComponentFixture<RolesPermisosComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ViaticosComponent]
+      imports: [RolesPermisosComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ViaticosComponent);
+    fixture = TestBed.createComponent(RolesPermisosComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

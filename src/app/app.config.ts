@@ -14,8 +14,6 @@ import { registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient } from '@angular/common/http';
-import { provideStore } from '@ngrx/store';
-import { reducers } from './state/app.state';
 import {es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
 
 
@@ -26,7 +24,6 @@ const icons = [MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideStore(reducers),
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(),

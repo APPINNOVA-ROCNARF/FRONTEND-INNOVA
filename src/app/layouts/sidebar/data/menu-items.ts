@@ -4,22 +4,19 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     title: 'Dashboard',
     icon: 'dashboard',
-    children: [
-      { title: 'Welcome', icon:'', route: '/welcome' },
-    ]
+    children: [{ title: 'Welcome', icon: '', route: '/welcome' }],
   },
   {
     title: 'Viaticos',
     icon: 'dollar',
-    children: [
-      { title: 'Administrar viaticos',icon:'', route: '/viaticos' }
-    ]
+    children: [{ title: 'Administrar viaticos', icon: '', route: '/viaticos' }],
   },
   {
-    title: 'Visitas',
-    icon: 'form',
+    title: 'Usuarios',
+    icon: 'user',
     children: [
-      { title: 'Consulta Visitas Planificadas',icon:'', route: '' }
-    ]
-  }
+      { title: 'Administrar usuarios', icon: 'edit', route: '' },
+      { title: 'Roles y permisos', icon: 'edit', route: '/usuarios/roles-permisos' },
+    ],
+  },
 ];
