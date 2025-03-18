@@ -131,7 +131,7 @@ export class FormularioRolesComponent implements OnInit, OnChanges {
     this.permissionsByModule = {};
     this.modules.forEach(module => {
       this.permissionsByModule[module.id] = module.permissions;
-      this.expandedPanels[module.id] = true;
+      this.expandedPanels[module.id] = false;
     });
     
     this.filteredModules = [...this.modules];
@@ -142,6 +142,7 @@ export class FormularioRolesComponent implements OnInit, OnChanges {
         id: 0,
         name: '',
         description: '',
+        state: false,
         permissions: []
       };
     }
@@ -188,6 +189,7 @@ export class FormularioRolesComponent implements OnInit, OnChanges {
         id: this.role ? this.role.id : 0,
         name: this.roleForm.get('name')?.value || 'Nuevo Rol',
         description: this.roleForm.get('description')?.value || '',
+        state: this.roleForm.get('state')?.value || '',
         permissions: this.role ? [...this.role.permissions] : []
       };
     }
