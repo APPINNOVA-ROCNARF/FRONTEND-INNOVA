@@ -12,6 +12,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { TablaRolesComponent } from "../../components/tabla-roles/tabla-roles.component";
 import { FormularioRolesComponent } from "../../components/formulario-roles/formulario-roles.component";
@@ -26,6 +27,7 @@ import { FormularioRolesComponent } from "../../components/formulario-roles/form
     NzModalModule,
     NzFormModule,
     NzTypographyModule,
+    NzIconModule,
     TablaRolesComponent,
     FormularioRolesComponent
 ],
@@ -74,35 +76,98 @@ tempRole: Role | null = null;
         id: 1,
         name: 'Administrador',
         description: 'Acceso completo al sistema',
+        state: true,
         permissions: [
-          { id: 1, name: 'Ver Usuarios', moduleId: 1, action: 'Listar todos los usuarios del sistema' },
-          { id: 2, name: 'Crear Usuario', moduleId: 1, action: 'Crear nuevos usuarios en el sistema' },
-          { id: 3, name: 'Editar Usuario', moduleId: 1, action: 'Modificar datos de usuarios existentes' },
-          { id: 4, name: 'Eliminar Usuario', moduleId: 1, action: 'Eliminar usuarios del sistema' },
-          { id: 5, name: 'Ver Productos', moduleId: 2, action: 'Listar todos los productos' },
-          { id: 9, name: 'Ver Ventas', moduleId: 3, action: 'Acceder al historial de ventas' }
-        ]
+          {
+            id: 1,
+            name: 'Ver Usuarios',
+            moduleId: 1,
+            action: 'Listar todos los usuarios del sistema',
+          },
+          {
+            id: 2,
+            name: 'Crear Usuario',
+            moduleId: 1,
+            action: 'Crear nuevos usuarios en el sistema',
+          },
+          {
+            id: 3,
+            name: 'Editar Usuario',
+            moduleId: 1,
+            action: 'Modificar datos de usuarios existentes',
+          },
+          {
+            id: 4,
+            name: 'Eliminar Usuario',
+            moduleId: 1,
+            action: 'Eliminar usuarios del sistema',
+          },
+          {
+            id: 5,
+            name: 'Ver Productos',
+            moduleId: 2,
+            action: 'Listar todos los productos',
+          },
+          {
+            id: 9,
+            name: 'Ver Ventas',
+            moduleId: 3,
+            action: 'Acceder al historial de ventas',
+          },
+        ],
       },
       {
         id: 2,
         name: 'Vendedor',
         description: 'Gestión de ventas y consulta de productos',
+        state: true,
         permissions: [
-          { id: 5, name: 'Ver Productos', moduleId: 2, action: 'Listar todos los productos' },
-          { id: 9, name: 'Ver Ventas', moduleId: 3, action: 'Acceder al historial de ventas' },
-          { id: 10, name: 'Crear Venta', moduleId: 3, action: 'Registrar nuevas ventas' }
-        ]
+          {
+            id: 5,
+            name: 'Ver Productos',
+            moduleId: 2,
+            action: 'Listar todos los productos',
+          },
+          {
+            id: 9,
+            name: 'Ver Ventas',
+            moduleId: 3,
+            action: 'Acceder al historial de ventas',
+          },
+          {
+            id: 10,
+            name: 'Crear Venta',
+            moduleId: 3,
+            action: 'Registrar nuevas ventas',
+          },
+        ],
       },
       {
         id: 3,
         name: 'Inventario',
         description: 'Gestión de productos y stock',
+        state: false,
         permissions: [
-          { id: 5, name: 'Ver Productos', moduleId: 2, action: 'Listar todos los productos' },
-          { id: 6, name: 'Crear Producto', moduleId: 2, action: 'Añadir nuevos productos' },
-          { id: 7, name: 'Editar Producto', moduleId: 2, action: 'Modificar productos existentes' }
-        ]
-      }
+          {
+            id: 5,
+            name: 'Ver Productos',
+            moduleId: 2,
+            action: 'Listar todos los productos',
+          },
+          {
+            id: 6,
+            name: 'Crear Producto',
+            moduleId: 2,
+            action: 'Añadir nuevos productos',
+          },
+          {
+            id: 7,
+            name: 'Editar Producto',
+            moduleId: 2,
+            action: 'Modificar productos existentes',
+          },
+        ],
+      },
     ];
 
     // Organizar permisos por módulo
@@ -140,6 +205,7 @@ tempRole: Role | null = null;
       nzTitle: '¿Está seguro de eliminar este rol?',
       nzContent: 'Esta acción no se puede deshacer',
       nzOkText: 'Sí',
+      nzOkDanger: true,
       nzOnOk: () => {
         this.roles = this.roles.filter(r => r.id !== id);
         this.message.success('Rol eliminado exitosamente');
