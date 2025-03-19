@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { UiService } from '../../core/services/ui-service/ui.service';
 import { RouterLink } from '@angular/router';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { ModuloDto } from '../../core/services/ui-service/Interfaces/moduloDTO';
+import { ModuloDTO } from '../../core/services/ui-service/Interfaces/moduloDTO';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,14 +17,14 @@ import { ModuloDto } from '../../core/services/ui-service/Interfaces/moduloDTO';
 })
 export class SidebarComponent implements OnInit{
   isCollapsed$: Observable<boolean>;
-  menuItems: ModuloDto[] = [];
+  menuItems: ModuloDTO[] = [];
 
   constructor(private uiService: UiService) {
     this.isCollapsed$ = this.uiService.sidebarOpen$;
   }
 
   ngOnInit(): void{
-    this.uiService.getMenu().subscribe((modulos: ModuloDto[]) => {
+    this.uiService.getMenu().subscribe((modulos: ModuloDTO[]) => {
       this.menuItems = modulos;
     })
   }

@@ -1,14 +1,16 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
-import { ModuloDto } from './Interfaces/moduloDTO';
+import { ModuloDTO } from './Interfaces/moduloDTO';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE_URL } from '../../../app.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UiService {
-  private moduloCache: ModuloDto[] | null = null;
-  private moduloUrl = 'http://localhost:5000/api/usuario/menu';
+  private moduloCache: ModuloDTO[] | null = null;
+  private apiUrl = inject(API_BASE_URL);
+  private moduloUrl = 'http://localhost:5000/api/usuarios/menu';
 
   private sidebarOpenSubject = new BehaviorSubject<boolean>(false);
   sidebarOpen$: Observable<boolean> = this.sidebarOpenSubject.asObservable();
@@ -23,19 +25,19 @@ export class UiService {
     this.sidebarOpenSubject.next(state);
   }
 
-  getMenu(): Observable<ModuloDto[]> {
+  getMenu(): Observable<ModuloDTO[]> {
     if (this.moduloCache) {
       return of(this.moduloCache);
     } else {
       return this.http
-        .get<ModuloDto[]>(this.moduloUrl)
+        .get<ModuloDTO[]>(this.moduloUrl)
         .pipe(tap((menu) => (this.moduloCache = menu)));
     }
   }
 
-  refreshMenu(): Observable<ModuloDto[]> {
+  refreshMenu(): Observable<ModuloDTO[]> {
     return this.http
-      .get<ModuloDto[]>(this.moduloUrl)
+      .get<ModuloDTO[]>(this.moduloUrl)
       .pipe(tap((menu) => (this.moduloCache = menu)));
   }
 }

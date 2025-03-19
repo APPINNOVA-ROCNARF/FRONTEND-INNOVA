@@ -1,6 +1,7 @@
-import { ApplicationConfig} from '@angular/core';
+import { ApplicationConfig, InjectionToken} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 import {
   MenuFoldOutline,
@@ -19,6 +20,11 @@ import { AuthInterceptor } from './core/auth/auth.interceptor';
 
 registerLocaleData(es);
 
+export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL', {
+  providedIn: 'root',
+  factory: () => environment.apiUrl
+});
+
 const icons = [MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline];
 
 
@@ -30,4 +36,5 @@ export const appConfig: ApplicationConfig = {
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     provideNzIcons(icons),
     provideNzI18n(es_ES),
+    { provide: API_BASE_URL, useValue: environment.apiUrl }
   ]};

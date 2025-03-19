@@ -1,12 +1,12 @@
-export interface PermisoDto {
+export interface PermisoDTO {
   id: number;
   nombre: string;
   ruta: string;
 }
 
-export interface ModuloDto {
+export interface ModuloDTO {
   id: number;
   nombre: string;
   icono: string;
-  permisos: PermisoDto[];
+  permisos: PermisoDTO[];
 }
