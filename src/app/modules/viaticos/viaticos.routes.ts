@@ -4,11 +4,11 @@ import { AdministrarViaticosComponent } from './pages/administrar-viaticos/admin
 export const VIATICOS_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'administrar-viaticos',
+    redirectTo: 'admin',
     pathMatch: 'full',
   },
   {
-    path: 'administrar-viaticos',
+    path: 'admin',
     loadComponent: () =>
       import('./pages/administrar-viaticos/administrar-viaticos.component').then(
         (c) => c.AdministrarViaticosComponent
