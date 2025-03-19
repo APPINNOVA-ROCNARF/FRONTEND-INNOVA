@@ -33,7 +33,7 @@ export class AuthService {
     this.userSubject.next(this.decodeToken(token));
   }
 
-  private getToken(): string | null {
+  public getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
