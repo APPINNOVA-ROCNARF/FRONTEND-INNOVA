@@ -16,7 +16,7 @@ import { registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
-import { AuthInterceptor } from './core/auth/auth.interceptor';
+import { AuthInterceptor } from './core/auth/interceptors/auth.interceptor';
 
 registerLocaleData(es);
 

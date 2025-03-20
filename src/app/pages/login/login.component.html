@@ -1,7 +1,7 @@
 <!-- login.component.html -->
 <div class="login-container">
     <div class="login-background"></div>
-
+    
     <nz-card class="login-card">
         <div class="login-header">
             <div class="logo">
@@ -10,18 +10,26 @@
             <h1>APP INNOVA</h1>
             <p>Introduzca sus credenciales para acceder al sistema</p>
         </div>
-
+        
         <nz-alert *ngIf="error" nzType="error" [nzMessage]="error" nzCloseable></nz-alert>
-
+        
         <form nz-form [formGroup]="loginForm" class="login-form" (ngSubmit)="submitForm()">
             <nz-form-item>
-                <nz-form-control nzErrorTip="Por favor ingrese su correo">
+                <nz-form-control [nzErrorTip]="emailErrorTpl">
                     <nz-input-group nzPrefixIcon="user">
                         <input type="text" nz-input formControlName="email" placeholder="Correo" />
                     </nz-input-group>
+                    <ng-template #emailErrorTpl let-control>
+                        <ng-container *ngIf="control.hasError('required')">
+                            Por favor ingrese su correo
+                        </ng-container>
+                        <ng-container *ngIf="control.hasError('email')">
+                            Por favor ingrese un correo válido
+                        </ng-container>
+                    </ng-template>
                 </nz-form-control>
             </nz-form-item>
-
+            
             <nz-form-item>
                 <nz-form-control nzErrorTip="Por favor ingrese su contraseña">
                     <nz-input-group [nzSuffix]="passwordTemplate">
@@ -34,14 +42,14 @@
                     </ng-template>
                 </nz-form-control>
             </nz-form-item>
-
+            
             <button nz-button class="login-form-button" [nzType]="'primary'" [nzLoading]="isLoading"
                 [disabled]="!loginForm.valid">
                 Iniciar Sesión 
             </button>
         </form>
     </nz-card>
-
+    
     <div class="login-footer">
         <p>© 2025 Rocnarf. Todos los derechos reservados.</p>
     </div>

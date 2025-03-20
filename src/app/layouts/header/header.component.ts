@@ -6,6 +6,8 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { UiService } from '../../core/services/ui-service/ui.service';
+import { AuthService } from '../../core/auth/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -17,11 +19,17 @@ import { UiService } from '../../core/services/ui-service/ui.service';
 export class HeaderComponent {
   isCollapsed$: Observable<boolean>;
 
-  constructor(private uiService: UiService) {
+  constructor(private uiService: UiService, private authService: AuthService, private router: Router) {
     this.isCollapsed$ = this.uiService.sidebarOpen$;
   }
 
   toggleCollapse() {
     this.uiService.toggleSidebar();
   }
+
+  logout(){
+    this.authService.logout();
+      this.router.navigate(['/login']);
+  }
+
 }

@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import {jwtDecode} from 'jwt-decode';
-import { UserClaims, LoginResponse } from './auth.interface';
+import { UserClaims, LoginResponse } from '../interfaces/auth.interface';
+import { API_BASE_URL } from '../../../app.config';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth/login';
+  private apiUrl = inject(API_BASE_URL);
+  private moduloUrl = '/auth/login';
   private tokenKey = 'auth_token';
 
   private userSubject = new BehaviorSubject<UserClaims | null>(
@@ -20,7 +23,10 @@ export class AuthService {
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http
-      .post<LoginResponse>(this.apiUrl, { email, password })
+      .post<LoginResponse>(`${this.apiUrl}${this.moduloUrl}`, {
+        email,
+        password,
+      })
       .pipe(
         tap((response) => {
           this.setToken(response.token);
