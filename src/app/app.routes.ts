@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+import { MainLayoutComponent } from './layouts/desktop/main-layout/main-layout.component';
 import { AuthGuard } from './core/auth/guards/auth.guard';
 import { RolGuard } from './core/auth/guards/rol.guard';
 

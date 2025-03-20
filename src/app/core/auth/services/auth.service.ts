@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Inject, inject, Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import {jwtDecode} from 'jwt-decode';
-import { UserClaims, LoginResponse } from '../interfaces/auth.interface';
+import { UserClaims, LoginResponse, LoginRequest } from '../interfaces/auth.interface';
 import { API_BASE_URL } from '../../../app.config';
 
 
@@ -11,7 +11,6 @@ import { API_BASE_URL } from '../../../app.config';
 })
 export class AuthService {
   private apiUrl = inject(API_BASE_URL);
-  private moduloUrl = '/auth/login';
   private tokenKey = 'auth_token';
 
   private userSubject = new BehaviorSubject<UserClaims | null>(
@@ -19,19 +18,17 @@ export class AuthService {
   );
   user$ = this.userSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
-
-  login(email: string, password: string): Observable<LoginResponse> {
-    return this.http
-      .post<LoginResponse>(`${this.apiUrl}${this.moduloUrl}`, {
-        email,
-        password,
+  constructor(private http: HttpClient, @Inject(API_BASE_URL) apiUrl: string) {
+    this.apiUrl = `${apiUrl}/auth/login`;
+  }
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(this.apiUrl, credentials).pipe(
+      tap((response) => this.setToken(response.token)),
+      catchError((error) => {
+        console.error('Error en login:', error);
+        return throwError(() => new Error('Error de autenticación'));
       })
-      .pipe(
-        tap((response) => {
-          this.setToken(response.token);
-        })
-      );
+    );
   }
 
   private setToken(token: string): void {

@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, switchMap, take, tap } from 'rxjs';
 import { ModuloDTO } from './Interfaces/moduloDTO';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../../../app.config';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Injectable({
   providedIn: 'root',
@@ -11,20 +12,50 @@ export class UiService {
   private apiUrl = inject(API_BASE_URL);
   private moduloUrl = '/usuario/menu';
 
+  // Sidebar Desktop
   private sidebarOpenSubject = new BehaviorSubject<boolean>(false);
   sidebarOpen$: Observable<boolean> = this.sidebarOpenSubject.asObservable();
 
+  // Menu 
   private menuSubject = new BehaviorSubject<ModuloDTO[]>([]);
   menu$: Observable<ModuloDTO[]> = this.menuSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  // Drawer Mobile
+  private drawerVisibleSubject = new BehaviorSubject<boolean>(false);
+  drawerVisible$: Observable<boolean> = this.drawerVisibleSubject.asObservable();
+  isMobile$: Observable<boolean>;
+
+  constructor(private http: HttpClient, private breakpointObserver: BreakpointObserver) {
+    this.isMobile$ = this.breakpointObserver
+      .observe([Breakpoints.XSmall, Breakpoints.Small])
+      .pipe(map(result => result.matches));
+    
+    this.isMobile$.subscribe(isMobile => {
+      if (isMobile) {
+        this.sidebarOpenSubject.next(false);
+      }
+    });
+  }
 
   toggleSidebar(): void {
-    this.sidebarOpenSubject.next(!this.sidebarOpenSubject.value);
-  }
+    this.isMobile$.pipe(take(1)).subscribe(isMobile => {
+      if (isMobile) {
+        this.drawerVisibleSubject.next(!this.drawerVisibleSubject.value);
+      } else {
+        this.sidebarOpenSubject.next(!this.sidebarOpenSubject.value);
+      }
+    });  }
 
   setSidebarState(state: boolean): void {
     this.sidebarOpenSubject.next(state);
+  }
+
+  closeDrawer(): void {
+    this.drawerVisibleSubject.next(false);
+  }
+
+  openDrawer(): void {
+    this.drawerVisibleSubject.next(true);
   }
 
   loadMenu(): void {
@@ -48,14 +79,5 @@ export class UiService {
       .get<ModuloDTO[]>(`${this.apiUrl}${this.moduloUrl}`)
       .pipe(tap((menu) => this.menuSubject.next(menu)))
       .subscribe();
-  }
-
-  hasPermission(route: string): boolean {
-    const menu = this.menuSubject.value;
-    return menu
-      ? menu.some((modulo) =>
-          modulo.permisos.some((permiso) => permiso.ruta === route)
-        )
-      : false;
   }
 }

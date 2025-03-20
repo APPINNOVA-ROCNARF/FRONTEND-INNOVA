@@ -5,8 +5,8 @@ import { CommonModule } from '@angular/common';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { UiService } from '../../core/services/ui-service/ui.service';
-import { AuthService } from '../../core/auth/services/auth.service';
+import { UiService } from '../../../core/services/ui-service/ui.service';
+import { AuthService } from '../../../core/auth/services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -18,9 +18,12 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent {
   isCollapsed$: Observable<boolean>;
+  isMobile$: Observable<boolean>;
+
 
   constructor(private uiService: UiService, private authService: AuthService, private router: Router) {
     this.isCollapsed$ = this.uiService.sidebarOpen$;
+    this.isMobile$ = this.uiService.isMobile$;
   }
 
   toggleCollapse() {

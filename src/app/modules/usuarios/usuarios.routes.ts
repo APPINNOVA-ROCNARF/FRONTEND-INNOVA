@@ -3,8 +3,16 @@ import { Routes } from '@angular/router';
 export const USUARIOS_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'roles-permisos',
+    redirectTo: 'admin',
     pathMatch: 'full',
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./pages/administrar-usuarios/administrar-usuarios.component').then(
+        (c) => c.AdministrarUsuariosComponent
+      ),
+    title: 'Roles y Permisos',
   },
   {
     path: 'roles-permisos',
