@@ -12,7 +12,7 @@
     </a>
   </div>
   <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed$ | async">
-    <li *ngFor="let item of menuItems" nz-submenu nzClosed [nzTitle]="item.nombre" [nzIcon]="item.icono">
+    <li *ngFor="let item of menuItems | async" nz-submenu nzClosed [nzTitle]="item.nombre" [nzIcon]="item.icono">
       <ul>
         <li *ngFor="let child of item.permisos" nz-menu-item  [nzMatchRouter]="true" >
           <a *ngIf="child.ruta; else noRoute" [routerLink]="child.ruta" >{{ child.nombre }}</a>

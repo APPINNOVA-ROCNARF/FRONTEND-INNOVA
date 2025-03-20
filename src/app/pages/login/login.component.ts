@@ -9,7 +9,7 @@ import {
   FormsModule,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../core/auth/auth.service';
+import { AuthService } from '../../core/auth/services/auth.service';
 
 // NG-Zorro imports
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -50,14 +50,13 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService : AuthService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      email: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.email]],
       password: [null, [Validators.required]],
-      remember: [true],
     });
   }
 
@@ -70,7 +69,7 @@ export class LoginComponent implements OnInit {
       this.isLoading = true;
       this.error = null;
 
-      const { email, password} = this.loginForm.value;
+      const { email, password } = this.loginForm.value;
 
       this.authService.login(email, password).subscribe({
         next: () => {
@@ -79,9 +78,9 @@ export class LoginComponent implements OnInit {
         error: (err) => {
           this.isLoading = false;
           this.error = 'Credenciales incorrectas';
-        }
-      })
-
+        },
+      });
     }
   }
+
 }
