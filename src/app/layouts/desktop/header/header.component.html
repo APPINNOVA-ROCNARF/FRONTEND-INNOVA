@@ -1,15 +1,12 @@
 <div class="header-container">
-  <!-- Botón para colapsar el menú -->
   <div class="header-trigger" (click)="toggleCollapse()">
     <nz-icon class="trigger" [nzType]="(isCollapsed$ | async) ? 'menu-unfold' : 'menu-fold'"></nz-icon>
   </div>
 
-  <!-- Spacer to push avatar to the right -->
   <div class="header-spacer"></div>
 
-  <!-- Avatar dropdown menu -->
   <div class="avatar-container">
-    <a nz-dropdown [nzDropdownMenu]="userMenu" nzPlacement="bottomRight">
+    <a nz-dropdown nzTrigger="click" [nzDropdownMenu]="userMenu" nzPlacement="bottomRight">
       <span class="avatar-name">Administrador</span>
       <i nz-icon nzType="down"></i>
     </a>

@@ -3,10 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { Observable } from 'rxjs';
-import { UiService } from '../../core/services/ui-service/ui.service';
 import { RouterLink } from '@angular/router';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { ModuloDTO } from '../../core/services/ui-service/Interfaces/moduloDTO';
+import { UiService } from '../../../core/services/ui-service/ui.service';
+import { ModuloDTO } from '../../../core/services/ui-service/Interfaces/moduloDTO';
 
 @Component({
   selector: 'app-sidebar',
@@ -24,10 +24,12 @@ import { ModuloDTO } from '../../core/services/ui-service/Interfaces/moduloDTO';
 export class SidebarComponent implements OnInit {
   isCollapsed$: Observable<boolean>;
   menuItems: Observable<ModuloDTO[]>;
+  isMobile$: Observable<boolean>;
 
   constructor(private uiService: UiService) {
     this.isCollapsed$ = this.uiService.sidebarOpen$;
     this.menuItems = this.uiService.menu$;
+    this.isMobile$ = this.uiService.isMobile$;
   }
 
   ngOnInit(): void {

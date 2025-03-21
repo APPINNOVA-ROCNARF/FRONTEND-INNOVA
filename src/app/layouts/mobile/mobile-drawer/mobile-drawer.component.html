@@ -1,0 +1,20 @@
+<nz-drawer
+  [nzVisible]="drawerVisible$ | async"
+  nzPlacement="left"
+  [nzWidth]="256"
+  nzTitle="Menú"
+  (nzOnClose)="closeDrawer()">
+  
+  <ng-container *nzDrawerContent>
+  <ul nz-menu nzMode="inline" nzTheme="dark">
+    <li *ngFor="let item of menuItems | async" nz-submenu [nzTitle]="item.nombre" [nzIcon]="item.icono">
+      <ul>
+        <li *ngFor="let child of item.permisos" nz-menu-item [nzMatchRouter]="true" (click)="closeDrawer()">
+          <a *ngIf="child.ruta; else noRoute" [routerLink]="child.ruta">{{ child.nombre }}</a>
+          <ng-template #noRoute>{{ child.nombre }}</ng-template>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</ng-container>
+</nz-drawer>
