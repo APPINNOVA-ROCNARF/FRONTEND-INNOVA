@@ -1,25 +1,38 @@
 <div class="header-container">
-    <div class="header-trigger" (click)="toggleCollapse()">
-      <nz-icon class="trigger" [nzType]="(isCollapsed$ | async) ? 'bars' : 'bars'"></nz-icon>
-    </div>
-  
-    <div class="header-spacer"></div>
-  
-    <div class="avatar-container">
-      <a nz-dropdown nzTrigger="click" [nzDropdownMenu]="userMenu" nzPlacement="bottomRight">
-        <span class="avatar-name">Administrador</span>
-        <i nz-icon nzType="down"></i>
-      </a>
-      <nz-dropdown-menu #userMenu="nzDropdownMenu">
-        <ul nz-menu>
-          <li nz-menu-item>
-            <span class="menu-item-text">Mi Perfil</span>
-          </li>
-          <li nz-menu-divider></li>
-          <li nz-menu-item>
-            <span class="menu-item-text" (click)="logout()">Cerrar Sesión</span>
-          </li>
-        </ul>
-      </nz-dropdown-menu>
-    </div>
+  <div class="header-trigger" (click)="toggleCollapse()">
+    <nz-icon
+      class="trigger"
+      [nzType]="(isCollapsed$ | async) ? 'menu-unfold' : 'menu-fold'"
+    ></nz-icon>
   </div>
+
+  <div class="sidebar-logo">
+    <h1>APP INNOVA</h1>
+  </div>
+
+  <div class="header-spacer"></div>
+
+  <div class="avatar-container">
+    <a
+      nz-dropdown
+      nzTrigger="click"
+      [nzDropdownMenu]="userMenu"
+      nzPlacement="bottomRight"
+    >
+      <nz-avatar [nzShape]="'square'" nzIcon="user" style="color:#ffffff; background-color:#000000;" nzSize="default"></nz-avatar>
+            <i nz-icon nzType="down"></i>
+
+    </a>
+    <nz-dropdown-menu #userMenu="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item>
+          <span class="menu-item-text">Mi Perfil</span>
+        </li>
+        <li nz-menu-divider></li>
+        <li nz-menu-item>
+          <span class="menu-item-text" (click)="logout()">Cerrar Sesión</span>
+        </li>
+      </ul>
+    </nz-dropdown-menu>
+  </div>
+</div>

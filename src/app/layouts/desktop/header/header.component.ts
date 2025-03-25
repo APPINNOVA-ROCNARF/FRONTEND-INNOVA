@@ -8,11 +8,18 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { UiService } from '../../../core/services/ui-service/ui.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { Router } from '@angular/router';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NzIconModule, CommonModule, NzLayoutModule, NzDropDownModule, NzAvatarModule],
+  imports: [
+    NzIconModule,
+    CommonModule,
+    NzLayoutModule,
+    NzDropDownModule,
+    NzAvatarModule,
+  ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.less',
 })
@@ -20,8 +27,12 @@ export class HeaderComponent {
   isCollapsed$: Observable<boolean>;
   isMobile$: Observable<boolean>;
 
-
-  constructor(private uiService: UiService, private authService: AuthService, private router: Router) {
+  constructor(
+    private uiService: UiService,
+    private authService: AuthService,
+    private router: Router,
+    private message: NzMessageService
+  ) {
     this.isCollapsed$ = this.uiService.sidebarOpen$;
     this.isMobile$ = this.uiService.isMobile$;
   }
@@ -30,9 +41,9 @@ export class HeaderComponent {
     this.uiService.toggleSidebar();
   }
 
-  logout(){
+  logout(): void {
     this.authService.logout();
-      this.router.navigate(['/login']);
+    this.message.success('Sesión cerrada correctamente');
+    this.router.navigate(['/login']);
   }
-
 }

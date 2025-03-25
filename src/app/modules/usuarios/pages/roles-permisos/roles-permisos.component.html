@@ -1,25 +1,36 @@
 <div class="role-management-container">
-    <nz-card>
-      <div class="header-actions">
-        <h2 nz-typography>Gestión de Roles</h2>
-        <button nz-button nzType="primary" (click)="showRoleModal()">
-          <i nz-icon nzType="plus"></i>Nuevo Rol
-        </button>
-      </div>
-      
-<!--Tabla de Roles y Permisos-->
-<app-tabla-roles
-[roles]="roles"
-[loading]="loading"
-(editRole)="openEditRoleModal($event)"
-(deleteRole)="deleteRole($event)"
-></app-tabla-roles>
-    </nz-card>
+  <nz-card>
+    <div class="header-actions">
+      <h2 nz-typography>Gestión de Roles</h2>
+      <button nz-button nzType="primary" (click)="showRoleModal()">
+        <i nz-icon nzType="plus"></i>Nuevo Rol
+      </button>
+    </div>
 
-<!--Formulario Registro/Editar Rol-->
-<app-formulario-roles
-[(visible)]="isRoleModalVisible"
-[role]="selectedRole"
-(formSubmit)="onFormSubmit($event)"
-(cancel)="onFormCancel()"
-></app-formulario-roles>
+    <!--Tabla de Roles y Permisos-->
+    <app-tabla-base
+      [data]="(roles$ | async) ?? []"
+      [columns]="columns"
+      [pageSize]="10"
+      [loading]="(loading$ | async) ?? false"
+      [showActions]="true"
+      [showEditButton]="canEdit"
+      [showDeleteButton]="canDelete"
+      (edit)="handleEdit($event)"
+      (delete)="handleDelete($event)"
+    ></app-tabla-base>
+  </nz-card>
+</div>
+
+    <ng-template #stateTemplate let-item>
+  <nz-tag [nzColor]="item.estado ? 'green' : 'warning'">
+    {{ item.estado ? "Activo" : "Inactivo" }}
+  </nz-tag>
+</ng-template>
+
+    <app-role-form
+      [(visible)]="isRoleModalVisible"
+      [role]="selectedRole"
+      [modules]="modules"
+      (save)="onRoleSaved($event)"
+    ></app-role-form>

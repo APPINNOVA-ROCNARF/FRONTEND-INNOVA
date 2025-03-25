@@ -1,1 +1,15 @@
-<p>administrar-usuarios works!</p>
+<div class="role-management-container">
+    <nz-card>
+      <div class="header-actions">
+        <h2 nz-typography>Gestión de Usuarios</h2>
+        <button nz-button nzType="primary" >
+          <i nz-icon nzType="plus"></i>Nuevo usuario
+        </button>
+      </div>
+
+
+    <ng-template #stateTemplate let-item>
+  <nz-tag [nzColor]="item.state ? 'green' : 'warning'">
+    {{ item.state ? "Activo" : "Inactivo" }}
+  </nz-tag>
+</ng-template>

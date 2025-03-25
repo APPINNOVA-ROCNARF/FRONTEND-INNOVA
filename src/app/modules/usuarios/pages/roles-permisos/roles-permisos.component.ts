@@ -1,21 +1,22 @@
-import { Component } from '@angular/core';
-
-import { Role, Permission, Module } from '../../interfaces/roles-permisos.interface';
-
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 // NG Zorro
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { TablaBaseComponent } from '../../../../shared/components/tabla-base/tabla-base.component';
+import { TableColumn } from '../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
+import { RolService } from '../../services/rol.service';
+import { RolSimple } from '../../interfaces/rol-api-response';
+import { combineLatest, map, Observable } from 'rxjs';
+import { UiService } from '../../../../core/services/ui-service/ui.service';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { TablaRolesComponent } from "../../components/tabla-roles/tabla-roles.component";
-import { FormularioRolesComponent } from "../../components/formulario-roles/formulario-roles.component";
+import { Module, Role, RoleFormComponent } from '../../components/formulario-roles/formulario-roles.component';
 
 @Component({
   selector: 'app-roles-permisos',
@@ -28,218 +29,203 @@ import { FormularioRolesComponent } from "../../components/formulario-roles/form
     NzFormModule,
     NzTypographyModule,
     NzIconModule,
-    TablaRolesComponent,
-    FormularioRolesComponent
-],
+    TablaBaseComponent,
+    NzTagModule,
+    RoleFormComponent,
+  ],
   templateUrl: './roles-permisos.component.html',
-  styleUrl: './roles-permisos.component.less'
+  styleUrl: './roles-permisos.component.less',
 })
-export class RolesPermisosComponent  {
+export class RolesPermisosComponent implements OnInit {
+  @ViewChild('stateTemplate') stateTemplate!: TemplateRef<any>;
 
-  roles: Role[] = [];
-  modules: Module[] = [];
-  loading = false;
-  isRoleModalVisible = false;
-  isPermissionModalVisible = false;
-  roleForm!: FormGroup;
-  selectedRole: Role | null = null;
-  permissionsByModule: { [key: number]: Permission[] } = {};
+  MOCK_MODULES: Module[] = [
+    {
+      id: 1,
+      name: 'Usuarios',
+      permissions: [
+        {
+          id: 101,
+          name: 'Administrar Usuarios',
+          moduleId: 1,
+          availableActions: ['create', 'read', 'update', 'delete'],
+        },
+        {
+          id: 102,
+          name: 'Roles y Permisos',
+          moduleId: 1,
+          availableActions: ['create', 'read', 'update', 'delete'],
+        },
+        {
+          id: 103,
+          name: 'Perfiles de Usuario',
+          moduleId: 1,
+          availableActions: ['read', 'update'],
+        },
+      ],
+    },
+    {
+      id: 2,
+      name: 'Viáticos',
+      permissions: [
+        {
+          id: 201,
+          name: 'Solicitudes de Viáticos',
+          moduleId: 2,
+          availableActions: ['create', 'read', 'update', 'delete'],
+        },
+        {
+          id: 202,
+          name: 'Aprobación de Viáticos',
+          moduleId: 2,
+          availableActions: ['read', 'update'],
+        },
+        {
+          id: 203,
+          name: 'Reportes de Viáticos',
+          moduleId: 2,
+          availableActions: ['read', 'create'],
+        },
+      ],
+    },
+    {
+      id: 3,
+      name: 'Configuración',
+      permissions: [
+        {
+          id: 301,
+          name: 'Parámetros del Sistema',
+          moduleId: 3,
+          availableActions: ['read', 'update'],
+        },
+        {
+          id: 302,
+          name: 'Configuración de Correo',
+          moduleId: 3,
+          availableActions: ['read', 'update'],
+        },
+      ],
+    },
+    {
+      id: 4,
+      name: 'Reportes',
+      permissions: [
+        {
+          id: 401,
+          name: 'Reportes de Usuarios',
+          moduleId: 4,
+          availableActions: ['read'],
+        },
+        {
+          id: 402,
+          name: 'Reportes Financieros',
+          moduleId: 4,
+          availableActions: ['read'],
+        },
+        {
+          id: 403,
+          name: 'Exportar Datos',
+          moduleId: 4,
+          availableActions: ['read', 'create'],
+        },
+      ],
+    },
+  ];
 
-expandedPanels: { [key: number]: boolean } = {};
-showOnlyAssigned: boolean = false;
-filteredModules: Module[] = [];
-tempRole: Role | null = null; 
+  // Variables Tabla
+  columns: TableColumn[] = [];
+  canEdit = true;
+  canDelete = true;
+
+  roles$!: Observable<RolSimple[]>;
+  loading$!: Observable<boolean>;
+  isMobile$: Observable<boolean>;
+
+  private fieldLabels: Record<string, string> = {
+    rolId: 'ID',
+    nombreRol: 'Nombre',
+    descripcion: 'Descripción',
+    estado: 'Estado',
+  };
 
   constructor(
-    private fb: FormBuilder,
-    private message: NzMessageService,
+    private rolService: RolService,
+    private uiService: UiService,
     private modalService: NzModalService
-  ) {}
+  ) {
+    this.isMobile$ = this.uiService.isMobile$;
+  }
 
   ngOnInit(): void {
-    this.initForm();
-    this.loadMockData();
+    combineLatest([this.rolService.fetchRoles(), this.isMobile$]).subscribe(
+      ([roles, isMobile]) => {
+        if (roles.length > 0) {
+          this.columns = this.generateColumnsFromData(roles[0], isMobile);
+        }
+      }
+    );
+
+    this.roles$ = this.rolService.roles$.pipe(map((roles) => roles || []));
+    this.loading$ = this.rolService
+      .getRolesLoading()
+      .pipe(map((loading) => loading ?? false));
+
+          this.modules = [...this.MOCK_MODULES];
+
   }
 
-  initForm(): void {
-    this.roleForm = this.fb.group({
-      name: [null, [Validators.required]],
-      description: [null]
+  generateColumnsFromData(sample: RolSimple, isMobile: boolean): TableColumn[] {
+    const visibleFields = Object.keys(sample).filter((key) => {
+      if (key === 'rolId') return false;
+      if (isMobile) {
+        // En móvil, solo mostrar campos clave
+        return ['nombreRol', 'estado'].includes(key);
+      }
+      return true;
+    });
+
+    return visibleFields.map((key) => {
+      const column: TableColumn = {
+        title: this.fieldLabels[key] || key,
+        dataIndex: key,
+      };
+
+      if (key === 'estado') {
+        column.renderFn = this.stateTemplate;
+      }
+
+      return column;
     });
   }
 
-  loadMockData(): void {
-  
-    // Datos de ejemplo para roles
-    this.roles = [
-      {
-        id: 1,
-        name: 'Administrador',
-        description: 'Acceso completo al sistema',
-        state: true,
-        permissions: [
-          {
-            id: 1,
-            name: 'Ver Usuarios',
-            moduleId: 1,
-            action: 'Listar todos los usuarios del sistema',
-          },
-          {
-            id: 2,
-            name: 'Crear Usuario',
-            moduleId: 1,
-            action: 'Crear nuevos usuarios en el sistema',
-          },
-          {
-            id: 3,
-            name: 'Editar Usuario',
-            moduleId: 1,
-            action: 'Modificar datos de usuarios existentes',
-          },
-          {
-            id: 4,
-            name: 'Eliminar Usuario',
-            moduleId: 1,
-            action: 'Eliminar usuarios del sistema',
-          },
-          {
-            id: 5,
-            name: 'Ver Productos',
-            moduleId: 2,
-            action: 'Listar todos los productos',
-          },
-          {
-            id: 9,
-            name: 'Ver Ventas',
-            moduleId: 3,
-            action: 'Acceder al historial de ventas',
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: 'Vendedor',
-        description: 'Gestión de ventas y consulta de productos',
-        state: true,
-        permissions: [
-          {
-            id: 5,
-            name: 'Ver Productos',
-            moduleId: 2,
-            action: 'Listar todos los productos',
-          },
-          {
-            id: 9,
-            name: 'Ver Ventas',
-            moduleId: 3,
-            action: 'Acceder al historial de ventas',
-          },
-          {
-            id: 10,
-            name: 'Crear Venta',
-            moduleId: 3,
-            action: 'Registrar nuevas ventas',
-          },
-        ],
-      },
-      {
-        id: 3,
-        name: 'Inventario',
-        description: 'Gestión de productos y stock',
-        state: false,
-        permissions: [
-          {
-            id: 5,
-            name: 'Ver Productos',
-            moduleId: 2,
-            action: 'Listar todos los productos',
-          },
-          {
-            id: 6,
-            name: 'Crear Producto',
-            moduleId: 2,
-            action: 'Añadir nuevos productos',
-          },
-          {
-            id: 7,
-            name: 'Editar Producto',
-            moduleId: 2,
-            action: 'Modificar productos existentes',
-          },
-        ],
-      },
-    ];
-
-    // Organizar permisos por módulo
-    this.modules.forEach(module => {
-      this.permissionsByModule[module.id] = module.permissions;
-    });
+  handleEdit(role: any) {
+    console.log('Editar rol:', role);
+    // Lógica para editar el rol
   }
 
-  initializePermissionsInterface(): void {
-    // Inicializar todos los paneles como expandidos
-    this.modules.forEach(module => {
-      this.expandedPanels[module.id] = true;
-    });
-    
-    // Inicializar módulos filtrados
-    this.filteredModules = [...this.modules];
+  handleDelete(id: number) {
+    console.log('Eliminar rol:', id);
+    // Lógica para eliminar el rol
   }
-  
-  openEditRoleModal(role: Role): void {
-    this.selectedRole = role;
+
+  isRoleModalVisible = false;
+  selectedRole: Role | null = null;
+  modules: Module[] = [
+    // Define tus módulos y permisos aquí
+  ];
+
+  showRoleModal() {
+    this.selectedRole = null; // Para crear un nuevo rol
     this.isRoleModalVisible = true;
   }
 
-  // Sobreescribir el método showRoleModal
-  showRoleModal(): void {
-    this.roleForm.reset();
-    this.selectedRole = null;
-    this.tempRole = null;
+  editRole(role: Role) {
+    this.selectedRole = role; // Para editar un rol existente
     this.isRoleModalVisible = true;
-    this.initializePermissionsInterface();
   }
-  
-  deleteRole(id: number): void {
-    this.modalService.confirm({
-      nzTitle: '¿Está seguro de eliminar este rol?',
-      nzContent: 'Esta acción no se puede deshacer',
-      nzOkText: 'Sí',
-      nzOkDanger: true,
-      nzOnOk: () => {
-        this.roles = this.roles.filter(r => r.id !== id);
-        this.message.success('Rol eliminado exitosamente');
-      },
-      nzCancelText: 'No'
-    });
-  }
-  
-    // Método para manejar la presentación del formulario
-onFormSubmit(formData: any): void {
-  console.log('Datos del formulario recibidos:', formData);
-  
-  // Aquí normalmente llamarías a tu servicio para guardar los datos
-  // Por ahora solo mostraremos los datos en consola y cerraremos el modal
-  if (formData.id) {
-    // Es una actualización
-    console.log(`Actualizando rol ${formData.id}: ${formData.name}`);
-    console.log(`Permisos asignados: ${formData.permissions.length}`);
-  } else {
-    // Es una creación
-    console.log(`Creando nuevo rol: ${formData.name}`);
-    console.log(`Permisos asignados: ${formData.permissions.length}`);
-  }
-  
-  // Opcional: Mostrar mensaje de éxito
-  // Si tienes NzMessageService importado:
-  // this.message.success(`Rol ${formData.id ? 'actualizado' : 'creado'} exitosamente`);
-  
-  this.isRoleModalVisible = false;
-}
 
-// Método para manejar la cancelación del formulario
-onFormCancel(): void {
-  console.log('Formulario cancelado');
-  this.isRoleModalVisible = false;
-}
+  onRoleSaved(savedRole: Role) {
+    console.log('Rol guardado:', savedRole);
+    // Aquí manejarías la lógica para guardar el rol
+  }
 }

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TablaRolesComponent } from './tabla-roles.component';
+import { TablaBaseComponent } from './tabla-base.component';
 
-describe('TablaRolesComponent', () => {
-  let component: TablaRolesComponent;
-  let fixture: ComponentFixture<TablaRolesComponent>;
+describe('TablaBaseComponent', () => {
+  let component: TablaBaseComponent;
+  let fixture: ComponentFixture<TablaBaseComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TablaRolesComponent]
+      imports: [TablaBaseComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TablaRolesComponent);
+    fixture = TestBed.createComponent(TablaBaseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

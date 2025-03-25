@@ -1,33 +1,40 @@
 <nz-table
-  #rolesTable
-  [nzData]="roles"
+  #dynamicTable
+  [nzData]="data"
   [nzPageSize]="pageSize"
   [nzLoading]="loading"
 >
   <thead>
     <tr>
-      <th *ngFor="let col of columnas" [nzWidth]="col.width">
+      <th *ngFor="let col of columns">
         {{ col.title }}
       </th>
+      <th *ngIf="showActions">Acciones</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let role of rolesTable.data">
-      <td>{{ role.name }}</td>
-      <td>{{ role.description }}</td>
-      <td>
-        <nz-tag [nzColor]="role.state == true ? 'green' : 'warning'">
-          {{ role.state == true ? "Activo" : "Inactivo" }}
-        </nz-tag>
+    <tr *ngFor="let item of dynamicTable.data">
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.renderFn; else defaultCell">
+          <ng-container
+            [ngTemplateOutlet]="col.renderFn"
+            [ngTemplateOutletContext]="{ $implicit: item, column: col }"
+          ></ng-container>
+        </ng-container>
+
+        <ng-template #defaultCell>
+          {{ item[col.dataIndex] }}
+        </ng-template>
       </td>
-      <td>
+
+      <td *ngIf="showActions">
         <div class="actions-container">
           <button
             *ngIf="showEditButton"
             nz-button
             nzType="primary"
             nzSize="small"
-            (click)="onEditRole(role)"
+            (click)="onEdit(item)"
             nzTooltipTitle="Editar rol y permisos"
             nz-tooltip
           >
@@ -36,8 +43,9 @@
           <button
             *ngIf="showDeleteButton"
             nz-button
+            nzDanger
             nzSize="small"
-            (click)="onDeleteRole(role.id)"
+            (click)="onDelete(item.id)"
             nzTooltipTitle="Eliminar"
             nz-tooltip
           >

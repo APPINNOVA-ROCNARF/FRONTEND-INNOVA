@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { Observable } from 'rxjs';
@@ -20,6 +20,7 @@ import { ModuloDTO } from '../../../core/services/ui-service/Interfaces/moduloDT
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent implements OnInit {
   isCollapsed$: Observable<boolean>;
