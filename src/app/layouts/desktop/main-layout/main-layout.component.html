@@ -1,12 +1,17 @@
 <nz-layout class="app-layout">
   <ng-container *ngIf="!(isMobile$ | async); else mobileLayout">
-    <nz-sider class="menu-sidebar" nzCollapsible nzWidth="256px" nzBreakpoint="md"
-      [nzCollapsed]="(isCollapsed$ | async)!" [nzTrigger]="null">
+    <nz-sider
+      class="menu-sidebar"
+      nzCollapsible
+      nzWidth="256px"
+      nzBreakpoint="md"
+      [nzCollapsed]="(isCollapsed$ | async) ?? false"
+      [nzTrigger]="null"
+    >
       <app-sidebar></app-sidebar>
     </nz-sider>
 
     <nz-layout class="main-content">
-
       <nz-header class="app-header">
         <app-header></app-header>
       </nz-header>
@@ -14,13 +19,10 @@
       <nz-content class="inner-content">
         <router-outlet></router-outlet>
       </nz-content>
-
     </nz-layout>
   </ng-container>
 
   <ng-template #mobileLayout>
-    <app-mobile-layout>
-    </app-mobile-layout>
+    <app-mobile-layout> </app-mobile-layout>
   </ng-template>
-
 </nz-layout>

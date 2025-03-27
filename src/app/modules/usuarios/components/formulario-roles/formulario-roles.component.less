@@ -1,23 +1,17 @@
-/* src/app/features/role-management/components/role-form/role-form.component.less */
-.permission-filters {
-    margin-bottom: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .permission-actions-top {
-    display: flex;
-    margin-left: auto;
-    gap: 8px;
-  }
+// Estilos para el componente de formulario de roles
+:host {
+  display: block;
   
   .module-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
+  }
+  
+  .module-title {
+    display: flex;
+    align-items: center;
   }
   
   .module-actions {
@@ -26,74 +20,76 @@
     gap: 8px;
   }
   
-  .permission-switch-cell {
-    text-align: center;
+  .permission-controls {
+    margin-bottom: 16px;
   }
-
-  nz-form-label {
-    text-align: left; 
-  }
-
   
+  .permission-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  
+  .status-label {
+    margin-left: 8px;
+  }
+  
+  .ml-2 {
+    margin-left: 8px;
+  }
+  
+  .modules-collapse {
+    margin-top: 16px;
+  }
+  
+  .permission-name {
+    font-weight: 500;
+  }
+  
+  // Personalizaciones para componentes de NG-ZORRO
   :global {
-    .custom-collapse {
-      .ant-collapse-item {
-        margin-bottom: 8px;
-        border-radius: 2px;
-        border: 1px solid #f0f0f0;
-        
-        .ant-collapse-header {
-          background-color: #fafafa;
-        }
-        
-        .ant-collapse-content {
-          border-top: 1px solid #f0f0f0;
-        }
-        
-        &:last-child {
-          margin-bottom: 0;
-        }
+    .ant-collapse {
+      .ant-collapse-header {
+        padding: 12px 16px;
+      }
+      
+      .ant-collapse-content-box {
+        padding: 16px;
       }
     }
     
-    .ant-modal-body {
-      padding: 20px;
-      max-height: 70vh;
-      overflow-y: auto;
-    }
-    
-    .ant-table-small {
+    .ant-table {
       .ant-table-thead > tr > th {
-        background-color: #fafafa;
-        padding: 8px 16px;
+        background-color: #f5f7fa;
       }
       
       .ant-table-tbody > tr > td {
-        padding: 8px 16px;
+        transition: background-color 0.3s;
       }
-    }
-    
-    .ant-tag {
-      margin-right: 0;
-    }
-    
-    .ant-collapse-content-box {
-      padding: 16px !important;
-    }
-    
-    .ant-collapse > .ant-collapse-item > .ant-collapse-header {
-      padding: 8px 16px;
-    }
-    
-    .ant-divider-inner-text {
-      font-weight: 500;
       
-      .anticon {
-        margin-right: 6px;
+      .ant-table-tbody > tr:hover > td {
+        background-color: #e6f7ff;
       }
     }
     
-    .ant-btn-link {
-      padding: 0;
+    .ant-switch {
+      &.ant-switch-checked {
+        background-color: #1890ff;
+      }
+    }
+    
+    .ant-card-small {
+      .ant-card-head {
+        min-height: 36px;
+        
+        .ant-card-head-title {
+          padding: 8px 0;
+        }
+      }
+      
+      .ant-card-body {
+        padding: 12px;
+      }
     }
   }
+}

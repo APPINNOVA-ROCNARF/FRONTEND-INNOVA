@@ -19,7 +19,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 
 @Component({
@@ -50,7 +50,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private message: NzMessageService
   ) {}
 
   ngOnInit(): void {
@@ -73,6 +74,7 @@ export class LoginComponent implements OnInit {
 
       this.authService.login({ email, password }).subscribe({
         next: () => {
+          this.message.success("Inicio de sesión exitoso")
           this.router.navigate(['/welcome']);
         },
         error: (err) => {
