@@ -1,7 +1,7 @@
 <!-- src/app/features/role-management/components/role-form/role-form.component.html -->
 <nz-modal
   [(nzVisible)]="visible"
-  [nzTitle]="role ? 'Editar Rol' : 'Nuevo Rol'"
+  [nzTitle]="rolId ? 'Editar Rol' : 'Nuevo Rol'"
   (nzOnCancel)="closeModal()"
   nzMaskClosable="false"
   nzWidth="900px"
@@ -12,23 +12,30 @@
     <button
       nz-button
       nzType="primary"
-      [disabled]="roleForm.invalid"
+      [disabled]="rolForm.invalid"
       (click)="submitForm()"
     >
-      {{ role ? "Actualizar" : "Crear" }}
+      {{ rolId ? "Actualizar" : "Crear" }}
     </button>
   </ng-template>
 
   <ng-container *nzModalContent>
     <!-- Información básica del rol -->
-    <form nz-form [formGroup]="roleForm">
+    <form nz-form [formGroup]="rolForm">
       <div nz-row [nzGutter]="24">
-        <div nz-col [nzSpan]="16">
-          <!-- Nombre y descripción -->
+        <!-- Columna izquierda: Nombre y Descripción -->
+        <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="6" nzRequired>Nombre</nz-form-label>
-            <nz-form-control [nzSpan]="18" nzErrorTip="¡Por favor ingrese el nombre del rol!">
-              <input nz-input formControlName="name" placeholder="Nombre del rol" />
+            <nz-form-control
+              [nzSpan]="18"
+              nzErrorTip="¡Por favor ingrese el nombre del rol!"
+            >
+              <input
+                nz-input
+                formControlName="name"
+                placeholder="Nombre del rol"
+              />
             </nz-form-control>
           </nz-form-item>
 
@@ -44,19 +51,31 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-        
-        <div nz-col [nzSpan]="8" *ngIf="role">
-          <!-- Estado -->
+
+        <!-- Columna derecha: Estado del rol -->
+        <div nz-col [nzSpan]="12">
           <nz-card nzSize="small" nzTitle="Estado del Rol">
-            <nz-switch
-              formControlName="status"
-              [nzCheckedChildren]="checkedTemplate"
-              [nzUnCheckedChildren]="unCheckedTemplate"
-            ></nz-switch>
-            <span class="status-label">{{ true ? 'Activo' : 'Inactivo' }}</span>
-            
-            <ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
-            <ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
+            <div nz-row nzAlign="middle">
+              <div nz-col [nzSpan]="8">
+                <nz-switch
+                  formControlName="status"
+                  [nzCheckedChildren]="checkedTemplate"
+                  [nzUnCheckedChildren]="unCheckedTemplate"
+                ></nz-switch>
+              </div>
+              <div nz-col [nzSpan]="16">
+                <span class="status-label">
+                  {{ rolForm.get("status")?.value ? "Activo" : "Inactivo" }}
+                </span>
+              </div>
+            </div>
+
+            <ng-template #checkedTemplate>
+              <i nz-icon nzType="check"></i>
+            </ng-template>
+            <ng-template #unCheckedTemplate>
+              <i nz-icon nzType="close"></i>
+            </ng-template>
           </nz-card>
         </div>
       </div>
@@ -72,47 +91,22 @@
     <!-- Filtros y búsqueda -->
     <div nz-row [nzGutter]="16" class="permission-controls">
       <div nz-col [nzSpan]="8">
-        <nz-input-group [nzSuffix]="suffixIconSearch">
-          <input
-            type="text"
-            nz-input
-            placeholder="Buscar permisos"
-            [(ngModel)]="permissionSearchText"
-            (ngModelChange)="filterPermissions()"
-          />
-        </nz-input-group>
-        <ng-template #suffixIconSearch>
-          <i nz-icon nzType="search"></i>
-        </ng-template>
-      </div>
-
-      <div nz-col [nzSpan]="8">
         <nz-select
-          [(ngModel)]="selectedModuleFilter"
-          (ngModelChange)="filterPermissions()"
+          (ngModelChange)="setFiltroModulo($event)"
+          [ngModel]="0"
           nzPlaceHolder="Filtrar por módulo"
           style="width: 100%"
         >
           <nz-option [nzValue]="0" nzLabel="Todos los módulos"></nz-option>
           <nz-option
-            *ngFor="let module of modules"
-            [nzValue]="module.id"
-            [nzLabel]="module.name"
+            *ngFor="let module of (rolService.rolDetalle$ | async)?.modulos"
+            [nzValue]="module.moduloId"
+            [nzLabel]="module.nombreModulo"
           ></nz-option>
         </nz-select>
       </div>
 
       <div nz-col [nzSpan]="8" class="permission-actions">
-        <button
-          nz-button
-          nzType="default"
-          (click)="toggleShowOnlyAssigned()"
-          [nzType]="showOnlyAssigned ? 'primary' : 'default'"
-        >
-          <i nz-icon [nzType]="showOnlyAssigned ? 'eye' : 'eye-invisible'"></i>
-          {{ showOnlyAssigned ? "Ver todos" : "Ver asignados" }}
-        </button>
-        
         <button
           nz-button
           nzType="default"
@@ -124,107 +118,81 @@
       </div>
     </div>
 
+    <br />
+
     <!-- Módulos y Permisos - Estructura Nueva -->
-    <nz-collapse [nzBordered]="true" class="modules-collapse">
+    <nz-collapse [nzBordered]="false" class="modules-collapse">
       <nz-collapse-panel
-        *ngFor="let module of filteredModules"
+        *ngFor="let modulo of filtroModulos$ | async"
         [nzHeader]="moduleHeader"
-        [nzActive]="expandedPanels[module.id]"
-        (nzActiveChange)="expandedPanels[module.id] = $event"
+        [nzActive]="(expandedPanels$ | async)?.[modulo.moduloId]"
+        (nzActiveChange)="setExpandedPanel(modulo.moduloId, $event)"
       >
         <ng-template #moduleHeader>
           <div class="module-header">
             <div class="module-title">
-              <i nz-icon [nzType]="getModuleIcon(module.name)" nzTheme="outline"></i>
-              <span class="ml-2">{{ module.name }}</span>
-            </div>
-            <div class="module-actions">
-              <nz-tag
-                [nzColor]="getModulePermissionCount(module.id).assigned > 0 ? 'blue' : 'default'"
-              >
-                {{ getModulePermissionCount(module.id).assigned }} / {{ getModulePermissionCount(module.id).total }}
-              </nz-tag>
-              <button
-                nz-button
-                nzType="link"
-                (click)="
-                  $event.stopPropagation();
-                  toggleAllModulePermissions(module.id)
-                "
-              >
-                {{ getModulePermissionCount(module.id).assigned < getModulePermissionCount(module.id).total
-                    ? "Asignar todos"
-                    : "Quitar todos" }}
-              </button>
+              <span class="ml-2">{{ modulo.nombreModulo }}</span>
             </div>
           </div>
         </ng-template>
 
         <!-- Tabla de permisos con acciones CRUD -->
         <nz-table
-          [nzData]="getFilteredPermissionsForModule(module.id)"
+          [nzData]="modulo.permisos"
           [nzShowPagination]="false"
           [nzSize]="'small'"
           [nzBordered]="true"
+          [nzScroll]="{ x: '600px', y: '240px' }"
         >
           <thead>
             <tr>
-              <th nzWidth="30%">Permiso</th>
-              <th nzWidth="15%" nzAlign="center">Crear</th>
-              <th nzWidth="15%" nzAlign="center">Leer</th>
-              <th nzWidth="15%" nzAlign="center">Actualizar</th>
-              <th nzWidth="15%" nzAlign="center">Eliminar</th>
-              <th nzWidth="10%" nzAlign="center">Todos</th>
+              <th>Permiso</th>
+              <th nzAlign="center">Acceso</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let permission of getFilteredPermissionsForModule(module.id)">
-              <td class="permission-name">{{ permission.name }}</td>
-              
-              <!-- Acciones CRUD como switches -->
+            <tr *ngFor="let permission of modulo.permisos">
+              <td class="permission-name">{{ permission.nombrePermiso }}</td>
               <td nzAlign="center">
-                <nz-switch
-                  [ngModel]="hasPermissionAction(permission.id, 'create')"
-                  (ngModelChange)="togglePermissionAction(permission.id, 'create')"
-                  nzSize="small"
-                  [nzDisabled]="!hasActionAvailable(permission.id, 'create')"
-                ></nz-switch>
-              </td>
-              <td nzAlign="center">
-                <nz-switch
-                  [ngModel]="hasPermissionAction(permission.id, 'read')"
-                  (ngModelChange)="togglePermissionAction(permission.id, 'read')"
-                  nzSize="small"
-                  [nzDisabled]="!hasActionAvailable(permission.id, 'read')"
-                ></nz-switch>
-              </td>
-              <td nzAlign="center">
-                <nz-switch
-                  [ngModel]="hasPermissionAction(permission.id, 'update')"
-                  (ngModelChange)="togglePermissionAction(permission.id, 'update')"
-                  nzSize="small"
-                  [nzDisabled]="!hasActionAvailable(permission.id, 'update')"
-                ></nz-switch>
-              </td>
-              <td nzAlign="center">
-                <nz-switch
-                  [ngModel]="hasPermissionAction(permission.id, 'delete')"
-                  (ngModelChange)="togglePermissionAction(permission.id, 'delete')"
-                  nzSize="small"
-                  [nzDisabled]="!hasActionAvailable(permission.id, 'delete')"
-                ></nz-switch>
-              </td>
-              
-              <!-- Botón para asignar/quitar todas las acciones del permiso -->
-              <td nzAlign="center">
-                <button
-                  nz-button
-                  nzType="link"
-                  nzSize="small"
-                  (click)="toggleAllPermissionActions(permission.id)"
+                <nz-radio-group
+                  [ngModel]="permission.acciones | permiso"
+                  (ngModelChange)="
+                    setPermissionAccessLevel(permission.permisoId, $event)
+                  "
                 >
-                  <i nz-icon [nzType]="hasAllPermissionActions(permission.id) ? 'minus-circle' : 'plus-circle'"></i>
-                </button>
+                  <label
+                    nz-radio
+                    nzValue="Lectura"
+                    nz-tooltip
+                    nzTooltipTitle="
+                      Permite solo ver los datos sin modificarlos.
+                    "
+                  >
+                    Lectura
+                  </label>
+
+                  <label
+                    nz-radio
+                    nzValue="Edición"
+                    nz-tooltip
+                    nzTooltipTitle="
+                      Permite ver y editar los datos existentes.
+                    "
+                  >
+                    Edición
+                  </label>
+
+                  <label
+                    nz-radio
+                    nzValue="Control total"
+                    nz-tooltip
+                    nzTooltipTitle="
+                      Permite crear, ver, editar y eliminar datos.
+                    "
+                  >
+                    Control total
+                  </label>
+                </nz-radio-group>
               </td>
             </tr>
           </tbody>

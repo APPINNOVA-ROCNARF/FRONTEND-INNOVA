@@ -12,7 +12,7 @@ export const USUARIOS_ROUTES: Routes = [
       import('./pages/administrar-usuarios/administrar-usuarios.component').then(
         (c) => c.AdministrarUsuariosComponent
       ),
-    title: 'Roles y Permisos',
+    title: 'Administrar Usuarios',
   },
   {
     path: 'roles-permisos',

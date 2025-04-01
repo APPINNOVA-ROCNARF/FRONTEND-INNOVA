@@ -2,7 +2,7 @@
   <nz-card>
     <div class="header-actions">
       <h2 nz-typography>Gestión de Roles</h2>
-      <button nz-button nzType="primary" (click)="showRoleModal()">
+      <button nz-button nzType="primary" (click)="showRolModal()">
         <i nz-icon nzType="plus"></i>Nuevo Rol
       </button>
     </div>
@@ -28,9 +28,7 @@
   </nz-tag>
 </ng-template>
 
-    <app-role-form
-      [(visible)]="isRoleModalVisible"
-      [role]="selectedRole"
-      [modules]="modules"
-      (save)="onRoleSaved($event)"
-    ></app-role-form>
+    <app-rol-modal
+      [(visible)]="isRolModalVisible"
+      [rolId]="selectedRolId"
+    ></app-rol-modal>

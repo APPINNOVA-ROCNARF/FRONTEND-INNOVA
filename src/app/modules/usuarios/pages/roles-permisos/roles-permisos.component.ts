@@ -4,8 +4,6 @@ import { CommonModule } from '@angular/common';
 // NG Zorro
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzModalModule } from 'ng-zorro-antd/modal';
-import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { TablaBaseComponent } from '../../../../shared/components/tabla-base/tabla-base.component';
@@ -15,9 +13,8 @@ import { RolSimple } from '../../interfaces/rol-api-response';
 import { combineLatest, map, Observable } from 'rxjs';
 import { UiService } from '../../../../core/services/ui-service/ui.service';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { NzModalService } from 'ng-zorro-antd/modal';
-import { Module, Role, RoleFormComponent } from '../../components/formulario-roles/formulario-roles.component';
-
+import { RolFormComponent } from '../../components/formulario-roles/formulario-roles.component';
+import { RolDetalle } from '../../interfaces/rol-api-response';
 @Component({
   selector: 'app-roles-permisos',
   standalone: true,
@@ -25,112 +22,17 @@ import { Module, Role, RoleFormComponent } from '../../components/formulario-rol
     CommonModule,
     NzCardModule,
     NzButtonModule,
-    NzModalModule,
-    NzFormModule,
     NzTypographyModule,
     NzIconModule,
     TablaBaseComponent,
     NzTagModule,
-    RoleFormComponent,
+    RolFormComponent,
   ],
   templateUrl: './roles-permisos.component.html',
   styleUrl: './roles-permisos.component.less',
 })
 export class RolesPermisosComponent implements OnInit {
   @ViewChild('stateTemplate') stateTemplate!: TemplateRef<any>;
-
-  MOCK_MODULES: Module[] = [
-    {
-      id: 1,
-      name: 'Usuarios',
-      permissions: [
-        {
-          id: 101,
-          name: 'Administrar Usuarios',
-          moduleId: 1,
-          availableActions: ['create', 'read', 'update', 'delete'],
-        },
-        {
-          id: 102,
-          name: 'Roles y Permisos',
-          moduleId: 1,
-          availableActions: ['create', 'read', 'update', 'delete'],
-        },
-        {
-          id: 103,
-          name: 'Perfiles de Usuario',
-          moduleId: 1,
-          availableActions: ['read', 'update'],
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Viáticos',
-      permissions: [
-        {
-          id: 201,
-          name: 'Solicitudes de Viáticos',
-          moduleId: 2,
-          availableActions: ['create', 'read', 'update', 'delete'],
-        },
-        {
-          id: 202,
-          name: 'Aprobación de Viáticos',
-          moduleId: 2,
-          availableActions: ['read', 'update'],
-        },
-        {
-          id: 203,
-          name: 'Reportes de Viáticos',
-          moduleId: 2,
-          availableActions: ['read', 'create'],
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: 'Configuración',
-      permissions: [
-        {
-          id: 301,
-          name: 'Parámetros del Sistema',
-          moduleId: 3,
-          availableActions: ['read', 'update'],
-        },
-        {
-          id: 302,
-          name: 'Configuración de Correo',
-          moduleId: 3,
-          availableActions: ['read', 'update'],
-        },
-      ],
-    },
-    {
-      id: 4,
-      name: 'Reportes',
-      permissions: [
-        {
-          id: 401,
-          name: 'Reportes de Usuarios',
-          moduleId: 4,
-          availableActions: ['read'],
-        },
-        {
-          id: 402,
-          name: 'Reportes Financieros',
-          moduleId: 4,
-          availableActions: ['read'],
-        },
-        {
-          id: 403,
-          name: 'Exportar Datos',
-          moduleId: 4,
-          availableActions: ['read', 'create'],
-        },
-      ],
-    },
-  ];
 
   // Variables Tabla
   columns: TableColumn[] = [];
@@ -148,11 +50,12 @@ export class RolesPermisosComponent implements OnInit {
     estado: 'Estado',
   };
 
-  constructor(
-    private rolService: RolService,
-    private uiService: UiService,
-    private modalService: NzModalService
-  ) {
+  // Variables Modal
+
+  selectedRolId: number | null = null;
+  isRolModalVisible = false;
+
+  constructor(private rolService: RolService, private uiService: UiService) {
     this.isMobile$ = this.uiService.isMobile$;
   }
 
@@ -169,9 +72,6 @@ export class RolesPermisosComponent implements OnInit {
     this.loading$ = this.rolService
       .getRolesLoading()
       .pipe(map((loading) => loading ?? false));
-
-          this.modules = [...this.MOCK_MODULES];
-
   }
 
   generateColumnsFromData(sample: RolSimple, isMobile: boolean): TableColumn[] {
@@ -198,34 +98,19 @@ export class RolesPermisosComponent implements OnInit {
     });
   }
 
-  handleEdit(role: any) {
-    console.log('Editar rol:', role);
+  showRolModal() {
+    this.selectedRolId = 1;
+    this.isRolModalVisible = true;
+  }
+
+  handleEdit(rolId: number) {
+    console.log('Editar rol:', rolId);
     // Lógica para editar el rol
   }
 
-  handleDelete(id: number) {
-    console.log('Eliminar rol:', id);
+  handleDelete(rolId: number) {
+    console.log('Eliminar rol:', rolId);
     // Lógica para eliminar el rol
   }
 
-  isRoleModalVisible = false;
-  selectedRole: Role | null = null;
-  modules: Module[] = [
-    // Define tus módulos y permisos aquí
-  ];
-
-  showRoleModal() {
-    this.selectedRole = null; // Para crear un nuevo rol
-    this.isRoleModalVisible = true;
-  }
-
-  editRole(role: Role) {
-    this.selectedRole = role; // Para editar un rol existente
-    this.isRoleModalVisible = true;
-  }
-
-  onRoleSaved(savedRole: Role) {
-    console.log('Rol guardado:', savedRole);
-    // Aquí manejarías la lógica para guardar el rol
-  }
 }
