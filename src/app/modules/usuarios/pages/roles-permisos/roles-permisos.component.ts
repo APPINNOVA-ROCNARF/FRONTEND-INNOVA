@@ -60,6 +60,13 @@ export class RolesPermisosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.roles$ = this.rolService.roles$.pipe(map((roles) => roles || []));
+    this.loading$ = this.rolService
+      .getRolesLoading()
+      .pipe(map((loading) => loading ?? false));
+  }
+
+  ngAfterViewInit(): void{
     combineLatest([this.rolService.fetchRoles(), this.isMobile$]).subscribe(
       ([roles, isMobile]) => {
         if (roles.length > 0) {
@@ -67,11 +74,6 @@ export class RolesPermisosComponent implements OnInit {
         }
       }
     );
-
-    this.roles$ = this.rolService.roles$.pipe(map((roles) => roles || []));
-    this.loading$ = this.rolService
-      .getRolesLoading()
-      .pipe(map((loading) => loading ?? false));
   }
 
   generateColumnsFromData(sample: RolSimple, isMobile: boolean): TableColumn[] {

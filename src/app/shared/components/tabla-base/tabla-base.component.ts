@@ -18,6 +18,7 @@ export class TablaBaseComponent {
   @Input() columns: TableColumn[] = [];
   @Input() pageSize: number = 10;
   @Input() loading: boolean = false;
+  @Input() stateTemplate!: TemplateRef<any>;
 
   // Configuración de acciones
   @Input() showActions: boolean = true;
