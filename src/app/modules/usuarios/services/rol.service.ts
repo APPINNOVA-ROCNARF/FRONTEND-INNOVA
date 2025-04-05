@@ -24,6 +24,11 @@ export class RolService {
 
   fetchRoles(): Observable<RolSimple[]> {
     const loadingKey = 'fetchRoles';
+
+    if (this.rolesSubject.value.length > 0){
+      return this.roles$;
+    }
+    
     this.loadingService.setLoading(loadingKey, true);
 
     return this.http.get<RolSimple[]>(`${this.apiUrl}${this.rolUrl}`).pipe(
