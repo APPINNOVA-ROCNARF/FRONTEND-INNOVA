@@ -24,10 +24,18 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { Modulo, RolDetalle } from '../../interfaces/rol-api-response';
-import { RolService } from '../../services/rol.service';
-import { BehaviorSubject, combineLatest, map, Observable, take, tap } from 'rxjs';
+import { Modulo, RolDetalle } from '../../interfaces/roles/rol-api-response';
+import { RolStateService } from '../../services/roles/rol-state.service';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  take,
+  tap,
+} from 'rxjs';
 import { PermisosPipe } from '../../pipes/PermisosPipe';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-rol-modal',
@@ -57,9 +65,8 @@ import { PermisosPipe } from '../../pipes/PermisosPipe';
   styleUrls: ['./formulario-roles.component.less'],
 })
 export class RolFormComponent implements OnInit {
-  @Input() visible = false;
+  tituloFormulario = '';
   @Input() rolId: number | null = null;
-  @Output() visibleChange = new EventEmitter<boolean>();
 
   rolForm!: FormGroup;
 
@@ -77,23 +84,32 @@ export class RolFormComponent implements OnInit {
   );
   expandedPanels$ = this.expandedPanelsSubject.asObservable();
 
-  constructor(private fb: FormBuilder, public rolService: RolService) {}
+  constructor(
+    private fb: FormBuilder,
+    public rolState: RolStateService,
+    public route: ActivatedRoute
+  ) {}
 
-ngOnInit(): void {
-  this.rolService.fetchRolDetalle(1).subscribe();
+  ngOnInit(): void {
+    this.rolId = Number(this.route.snapshot.paramMap.get('id'));
+    this.tituloFormulario = this.rolId ? 'Editar Rol' : 'Nuevo Rol';
 
-  this.filtroModulos$ = combineLatest([
-    this.rolService.rolDetalle$.pipe(map(r => r?.modulos ?? [])),
-    this.filtroModuloId$
-  ]).pipe(
-    tap(([modulos, filtro]) => {
-      console.log('🔍 Modulos originales:', modulos);
-      console.log('🔍 Filtro aplicado:', filtro);
-    }),
-    map(([modulos, filtroId]) =>
-      filtroId === 0 ? modulos : modulos.filter(m => m.moduloId === filtroId)
-    )
-  );
+    if (this.rolId) {
+      this.rolState.fetchRolDetalle(this.rolId);
+    }
+
+    this.rolState.fetchModulos();
+
+    this.filtroModulos$ = combineLatest([
+      this.rolState.modulo$,
+      this.filtroModuloId$,
+    ]).pipe(
+      map(([modulos, filtroId]) =>
+        filtroId === 0
+          ? modulos
+          : modulos.filter((m) => m.moduloId === filtroId)
+      )
+    );
 
     this.initForm();
   }
@@ -106,12 +122,10 @@ ngOnInit(): void {
     });
   }
 
-  // Leer el valor actual (snapshot)
   getExpandedState(): Record<number, boolean> {
     return this.expandedPanelsSubject.getValue();
   }
 
-  // Actualizar un solo panel
   setExpandedPanel(id: number, state: boolean): void {
     const current = this.getExpandedState();
     this.expandedPanelsSubject.next({ ...current, [id]: state });
@@ -135,36 +149,92 @@ ngOnInit(): void {
     });
   }
 
-  setPermissionAccessLevel(
-    permisoId: number,
-    nivel: 'Lectura' | 'Edición' | 'Control total' | null
-  ): void {
-    const detalle = this.rolService.getRolDetalleSnapshot();
-    if (!detalle) return;
-
+  setPermissionAccessLevel(permisoId: number, nivel: string): void {
     const accionesPorNivel: Record<string, string[]> = {
       Lectura: ['Leer'],
       Edición: ['Leer', 'Actualizar'],
-      'Control total': ['Leer', 'Actualizar', 'Crear', 'Eliminar'],
+      'Control total': ['Crear', 'Leer', 'Actualizar', 'Eliminar'],
     };
 
     const nuevasAcciones = accionesPorNivel[nivel ?? ''] ?? [];
 
-    for (const modulo of detalle.modulos) {
-      const permiso = modulo.permisos.find((p) => p.permisoId === permisoId);
-      if (permiso) {
-        permiso.acciones.forEach((accion) => {
-          accion.seleccionado = nuevasAcciones.includes(accion.nombreAccion);
-        });
-        break;
-      }
+    // Detectar si es edición o creación
+    if (this.rolId) {
+      const detalle = this.rolState.getRolDetalleSnapshot();
+      if (!detalle) return;
+
+      detalle.modulos.forEach((modulo) => {
+        const permiso = modulo.permisos.find((p) => p.permisoId === permisoId);
+        if (permiso) {
+          permiso.acciones.forEach((accion) => {
+            accion.seleccionado = nuevasAcciones.includes(accion.nombreAccion);
+          });
+        }
+      });
+    } else {
+      const modulos = this.rolState.getModulosSnapshot();
+
+      const actualizados = modulos.map((modulo) => ({
+        ...modulo,
+        permisos: modulo.permisos.map((permiso) => {
+          if (permiso.permisoId !== permisoId) return permiso;
+          return {
+            ...permiso,
+            acciones: permiso.acciones.map((accion) => ({
+              ...accion,
+              seleccionado: nuevasAcciones.includes(accion.nombreAccion),
+            })),
+          };
+        }),
+      }));
+
+      this.rolState.setModulos(actualizados);
     }
   }
 
-  closeModal(): void {
-    this.visible = false;
-    this.visibleChange.emit(false);
-  }
+  submitForm(): void {
+    if (this.rolForm.invalid) {
+      this.rolForm.markAllAsTouched();
+      return;
+    }
 
-  submitForm(): void {}
+    const formValue = this.rolForm.value;
+
+    this.rolState.modulo$.pipe(take(1)).subscribe((modulos) => {
+      const modulosFiltrados = modulos
+        .map((modulo) => {
+          const permisosFiltrados = modulo.permisos
+            .map((permiso) => {
+              const accionesFiltradas = permiso.acciones.filter(
+                (accion) => accion.seleccionado
+              );
+
+              return {
+                permisoId: permiso.permisoId,
+                nombrePermiso: permiso.nombrePermiso,
+                seleccionado: accionesFiltradas.length > 0,
+                acciones: accionesFiltradas,
+              };
+            })
+            .filter((permiso) => permiso.seleccionado);
+
+          return {
+            moduloId: modulo.moduloId,
+            nombreModulo: modulo.nombreModulo,
+            seleccionado: permisosFiltrados.length > 0,
+            permisos: permisosFiltrados,
+          };
+        })
+        .filter((modulo) => modulo.seleccionado);
+
+      const payload = {
+        nombreRol: formValue.name,
+        descripcion: formValue.description,
+        modulos: modulosFiltrados,
+      };
+
+      this.rolState.crearRol(payload);
+
+    });
+  }
 }

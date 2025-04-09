@@ -89,6 +89,10 @@ export class UiService {
       )
       .subscribe();
   }
+  
+  clearMenu(): void {
+    this.menuSubject.next([]);
+  }
 
   refreshMenu(): void {
     this.http

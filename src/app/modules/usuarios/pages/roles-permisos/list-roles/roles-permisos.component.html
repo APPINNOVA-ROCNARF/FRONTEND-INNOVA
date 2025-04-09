@@ -1,0 +1,34 @@
+  <div class="role-management-container">
+    <nz-card>
+      <div class="header-actions">
+        <h2 nz-typography>Gestión de Roles</h2>
+        <button
+          nz-button
+          nzType="primary"
+          nzSize="large"
+          (click)="router.navigate(['nuevo-rol'], { relativeTo: route })"
+        >
+          <i nz-icon nzType="plus"></i>Nuevo Rol
+        </button>
+      </div>
+
+      <app-tabla-base
+        [data]="(roles$ | async) ?? []"
+        [columns]="columns"
+        [pageSize]="10"
+        [loading]="(loading$ | async) ?? false"
+        [stateTemplate]="stateTemplate"
+        [showActions]="true"
+        [showEditButton]="canEdit"
+        [showDeleteButton]="canDelete"
+        (edit)="router.navigate(['editar', $event.id], { relativeTo: route })"
+        (delete)="handleDelete($event)"
+      ></app-tabla-base>
+    </nz-card>
+  </div>
+
+<ng-template #stateTemplate let-item>
+  <nz-tag [nzColor]="item.estado ? 'green' : 'warning'">
+    {{ item.estado ? "Activo" : "Inactivo" }}
+  </nz-tag>
+</ng-template>

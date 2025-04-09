@@ -14,18 +14,18 @@
   </thead>
   <tbody>
     <tr *ngFor="let item of dynamicTable.data">
-      <td *ngFor="let col of columns">
-        <ng-container *ngIf="col.renderFn; else defaultCell">
-          <ng-container
-            [ngTemplateOutlet]="col.renderFn"
-            [ngTemplateOutletContext]="{ $implicit: item, column: col }"
-          ></ng-container>
-        </ng-container>
+<td *ngFor="let col of columns">
+  <ng-container *ngIf="col.dataIndex === 'estado' && stateTemplate; else defaultCell">
+    <ng-container
+      [ngTemplateOutlet]="stateTemplate"
+      [ngTemplateOutletContext]="{ $implicit: item }"
+    ></ng-container>
+  </ng-container>
 
-        <ng-template #defaultCell>
-          {{ item[col.dataIndex] }}
-        </ng-template>
-      </td>
+  <ng-template #defaultCell>
+    {{ item[col.dataIndex] }}
+  </ng-template>
+</td>
 
       <td *ngIf="showActions">
         <div class="actions-container">
