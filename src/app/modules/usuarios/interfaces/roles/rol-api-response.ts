@@ -13,6 +13,11 @@ export interface RolDetalle {
   modulos: Modulo[];
 }
 
+export interface NuevoRol {
+  nombreRol: string;
+  descripcion: string;
+  modulos: Modulo[];
+}
 export interface Modulo {
   moduloId: number;
   nombreModulo: string;

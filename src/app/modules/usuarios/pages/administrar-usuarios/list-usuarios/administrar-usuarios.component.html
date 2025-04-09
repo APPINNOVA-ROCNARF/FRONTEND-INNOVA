@@ -1,0 +1,19 @@
+<div class="role-management-container">
+  <nz-card>
+    <div class="header-actions">
+      <h2 nz-typography>Gestión de Usuarios</h2>
+      <button nz-button nzType="primary" nzSize="large">
+        <i nz-icon nzType="plus"></i>Nuevo usuario
+      </button>
+    </div>
+
+    <app-tabla-base
+    ></app-tabla-base>
+
+    <ng-template #stateTemplate let-item>
+      <nz-tag [nzColor]="item.state ? 'green' : 'warning'">
+        {{ item.state ? "Activo" : "Inactivo" }}
+      </nz-tag>
+    </ng-template></nz-card
+  >
+</div>

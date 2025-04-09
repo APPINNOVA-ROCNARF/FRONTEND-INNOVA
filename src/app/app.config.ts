@@ -17,6 +17,7 @@ import es from '@angular/common/locales/es';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { AuthInterceptor } from './core/auth/interceptors/auth.interceptor';
+import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 
 registerLocaleData(es);
 
@@ -33,8 +34,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     provideNzIcons(icons),
     provideNzI18n(es_ES),
-    { provide: API_BASE_URL, useValue: environment.apiUrl }
-  ]};
+    { provide: API_BASE_URL, useValue: environment.apiUrl },
+  ],
+};

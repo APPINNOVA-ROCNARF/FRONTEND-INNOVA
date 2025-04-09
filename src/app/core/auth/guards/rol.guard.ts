@@ -5,7 +5,7 @@ import {
   RouterStateSnapshot,
   Router,
 } from '@angular/router';
-import { filter, map, Observable, take } from 'rxjs';
+import { filter, map, Observable } from 'rxjs';
 import { UiService } from '../../services/ui-service/ui.service';
 
 @Injectable({
@@ -19,11 +19,13 @@ export class RolGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     return this.uiService.menu$.pipe(
-      filter((menu) => menu.length > 0), 
+      filter((menu) => menu.length > 0),
       map((menu) => {
         const rutaSolicitada = state.url;
         const tienePermiso = menu.some((modulo) =>
-          modulo.permisos.some((permiso) => permiso.ruta === rutaSolicitada)
+          modulo.permisos.some((permiso) =>
+            rutaSolicitada.startsWith(permiso.ruta)
+          )
         );
 
         if (!tienePermiso) {

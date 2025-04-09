@@ -1,14 +1,16 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { TableColumn } from '../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
+import { TableColumn } from '../../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { TablaBaseComponent } from '../../../../../shared/components/tabla-base/tabla-base.component';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-administrar-usuarios',
   standalone: true,
-  imports: [NzCardModule, NzTagModule, NzTypographyModule, NzButtonModule],
+  imports: [NzCardModule, NzTagModule, NzTypographyModule, NzButtonModule, TablaBaseComponent, NzIconModule],
   templateUrl: './administrar-usuarios.component.html',
   styleUrl: './administrar-usuarios.component.less',
 })

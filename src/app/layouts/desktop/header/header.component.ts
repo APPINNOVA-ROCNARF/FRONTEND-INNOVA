@@ -43,6 +43,7 @@ export class HeaderComponent {
 
   logout(): void {
     this.authService.logout();
+    this.uiService.clearMenu();
     this.message.success('Sesión cerrada correctamente');
     this.router.navigate(['/login']);
   }
