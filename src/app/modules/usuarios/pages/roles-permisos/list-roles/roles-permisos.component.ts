@@ -15,10 +15,10 @@ import { TablaBaseComponent } from '../../../../../shared/components/tabla-base/
 import { TableColumn } from '../../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
 import { RolStateService } from '../../../services/roles/rol-state.service';
 import { RolSimple } from '../../../interfaces/roles/rol-api-response';
-import { combineLatest, filter, map, Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { UiService } from '../../../../../core/services/ui-service/ui.service';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-roles-permisos',
@@ -36,7 +36,6 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
   styleUrl: './roles-permisos.component.less',
 })
 export class RolesPermisosComponent implements OnInit {
-  mostrarFormulario = false;
   @ViewChild('stateTemplate') stateTemplate!: TemplateRef<any>;
 
   // Variables Tabla
@@ -52,6 +51,7 @@ export class RolesPermisosComponent implements OnInit {
     rolId: 'ID',
     nombreRol: 'Nombre',
     descripcion: 'Descripción',
+    tipo: "Tipo",
     estado: 'Estado',
   };
 
@@ -106,11 +106,6 @@ export class RolesPermisosComponent implements OnInit {
 
       return column;
     });
-  }
-
-  showRolModal() {
-    this.selectedRolId = 1;
-    this.isRolModalVisible = true;
   }
 
   handleEdit(rolId: number) {

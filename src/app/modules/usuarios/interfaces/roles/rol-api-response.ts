@@ -2,6 +2,7 @@ export interface RolSimple {
     rolId: number;
     nombreRol: string;
     descripcion: string;
+    tipo: string;
     estado: boolean;
   }
 

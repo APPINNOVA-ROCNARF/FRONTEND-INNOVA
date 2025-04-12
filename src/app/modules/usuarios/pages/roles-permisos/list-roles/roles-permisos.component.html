@@ -1,31 +1,43 @@
-  <div class="role-management-container">
-    <nz-card>
-      <div class="header-actions">
-        <h2 nz-typography>Gestión de Roles</h2>
-        <button
-          nz-button
-          nzType="primary"
-          nzSize="large"
-          (click)="router.navigate(['nuevo-rol'], { relativeTo: route })"
-        >
-          <i nz-icon nzType="plus"></i>Nuevo Rol
-        </button>
-      </div>
+<div class="role-management-container">
 
-      <app-tabla-base
-        [data]="(roles$ | async) ?? []"
-        [columns]="columns"
-        [pageSize]="10"
-        [loading]="(loading$ | async) ?? false"
-        [stateTemplate]="stateTemplate"
-        [showActions]="true"
-        [showEditButton]="canEdit"
-        [showDeleteButton]="canDelete"
-        (edit)="router.navigate(['editar', $event.id], { relativeTo: route })"
-        (delete)="handleDelete($event)"
-      ></app-tabla-base>
-    </nz-card>
-  </div>
+  <!-- Card de encabezado (título, descripción y botón) -->
+  <nz-card>
+    <div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <div>
+        <h2 nz-typography style="margin: 0">Gestión de Roles</h2>
+        <p style="margin: 4px 0 0 0; color: #888;">
+          Administra los roles del sistema, asignando permisos y editando su estado.
+        </p>
+      </div>
+      <button
+        nz-button
+        nzType="primary"
+        nzSize="large"
+        (click)="router.navigate(['nuevo-rol'], { relativeTo: route })"
+        style="margin-top: 8px;"
+      >
+        <i nz-icon nzType="plus"></i>Nuevo Rol
+      </button>
+    </div>
+  </nz-card>
+
+  <!-- Card de la tabla -->
+  <nz-card style="margin-top: 16px">
+    <app-tabla-base
+      [data]="(roles$ | async) ?? []"
+      [columns]="columns"
+      [pageSize]="10"
+      [loading]="(loading$ | async) ?? false"
+      [stateTemplate]="stateTemplate"
+      [showActions]="true"
+      [showEditButton]="canEdit"
+      [showDeleteButton]="canDelete"
+      (edit)="router.navigate(['editar', $event.id], { relativeTo: route })"
+      (delete)="handleDelete($event)"
+    ></app-tabla-base>
+  </nz-card>
+
+</div>
 
 <ng-template #stateTemplate let-item>
   <nz-tag [nzColor]="item.estado ? 'green' : 'warning'">

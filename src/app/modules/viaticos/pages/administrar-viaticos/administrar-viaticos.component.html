@@ -1,6 +1,6 @@
 <nz-card>
   <h2 nz-typography>Gestión de Viáticos</h2>
-  <br>
+  <br />
   <form nz-form>
     <div nz-row [nzGutter]="16">
       <!-- Selector de Asesor -->
@@ -8,19 +8,8 @@
         <nz-form-item>
           <nz-form-label nzFor="asesor">Asesor</nz-form-label>
           <nz-form-control>
-            <nz-select
-              [(ngModel)]="asesorSeleccionado"
-              nzPlaceHolder="Seleccione un asesor"
-              nzShowSearch
-              nzAllowClear
-              style="width: 100%"
-            >
-              <nz-option
-                *ngFor="let nombre of listaAsesores"
-                [nzValue]="nombre"
-                [nzLabel]="nombre"
-              >
-              </nz-option>
+            <nz-select [(ngModel)]="asesorSeleccionado" nzPlaceHolder="Seleccione un asesor" nzShowSearch nzAllowClear name="asesor">
+              <nz-option *ngFor="let asesor of listaAsesores" [nzValue]="asesor.id" [nzLabel]="asesor.nombre"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -31,26 +20,23 @@
         <nz-form-item>
           <nz-form-label nzFor="periodo">Periodo</nz-form-label>
           <nz-form-control>
-            <nz-date-picker
-              name="periodo"
-              nzMode="month"
-              nzFormat="MMMM yyyy"
-              style="width: 100%"
-            ></nz-date-picker>
+            <nz-select [(ngModel)]="cicloSeleccionado" [nzLoading]="(ciclosLoading$ | async)!" [nzOptions]="(cicloOpciones$ | async)!"
+              nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch nzAllowClear>
+            </nz-select>
           </nz-form-control>
         </nz-form-item>
       </div>
 
-      <!-- Selector de Estado -->
+      <!-- Selector de Estado (modificado a Select) -->
       <div nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label nzFor="estado">Estado</nz-form-label>
           <nz-form-control>
-            <nz-radio-group nzButtonStyle="solid">
-              <label nz-radio-button nzValue="enviado">Enviado</label>
-              <label nz-radio-button nzValue="rechazado">Rechazado</label>
-              <label nz-radio-button nzValue="aprobado">Aprobado</label>
-            </nz-radio-group>
+            <nz-select [(ngModel)]="estadoSeleccionado" name="estado" nzPlaceHolder="Seleccione un estado" nzAllowClear>
+              <nz-option nzValue="enviado" nzLabel="Enviado"></nz-option>
+              <nz-option nzValue="rechazado" nzLabel="Rechazado"></nz-option>
+              <nz-option nzValue="aprobado" nzLabel="Aprobado"></nz-option>
+            </nz-select>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -59,7 +45,7 @@
     <!-- Botón de búsqueda -->
     <div style="text-align: right; margin-top: 10px">
       <button nz-button nzType="primary" class="primary-button">
-      <i nz-icon nzType="search"></i>Buscar
+        <i nz-icon nzType="search"></i>Buscar
       </button>
     </div>
   </form>
