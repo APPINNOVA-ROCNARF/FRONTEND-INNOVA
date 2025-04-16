@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { delay, Observable } from 'rxjs';
 import { RolSimple, RolDetalle, Modulo, NuevoRol } from '../../interfaces/roles/rol-api-response';
 import { API_BASE_URL } from '../../../../app.config';
 
@@ -13,7 +13,9 @@ export class RolService {
   constructor(private http: HttpClient) {}
 
   getRoles(): Observable<RolSimple[]> {
-    return this.http.get<RolSimple[]>(`${this.apiUrl}${this.rolUrl}`);
+    return this.http.get<RolSimple[]>(`${this.apiUrl}${this.rolUrl}`).pipe(
+      delay(1500) // 1.5 segundos de retraso simulado
+    );
   }
 
   getRolDetalle(rolId: number): Observable<RolDetalle> {

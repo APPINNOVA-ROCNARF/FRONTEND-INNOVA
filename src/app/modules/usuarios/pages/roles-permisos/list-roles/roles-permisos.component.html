@@ -1,7 +1,7 @@
 <div class="role-management-container">
 
   <!-- Card de encabezado (título, descripción y botón) -->
-  <nz-card>
+
     <div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
       <div>
         <h2 nz-typography style="margin: 0">Gestión de Roles</h2>
@@ -19,10 +19,16 @@
         <i nz-icon nzType="plus"></i>Nuevo Rol
       </button>
     </div>
-  </nz-card>
+
+    <nz-divider></nz-divider>
 
   <!-- Card de la tabla -->
-  <nz-card style="margin-top: 16px">
+<nz-card style="margin-top: 16px">
+  <nz-skeleton
+    [nzLoading]="(loading$ | async) ?? false"
+    [nzActive]="true"
+    [nzParagraph]="{ rows: 4 }"
+  >
     <app-tabla-base
       [data]="(roles$ | async) ?? []"
       [columns]="columns"
@@ -35,7 +41,8 @@
       (edit)="router.navigate(['editar', $event.id], { relativeTo: route })"
       (delete)="handleDelete($event)"
     ></app-tabla-base>
-  </nz-card>
+  </nz-skeleton>
+</nz-card>
 
 </div>
 

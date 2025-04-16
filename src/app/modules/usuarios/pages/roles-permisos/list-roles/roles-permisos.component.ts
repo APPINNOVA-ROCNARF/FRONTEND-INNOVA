@@ -19,6 +19,8 @@ import { combineLatest, Observable } from 'rxjs';
 import { UiService } from '../../../../../core/services/ui-service/ui.service';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 
 @Component({
   selector: 'app-roles-permisos',
@@ -31,6 +33,8 @@ import { ActivatedRoute, Router } from '@angular/router';
     NzIconModule,
     TablaBaseComponent,
     NzTagModule,
+    NzDividerModule,
+    NzSkeletonModule
   ],
   templateUrl: './roles-permisos.component.html',
   styleUrl: './roles-permisos.component.less',
