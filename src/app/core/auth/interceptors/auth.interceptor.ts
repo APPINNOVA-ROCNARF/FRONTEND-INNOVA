@@ -12,15 +12,18 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private allowedDomains = ['localhost']; 
-
+  private allowedDomains = ['localhost'];
+  private excludedUrls = ['/login']; 
   constructor(private authService: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (this.isExcludedUrl(req.url)) {
+      return next.handle(req);
+    }
+
     let authReq = req;
     const token = this.authService.getToken();
 
-    // Agregar token solo si la solicitud es a un dominio permitido
     if (token && this.isAllowedDomain(req.url)) {
       if (this.isTokenExpired(token)) {
         this.authService.logout(); 
@@ -33,7 +36,6 @@ export class AuthInterceptor implements HttpInterceptor {
       });
     }
 
-    // Cierra sesión si recibe un 401
     return next.handle(authReq).pipe(
       catchError((error: any) => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
@@ -45,12 +47,14 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
-  // Verifica si el dominio es permitido para enviar el token
   private isAllowedDomain(url: string): boolean {
     return this.allowedDomains.some(domain => url.includes(domain));
   }
 
-  // Verifica si el token ha expirado
+  private isExcludedUrl(url: string): boolean {
+    return this.excludedUrls.some(excluded => url.includes(excluded));
+  }
+
   private isTokenExpired(token: string): boolean {
     try {
       const payload = JSON.parse(atob(token.split('.')[1])); 

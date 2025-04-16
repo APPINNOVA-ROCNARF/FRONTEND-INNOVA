@@ -14,6 +14,10 @@ import { CicloSelectDTO } from '../../../../shared/services/ciclos-service/Inter
 import { map, Observable } from 'rxjs';
 import { CiclotateService } from '../../../../shared/services/ciclos-service/ciclo-state.service';
 import { UsuarioAppSelect } from '../../../../shared/services/asesores-service/Interfaces/asesores-api-response';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
 @Component({
   selector: 'app-administrar-viaticos',
@@ -28,7 +32,11 @@ import { UsuarioAppSelect } from '../../../../shared/services/asesores-service/I
     NzRadioModule,
     NzButtonModule,
     NzTypographyModule,
-    NzIconModule
+    NzIconModule,
+    NzTagModule,
+    NzProgressModule,
+    NzDividerModule,
+    NzToolTipModule
   ],
   templateUrl: './administrar-viaticos.component.html',
   styleUrl: './administrar-viaticos.component.less',
@@ -44,6 +52,19 @@ export class AdministrarViaticosComponent {
   ciclosLoading$!: Observable<boolean>;
   cicloOpciones$!: Observable<{ label: string; value: number }[]>;
 
+  totalViaticos = 15320;
+  totalRegistros = 12;
+
+  pendiente = 2470;
+  aprobado = 12850;
+  rechazado = 0;
+
+  categorias = [
+    { nombre: 'Transp.', valor: 5120 },
+    { nombre: 'Hosp.', valor: 4330 },
+    { nombre: 'Alim.', valor: 3950 },
+    { nombre: 'Otro', valor: 1920 }
+  ];
 
   constructor(private asesorService: AsesoresService, private cicloState: CiclotateService) {}
 
@@ -72,4 +93,9 @@ export class AdministrarViaticosComponent {
       )
     );
   }
+
+  getTotalViaticosTexto(): string {
+    return `${this.totalRegistros} Total`;
+  }
+  
 }

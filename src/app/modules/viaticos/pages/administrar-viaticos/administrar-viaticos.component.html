@@ -1,52 +1,54 @@
-<nz-card>
   <h2 nz-typography>Gestión de Viáticos</h2>
-  <br />
-  <form nz-form>
-    <div nz-row [nzGutter]="16">
-      <!-- Selector de Asesor -->
-      <div nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label nzFor="asesor">Asesor</nz-form-label>
-          <nz-form-control>
-            <nz-select [(ngModel)]="asesorSeleccionado" nzPlaceHolder="Seleccione un asesor" nzShowSearch nzAllowClear name="asesor">
-              <nz-option *ngFor="let asesor of listaAsesores" [nzValue]="asesor.id" [nzLabel]="asesor.nombre"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
+  <p style="margin: 4px 0 0 0; color: #888;">
+    Administra los roles del sistema, asignando permisos y editando su estado.
+  </p>
 
-      <!-- Selector de Ciclo (Mes) -->
-      <div nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label nzFor="periodo">Periodo</nz-form-label>
-          <nz-form-control>
-            <nz-select [(ngModel)]="cicloSeleccionado" [nzLoading]="(ciclosLoading$ | async)!" [nzOptions]="(cicloOpciones$ | async)!"
-              nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch nzAllowClear>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
+  <nz-divider></nz-divider>
+  <div nz-col [nzSpan]="8">
+    <nz-form-item>
+      <nz-form-control>
+        <nz-select [(ngModel)]="cicloSeleccionado" [nzLoading]="(ciclosLoading$ | async)!" [nzOptions]="(cicloOpciones$ | async)!"
+          nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px;">
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
 
-      <!-- Selector de Estado (modificado a Select) -->
-      <div nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label nzFor="estado">Estado</nz-form-label>
-          <nz-form-control>
-            <nz-select [(ngModel)]="estadoSeleccionado" name="estado" nzPlaceHolder="Seleccione un estado" nzAllowClear>
-              <nz-option nzValue="enviado" nzLabel="Enviado"></nz-option>
-              <nz-option nzValue="rechazado" nzLabel="Rechazado"></nz-option>
-              <nz-option nzValue="aprobado" nzLabel="Aprobado"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <!-- Botón de búsqueda -->
-    <div style="text-align: right; margin-top: 10px">
-      <button nz-button nzType="primary" class="primary-button">
-        <i nz-icon nzType="search"></i>Buscar
-      </button>
-    </div>
-  </form>
-</nz-card>
+  <nz-row [nzGutter]="16" style="margin-bottom: 16px">
+    <!-- Total Viáticos -->
+    <nz-col [nzSpan]="6">
+      <nz-card>
+        <div style="color: #888;">Total Viáticos</div>
+        <div style="font-size: 28px; font-weight: bold;">$ {{ totalViaticos | number:'1.0-2' }}</div>
+        <div style="color: #888;">Viáticos Registrados: {{ totalRegistros }}</div>
+      </nz-card>
+    </nz-col>
+  
+    <!-- Distribución por Estado -->
+    <nz-col [nzSpan]="6">
+      <nz-card>
+        <div style="color: #888;">Total Viáticos</div>
+        <div style="font-size: 28px; font-weight: bold;">$ {{ totalViaticos | number:'1.0-2' }}</div>
+        <div style="color: #888;">Viáticos Registrados: {{ totalRegistros }}</div>
+      </nz-card>
+    </nz-col>
+  
+    <!-- Desglose por Categoría -->
+    <nz-col [nzSpan]="6">
+      <nz-card>
+        <div style="color: #888;">Total Viáticos</div>
+        <div style="font-size: 28px; font-weight: bold;">$ {{ totalViaticos | number:'1.0-2' }}</div>
+        <div style="color: #888;">Viáticos Registrados: {{ totalRegistros }}</div>
+      </nz-card>
+    </nz-col>
+  
+    <!-- Estado del Ciclo -->
+    <nz-col [nzSpan]="6">
+      <nz-card>
+        <div style="color: #888;">Total Viáticos</div>
+        <div style="font-size: 28px; font-weight: bold;">$ {{ totalViaticos | number:'1.0-2' }}</div>
+        <div style="color: #888;">Viáticos Registrados: {{ totalRegistros }}</div>
+      </nz-card>
+    </nz-col>
+  </nz-row>
+  
