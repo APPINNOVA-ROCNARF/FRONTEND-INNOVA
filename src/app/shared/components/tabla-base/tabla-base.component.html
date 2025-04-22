@@ -3,10 +3,18 @@
   [nzData]="data"
   [nzPageSize]="pageSize"
   [nzLoading]="loading"
+  [nzShowPagination]="true"
 >
   <thead>
     <tr>
-      <th *ngFor="let col of columns">
+      <th
+        *ngFor="let col of columns"
+        [nzShowFilter]="!!col.nzFilters?.length"
+        [nzFilters]="col.nzFilters || []"
+        [nzFilterFn]="col.nzFilterFn || null"
+        [nzSortFn]="col.nzSortFn || null"
+        [nzSortOrder]="col.defaultSortOrder || null"
+      >
         {{ col.title }}
       </th>
       <th *ngIf="showActions">Acciones</th>
@@ -14,18 +22,26 @@
   </thead>
   <tbody>
     <tr *ngFor="let item of dynamicTable.data">
-<td *ngFor="let col of columns">
-  <ng-container *ngIf="col.dataIndex === 'estado' && stateTemplate; else defaultCell">
-    <ng-container
-      [ngTemplateOutlet]="stateTemplate"
-      [ngTemplateOutletContext]="{ $implicit: item }"
-    ></ng-container>
-  </ng-container>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.renderFn; else useFormatter">
+          <ng-container
+            [ngTemplateOutlet]="col.renderFn"
+            [ngTemplateOutletContext]="{
+              $implicit: item[col.dataIndex],
+              column: col
+            }"
+          >
+          </ng-container>
+        </ng-container>
 
-  <ng-template #defaultCell>
-    {{ item[col.dataIndex] }}
-  </ng-template>
-</td>
+        <ng-template #useFormatter>
+          {{
+            col.formatFn
+              ? col.formatFn(item[col.dataIndex])
+              : item[col.dataIndex]
+          }}
+        </ng-template>
+      </td>
 
       <td *ngIf="showActions">
         <div class="actions-container">

@@ -1,79 +1,76 @@
-  <h2 nz-typography>Gestión de Viáticos</h2>
-  <p style="margin: 4px 0 0 0; color: #888;">
-    Administra los roles del sistema, asignando permisos y editando su estado.
-  </p>
+<h2 nz-typography>Gestión de Viáticos</h2>
+<p style="margin: 4px 0 0 0; color: #888">
+  Administra los roles del sistema, asignando permisos y editando su estado.
+</p>
 
-  <nz-divider></nz-divider>
-  <div nz-col [nzSpan]="8">
-    <nz-form-item>
-      <nz-form-control>
-        <nz-select
-         [(ngModel)]="cicloSeleccionado" (ngModelChange)="onCicloChange()" [nzLoading]="(ciclosLoading$ | async)!" [nzOptions]="(cicloOpciones$ | async)!"
-          nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px;"
-          >
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-  </div>
-
-  <nz-row [nzGutter]="16" style="margin-bottom: 16px">
-    <!-- Total Viáticos -->
-    <nz-col [nzSpan]="6">
-      <nz-card>
-        <div style="color: #888;">Total Viáticos</div>
-        <div style="font-size: 28px; font-weight: bold;">$ {{ totalViaticos | number:'1.0-2' }}</div>
-        <div style="color: #888;">Viáticos Registrados: {{ totalRegistros }}</div>
-      </nz-card>
-    </nz-col>
-  
-    <!-- Distribución por Estado -->
-    <nz-col [nzSpan]="6">
-      <nz-card>
-        <div style="color: #888;">Total Viáticos</div>
-        <div style="font-size: 28px; font-weight: bold;">$ {{ totalViaticos | number:'1.0-2' }}</div>
-        <div style="color: #888;">Viáticos Registrados: {{ totalRegistros }}</div>
-      </nz-card>
-    </nz-col>
-  
-    <!-- Desglose por Categoría -->
-    <nz-col [nzSpan]="6">
-      <nz-card>
-        <div style="color: #888;">Total Viáticos</div>
-        <div style="font-size: 28px; font-weight: bold;">$ {{ totalViaticos | number:'1.0-2' }}</div>
-        <div style="color: #888;">Viáticos Registrados: {{ totalRegistros }}</div>
-      </nz-card>
-    </nz-col>
-  
-    <!-- Estado del Ciclo -->
-    <nz-col [nzSpan]="6">
-      <nz-card>
-        <div style="color: #888;">Total Viáticos</div>
-        <div style="font-size: 28px; font-weight: bold;">$ {{ totalViaticos | number:'1.0-2' }}</div>
-        <div style="color: #888;">Viáticos Registrados: {{ totalRegistros }}</div>
-      </nz-card>
-    </nz-col>
-  </nz-row>
-  
-  <nz-card style="margin: 0px">
-    <app-tabla-base
-      [data]="(solicitudViatico$ | async) ?? []"
-      [columns]="columns"
-      [loading]="(loading$ | async) ?? false"
-      [stateTemplate]="stateTemplate"
-      [showActions]="true"
-      [showEditButton]="canEdit"
-      [showDeleteButton]="canDelete"
-      (edit)="router.navigate(['editar', $event.id], { relativeTo: route })"
-      (delete)="handleDelete($event)"
+<nz-divider></nz-divider>
+<div nz-col [nzSpan]="8">
+  <nz-form-item>
+    <nz-form-control>
+      <nz-select
+        [(ngModel)]="cicloSeleccionado"
+        (ngModelChange)="onCicloChange()"
+        [nzLoading]="(ciclosLoading$ | async)!"
+        [nzOptions]="(cicloOpciones$ | async)!"
+        nzPlaceHolder="Seleccione un periodo"
+        name="periodo"
+        nzShowSearch
+        style="width: 300px"
       >
-    </app-tabla-base>
-  </nz-card>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+</div>
 
-  <ng-template #stateTemplate let-estado>
-    <nz-tag [nzColor]="estado === 'aprobado' ? 'green' :
-                      estado === 'rechazado' ? 'red' :
-                      estado === 'paraCorregir' ? 'orange' :
-                      estado === 'No Enviada' ? 'blue' : 'default'">
-      {{ estado }}
-    </nz-tag>
-  </ng-template>
+<nz-row [nzGutter]="16" style="margin-bottom: 16px">
+  <!-- Total Viáticos -->
+  <nz-col [nzSpan]="6">
+    <nz-card>
+      <div style="color: #888">Total Viáticos</div>
+      <div style="font-size: 28px; font-weight: bold">
+        $ {{ totalViaticos | number : "1.0-2" }}
+      </div>
+      <div style="color: #888">Viáticos Registrados: {{ totalRegistros }}</div>
+    </nz-card>
+  </nz-col>
+
+  <!-- Distribución por Estado -->
+  <nz-col [nzSpan]="6">
+    <nz-card>
+      <div style="color: #888">Total Viáticos</div>
+      <div style="font-size: 28px; font-weight: bold">
+        $ {{ totalViaticos | number : "1.0-2" }}
+      </div>
+      <div style="color: #888">Viáticos Registrados: {{ totalRegistros }}</div>
+    </nz-card>
+  </nz-col>
+
+  <!-- Desglose por Categoría -->
+  <nz-col [nzSpan]="6">
+    <nz-card>
+      <div style="color: #888">Total Viáticos</div>
+      <div style="font-size: 28px; font-weight: bold">
+        $ {{ totalViaticos | number : "1.0-2" }}
+      </div>
+      <div style="color: #888">Viáticos Registrados: {{ totalRegistros }}</div>
+    </nz-card>
+  </nz-col>
+
+  <!-- Estado del Ciclo -->
+  <nz-col [nzSpan]="6">
+    <nz-card>
+      <div style="color: #888">Total Viáticos</div>
+      <div style="font-size: 28px; font-weight: bold">
+        $ {{ totalViaticos | number : "1.0-2" }}
+      </div>
+      <div style="color: #888">Viáticos Registrados: {{ totalRegistros }}</div>
+    </nz-card>
+  </nz-col>
+</nz-row>
+
+<nz-card style="margin: 0px">
+  <app-tabla-viaticos
+      [data]="(solicitudViatico$ | async) ?? []"
+      [loading]="(loading$ | async) ?? false"
+  />
+</nz-card>

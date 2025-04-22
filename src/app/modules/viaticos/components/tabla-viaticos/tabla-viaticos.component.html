@@ -1,0 +1,18 @@
+<ng-template #estadoTemplate let-estado>
+  <nz-tag
+    [nzColor]="estado === 'Aprobado' ? 'green' :
+                estado === 'Rechazado' ? 'red' :
+                estado === 'Para corregir' ? 'orange' :
+                estado === 'En revisión' ? 'blue' :
+                estado === 'No enviada' ? 'default' : 'default'">
+    {{ estado }}
+  </nz-tag>
+</ng-template>
+
+<app-tabla-base
+  [data]="data"
+  [columns]="columns"
+  [loading]="loading"
+  [showEditButton]="true"
+  [showDeleteButton]="true"
+/>

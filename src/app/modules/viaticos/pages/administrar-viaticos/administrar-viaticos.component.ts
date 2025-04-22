@@ -21,6 +21,7 @@ import { SolicitudViatico } from '../../interfaces/viatico-api-response';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UiService } from '../../../../core/services/ui-service/ui.service';
 import { SolicitudViaticoStateService } from '../../services/solicitudViatico/solicitudViatico-state.service';
+import { TablaViaticosComponent } from "../../components/tabla-viaticos/tabla-viaticos.component";
 
 @Component({
   selector: 'app-administrar-viaticos',
@@ -39,7 +40,7 @@ import { SolicitudViaticoStateService } from '../../services/solicitudViatico/so
     NzProgressModule,
     NzDividerModule,
     NzToolTipModule,
-    TablaBaseComponent
+    TablaViaticosComponent
 ],
   templateUrl: './administrar-viaticos.component.html',
   styleUrl: './administrar-viaticos.component.less',
