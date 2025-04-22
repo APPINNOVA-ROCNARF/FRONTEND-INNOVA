@@ -3,10 +3,6 @@
   [nzData]="data"
   [nzPageSize]="pageSize"
   [nzLoading]="loading"
-  [nzTotal]="data.length"
-  [nzPageIndex]="currentPage"
-  [nzFrontPagination]="false"
-  (nzPageIndexChange)="onPageChange($event)"
 >
   <thead>
     <tr>
@@ -17,21 +13,19 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of paginados">
-      <td *ngFor="let col of columns">
-        <ng-container
-          *ngIf="col.dataIndex === 'estado' && stateTemplate; else defaultCell"
-        >
-          <ng-container
-            [ngTemplateOutlet]="stateTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item }"
-          ></ng-container>
-        </ng-container>
+    <tr *ngFor="let item of dynamicTable.data">
+<td *ngFor="let col of columns">
+  <ng-container *ngIf="col.dataIndex === 'estado' && stateTemplate; else defaultCell">
+    <ng-container
+      [ngTemplateOutlet]="stateTemplate"
+      [ngTemplateOutletContext]="{ $implicit: item }"
+    ></ng-container>
+  </ng-container>
 
-        <ng-template #defaultCell>
-          {{ item[col.dataIndex] }}
-        </ng-template>
-      </td>
+  <ng-template #defaultCell>
+    {{ item[col.dataIndex] }}
+  </ng-template>
+</td>
 
       <td *ngIf="showActions">
         <div class="actions-container">
@@ -41,8 +35,6 @@
             nzType="primary"
             nzSize="small"
             (click)="onEdit(item)"
-            nzTooltipTitle="Editar rol y permisos"
-            nz-tooltip
           >
             <i nz-icon nzType="edit"></i>
           </button>
@@ -52,8 +44,6 @@
             nzDanger
             nzSize="small"
             (click)="onDelete(item.id)"
-            nzTooltipTitle="Eliminar"
-            nz-tooltip
           >
             <i nz-icon nzType="delete"></i>
           </button>
@@ -62,7 +52,3 @@
     </tr>
   </tbody>
 </nz-table>
-
-<p style="margin-top: 8px" *ngIf="data?.length">
-  Mostrando {{ rangoInicio }} a {{ rangoFin }} de {{ data.length }} resultados
-</p>

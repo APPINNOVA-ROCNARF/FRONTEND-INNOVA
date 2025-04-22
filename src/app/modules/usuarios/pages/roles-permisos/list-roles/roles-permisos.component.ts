@@ -59,10 +59,6 @@ export class RolesPermisosComponent implements OnInit {
     estado: 'Estado',
   };
 
-  // Variables Modal
-
-  selectedRolId: number | null = null;
-  isRolModalVisible = false;
 
   constructor(
     private rolState: RolStateService,

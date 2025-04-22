@@ -8,18 +8,16 @@ import { API_BASE_URL } from '../../../../app.config';
 export class RolService {
   private apiUrl = inject(API_BASE_URL);
   private rolUrl = '/rol';
-  private moduloUrl = '/rol/modulos';
+  private moduloUrl = '/rol/modulos/';
 
   constructor(private http: HttpClient) {}
 
   getRoles(): Observable<RolSimple[]> {
-    return this.http.get<RolSimple[]>(`${this.apiUrl}${this.rolUrl}`).pipe(
-      delay(1500) // 1.5 segundos de retraso simulado
-    );
+    return this.http.get<RolSimple[]>(`${this.apiUrl}${this.rolUrl}`);
   }
 
   getRolDetalle(rolId: number): Observable<RolDetalle> {
-    return this.http.get<RolDetalle>(`${this.apiUrl}${this.rolUrl}/${rolId}`);
+    return this.http.get<RolDetalle>(`${this.apiUrl}${this.rolUrl}${rolId}`);
   }
 
   getModulos(): Observable<Modulo[]> {

@@ -1,23 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { AsesoresService } from '../../../../shared/services/asesores-service/asesores.service';
 import { CommonModule } from '@angular/common';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { CicloSelectDTO } from '../../../../shared/services/ciclos-service/Interfaces/CicloSelectDTO';
-import { map, Observable } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { CiclotateService } from '../../../../shared/services/ciclos-service/ciclo-state.service';
-import { UsuarioAppSelect } from '../../../../shared/services/asesores-service/Interfaces/asesores-api-response';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { TablaBaseComponent } from "../../../../shared/components/tabla-base/tabla-base.component";
+import { TableColumn } from '../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
+import { SolicitudViatico } from '../../interfaces/viatico-api-response';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UiService } from '../../../../core/services/ui-service/ui.service';
+import { SolicitudViaticoStateService } from '../../services/solicitudViatico/solicitudViatico-state.service';
 
 @Component({
   selector: 'app-administrar-viaticos',
@@ -28,7 +31,6 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
     CommonModule,
     NzCardModule,
     NzFormModule,
-    NzDatePickerModule,
     NzRadioModule,
     NzButtonModule,
     NzTypographyModule,
@@ -36,47 +38,56 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
     NzTagModule,
     NzProgressModule,
     NzDividerModule,
-    NzToolTipModule
-  ],
+    NzToolTipModule,
+    TablaBaseComponent
+],
   templateUrl: './administrar-viaticos.component.html',
   styleUrl: './administrar-viaticos.component.less',
 })
-export class AdministrarViaticosComponent {
-  listaAsesores: UsuarioAppSelect[] = [];
+export class AdministrarViaticosComponent implements OnInit {
+  @ViewChild('stateTemplate') stateTemplate!: TemplateRef<any>;
+
+  columns: TableColumn[] = [];
+  canEdit = true;
+  canDelete = true;
+
+  solicitudViatico$!: Observable<SolicitudViatico[]>;
+  loading$!: Observable<boolean>;
+  isMobile$: Observable<boolean>;
+
   asesorSeleccionado: string | null = null;
   cicloSeleccionado: number | null = null;
   estadoSeleccionado: number | null = null;
 
-  //Observables Ciclos
   ciclos$!: Observable<CicloSelectDTO[]>;
   ciclosLoading$!: Observable<boolean>;
   cicloOpciones$!: Observable<{ label: string; value: number }[]>;
 
-  totalViaticos = 15320;
-  totalRegistros = 12;
+  totalViaticos = 0;
+  totalRegistros = 0;
 
-  pendiente = 2470;
-  aprobado = 12850;
-  rechazado = 0;
+  private fieldLabels: Record<string, string> = {
+    Id: 'ID',
+    usuarioNombre: 'Asesor',
+    cicloNombre: 'Ciclo',
+    fechaRegistro: 'Fecha Registro',
+    fechaModificacion: 'Fecha Modificación',
+    monto: 'Monto',
+    estado: 'Estado',
+  };
 
-  categorias = [
-    { nombre: 'Transp.', valor: 5120 },
-    { nombre: 'Hosp.', valor: 4330 },
-    { nombre: 'Alim.', valor: 3950 },
-    { nombre: 'Otro', valor: 1920 }
-  ];
-
-  constructor(private asesorService: AsesoresService, private cicloState: CiclotateService) {}
-
-  ngOnInit(): void {
-    this.cargarAsesores();
-    this.cargarCiclos();
+  constructor(
+    private cicloState: CiclotateService,
+    private solicitudState: SolicitudViaticoStateService,
+    private uiService: UiService,
+    public router: Router,
+    public route: ActivatedRoute
+  ) {
+    this.isMobile$ = this.uiService.isMobile$;
   }
 
-  cargarAsesores(): void {
-    this.asesorService.getAsesores().subscribe(data => {
-      this.listaAsesores = data;
-    })
+  ngOnInit(): void {
+    this.cargarCiclos();
   }
 
   cargarCiclos(): void {
@@ -88,14 +99,61 @@ export class AdministrarViaticosComponent {
       map((ciclos) =>
         ciclos.map((c) => ({
           label: c.nombre,
-          value: c.id
+          value: c.id,
         }))
       )
     );
   }
 
-  getTotalViaticosTexto(): string {
-    return `${this.totalRegistros} Total`;
+  onCicloChange(): void {
+    if (!this.cicloSeleccionado) return;
+
+    this.solicitudViatico$ = this.solicitudState.solicitudViatico$(this.cicloSeleccionado);
+    this.loading$ = this.solicitudState.getSolicitudViaticosLoading(this.cicloSeleccionado);
+
+    this.solicitudState.fetchSolicitudViaticos(this.cicloSeleccionado);
+
+    combineLatest([this.solicitudViatico$, this.isMobile$]).subscribe(([data, isMobile]) => {
+      this.totalRegistros = data.length;
+      this.totalViaticos = data.reduce((acc, curr) => acc + curr.Monto, 0);
+
+      if (data.length > 0) {
+        this.columns = this.generateColumnsFromData(data[0], isMobile);
+      }
+    });
   }
-  
+
+  generateColumnsFromData(sample: SolicitudViatico, isMobile: boolean): TableColumn[] {
+    const visibleFields = Object.keys(sample).filter((key) => {
+      if (key === 'id') return false;
+      if (isMobile) return ['usuarioNombre', 'estado'].includes(key);
+      return true;
+    });
+
+    return visibleFields.map((key) => {
+      const column: TableColumn = {
+        title: this.fieldLabels[key] || key,
+        dataIndex: key,
+      };
+
+      if (key === 'Estado') {
+        column.renderFn = this.stateTemplate;
+      }
+
+      return column;
+    });
+  }
+
+  getTotalViaticosTexto(): string {
+    return `${this.totalRegistros} registros — $${this.totalViaticos.toFixed(2)} total`;
+  }
+
+  handleEdit(id: number): void {
+    console.log('Editar solicitud:', id);
+  }
+
+  handleDelete(id: number): void {
+    console.log('Eliminar solicitud:', id);
+  }
 }
+

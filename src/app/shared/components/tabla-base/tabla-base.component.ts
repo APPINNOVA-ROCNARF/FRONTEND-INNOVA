@@ -20,8 +20,6 @@ export class TablaBaseComponent {
   @Input() loading: boolean = false;
   @Input() stateTemplate!: TemplateRef<any>;
 
-  currentPage: number = 1;
-
   // Configuración de acciones
   @Input() showActions: boolean = true;
   @Input() showEditButton: boolean = true;
@@ -39,21 +37,4 @@ export class TablaBaseComponent {
     this.delete.emit(id);
   }
 
-  get rangoInicio(): number {
-    return (this.currentPage - 1) * this.pageSize + 1;
-  }
-
-  get rangoFin(): number {
-    return Math.min(this.currentPage * this.pageSize, this.data.length);
-  }
-
-  get paginados(): any[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    return this.data.slice(start, end);
-  }
-
-  onPageChange(page: number): void {
-    this.currentPage = page;
-  }
 }

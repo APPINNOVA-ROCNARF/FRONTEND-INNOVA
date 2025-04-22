@@ -7,8 +7,10 @@
   <div nz-col [nzSpan]="8">
     <nz-form-item>
       <nz-form-control>
-        <nz-select [(ngModel)]="cicloSeleccionado" [nzLoading]="(ciclosLoading$ | async)!" [nzOptions]="(cicloOpciones$ | async)!"
-          nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px;">
+        <nz-select
+         [(ngModel)]="cicloSeleccionado" (ngModelChange)="onCicloChange()" [nzLoading]="(ciclosLoading$ | async)!" [nzOptions]="(cicloOpciones$ | async)!"
+          nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px;"
+          >
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -52,3 +54,26 @@
     </nz-col>
   </nz-row>
   
+  <nz-card style="margin: 0px">
+    <app-tabla-base
+      [data]="(solicitudViatico$ | async) ?? []"
+      [columns]="columns"
+      [loading]="(loading$ | async) ?? false"
+      [stateTemplate]="stateTemplate"
+      [showActions]="true"
+      [showEditButton]="canEdit"
+      [showDeleteButton]="canDelete"
+      (edit)="router.navigate(['editar', $event.id], { relativeTo: route })"
+      (delete)="handleDelete($event)"
+      >
+    </app-tabla-base>
+  </nz-card>
+
+  <ng-template #stateTemplate let-estado>
+    <nz-tag [nzColor]="estado === 'aprobado' ? 'green' :
+                      estado === 'rechazado' ? 'red' :
+                      estado === 'paraCorregir' ? 'orange' :
+                      estado === 'No Enviada' ? 'blue' : 'default'">
+      {{ estado }}
+    </nz-tag>
+  </ng-template>
