@@ -9,26 +9,21 @@ export interface SolicitudViatico{
 }
 
 export interface EstadisticaSolicitudViatico {
-    cicloId: number;
-  
-    // Solicitudes
-    totalSolicitudes: number;
-    totalMonto: number;
-    totalEnRevision: number;
-    totalAprobado: number;
-    totalRechazado: number;
-    cantidadEnRevision: number;
-    cantidadAprobado: number;
-    cantidadRechazado: number;
-  
-    // Viáticos por categoría
-    montoMovilizacion: number;
-    montoAlimentacion: number;
-    montoHospedaje: number;
-  
-    // Viáticos por estado
-    viaticosEnRevision: number;
-    viaticosAprobados: number;
-    viaticosRechazados: number;
-  }
+  ciclo_id: number;
+
+  // Solicitudes
+  total_solicitudes: number;
+  total_monto: number;
+  total_en_revision: number;
+  total_aprobado: number;
+  total_rechazado: number;
+  cantidad_en_revision: number;
+  cantidad_aprobado: number;
+  cantidad_rechazado: number;
+
+  // Viáticos por categoría
+  monto_movilizacion: number;
+  monto_alimentacion: number;
+  monto_hospedaje: number;
+}
   

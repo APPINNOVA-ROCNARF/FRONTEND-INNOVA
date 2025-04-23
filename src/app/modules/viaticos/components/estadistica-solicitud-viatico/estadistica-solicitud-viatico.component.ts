@@ -7,7 +7,7 @@ import { TotalViaticosComponent } from '../total-viaticos/total-viaticos.compone
 import { EstadoViaticosComponent } from '../estado-viaticos/estado-viaticos.component';
 import { EstadoCicloComponent } from '../estado-ciclo/estado-ciclo.component';
 import { NzGridModule } from 'ng-zorro-antd/grid';
-
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 @Component({
   selector: 'app-estadistica-solicitud-viatico',
@@ -17,12 +17,13 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
     TotalViaticosComponent,
     EstadoViaticosComponent,
     EstadoCicloComponent,
-    NzGridModule
+    NzGridModule,
+    NzSpinModule
   ],
   templateUrl: './estadistica-solicitud-viatico.component.html',
-  styleUrl: './estadistica-solicitud-viatico.component.less'
+  styleUrl: './estadistica-solicitud-viatico.component.less',
 })
-export class EstadisticaSolicitudViaticoComponent implements OnChanges{
+export class EstadisticaSolicitudViaticoComponent implements OnChanges {
   @Input() cicloId: number | null = null;
 
   estadistica$!: Observable<EstadisticaSolicitudViatico | null>;
@@ -34,53 +35,66 @@ export class EstadisticaSolicitudViaticoComponent implements OnChanges{
   tooltipCiclo$!: Observable<string>;
   estadoTextoCiclo$!: Observable<string>;
 
+  estadisticaLoading$!: Observable<boolean>;
+
   constructor(private state: SolicitudViaticoStateService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['cicloId'] && this.cicloId != null) {
-      this.state.fetchEstadisticaSolicitudViatico(this.cicloId);
+      this.state.fetchEstadisticaSolicitudViatico(this.cicloId, );
       this.estadistica$ = this.state.estadisticaSolicitudViatico$(this.cicloId);
 
-      this.totalViaticos$ = this.estadistica$.pipe(map(e => e?.totalMonto ?? 0));
-      this.totalRegistros$ = this.estadistica$.pipe(map(e => e?.totalSolicitudes ?? 0));
+      this.totalViaticos$ = this.estadistica$.pipe(
+        map((e) => e?.total_monto ?? 0)
+      );
+      this.totalRegistros$ = this.estadistica$.pipe(
+        map((e) => e?.total_solicitudes ?? 0)
+      );
 
       this.distribucionEstado$ = this.estadistica$.pipe(
-        map(e => [
-          { nombre: 'En revisión', monto: e?.totalEnRevision ?? 0, color: '#8ecaff' },
-          { nombre: 'Aprobado', monto: e?.totalAprobado ?? 0, color: '#b2f2bb' },
-          { nombre: 'Rechazado', monto: e?.totalRechazado ?? 0, color: '#e0e0e0' }
+        map((e) => [
+          {
+            nombre: 'En revisión',
+            monto: e?.total_en_revision ?? 0,
+            color: '#8ecaff',
+          },
+          {
+            nombre: 'Aprobado',
+            monto: e?.total_aprobado ?? 0,
+            color: '#b2f2bb',
+          },
+          {
+            nombre: 'Rechazado',
+            monto: e?.total_rechazado ?? 0,
+            color: '#e0e0e0',
+          },
         ])
       );
 
       this.distribucionCategoria$ = this.estadistica$.pipe(
-        map(e => [
-          { nombre: 'Movilización', monto: e?.montoMovilizacion ?? 0, color: '#ef8b83' },
-          { nombre: 'Hospedaje', monto: e?.montoHospedaje ?? 0, color: '#82edcd' },
-          { nombre: 'Alimentación', monto: e?.montoAlimentacion ?? 0, color: '#c082ed' }
+        map((e) => [
+          {
+            nombre: 'Movilización',
+            monto: e?.monto_movilizacion ?? 0,
+            color: '#ef8b83',
+          },
+          {
+            nombre: 'Hospedaje',
+            monto: e?.monto_hospedaje ?? 0,
+            color: '#82edcd',
+          },
+          {
+            nombre: 'Alimentación',
+            monto: e?.monto_alimentacion ?? 0,
+            color: '#c082ed',
+          },
         ])
       );
+    }
 
-      const totalViaticos$ = this.estadistica$.pipe(
-        map(e =>
-          (e?.viaticosAprobados ?? 0) +
-          (e?.viaticosEnRevision ?? 0) +
-          (e?.viaticosRechazados ?? 0)
-        )
-      );
-
-      const aprobados$ = this.estadistica$.pipe(map(e => e?.viaticosAprobados ?? 0));
-
-      this.porcentajeCiclo$ = combineLatest([totalViaticos$, aprobados$]).pipe(
-        map(([total, aprobados]) => total > 0 ? Math.round((aprobados / total) * 100) : 0)
-      );
-
-      this.tooltipCiclo$ = combineLatest([totalViaticos$, aprobados$]).pipe(
-        map(([total, aprobados]) => `${aprobados} completados / ${total - aprobados} pendientes`)
-      );
-
-      this.estadoTextoCiclo$ = this.porcentajeCiclo$.pipe(
-        map(p => p === 100 ? 'Ciclo completado' : 'En progreso')
-      );
+    if (this.cicloId != null) {
+      this.estadisticaLoading$ =
+        this.state.getEstadisticaSolicitudViaticoLoading(this.cicloId);
     }
   }
 }
