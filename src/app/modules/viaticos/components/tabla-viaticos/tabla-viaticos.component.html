@@ -3,7 +3,7 @@
     [nzColor]="estado === 'Aprobado' ? 'green' :
                 estado === 'Rechazado' ? 'red' :
                 estado === 'Para corregir' ? 'orange' :
-                estado === 'En revisión' ? 'blue' :
+                estado === 'En revisión' ? 'yellow' :
                 estado === 'No enviada' ? 'default' : 'default'">
     {{ estado }}
   </nz-tag>
@@ -14,5 +14,5 @@
   [columns]="columns"
   [loading]="loading"
   [showEditButton]="true"
-  [showDeleteButton]="true"
+  [showDeleteButton]="false"
 />

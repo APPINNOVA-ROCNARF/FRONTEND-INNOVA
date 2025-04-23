@@ -22,6 +22,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UiService } from '../../../../core/services/ui-service/ui.service';
 import { SolicitudViaticoStateService } from '../../services/solicitudViatico/solicitudViatico-state.service';
 import { TablaViaticosComponent } from "../../components/tabla-viaticos/tabla-viaticos.component";
+import { TotalViaticosComponent } from "../../components/total-viaticos/total-viaticos.component";
+import { EstadoViaticosComponent } from "../../components/estado-viaticos/estado-viaticos.component";
+import { EstadoCicloComponent } from "../../components/estado-ciclo/estado-ciclo.component";
+import { EstadisticaSolicitudViaticoComponent } from "../../components/estadistica-solicitud-viatico/estadistica-solicitud-viatico.component";
 
 @Component({
   selector: 'app-administrar-viaticos',
@@ -40,7 +44,8 @@ import { TablaViaticosComponent } from "../../components/tabla-viaticos/tabla-vi
     NzProgressModule,
     NzDividerModule,
     NzToolTipModule,
-    TablaViaticosComponent
+    TablaViaticosComponent,
+    EstadisticaSolicitudViaticoComponent
 ],
   templateUrl: './administrar-viaticos.component.html',
   styleUrl: './administrar-viaticos.component.less',
@@ -58,24 +63,13 @@ export class AdministrarViaticosComponent implements OnInit {
 
   asesorSeleccionado: string | null = null;
   cicloSeleccionado: number | null = null;
-  estadoSeleccionado: number | null = null;
 
   ciclos$!: Observable<CicloSelectDTO[]>;
   ciclosLoading$!: Observable<boolean>;
   cicloOpciones$!: Observable<{ label: string; value: number }[]>;
 
-  totalViaticos = 0;
-  totalRegistros = 0;
-
-  private fieldLabels: Record<string, string> = {
-    Id: 'ID',
-    usuarioNombre: 'Asesor',
-    cicloNombre: 'Ciclo',
-    fechaRegistro: 'Fecha Registro',
-    fechaModificacion: 'Fecha Modificación',
-    monto: 'Monto',
-    estado: 'Estado',
-  };
+  totalViaticos = 64;
+  totalRegistros = 1;
 
   constructor(
     private cicloState: CiclotateService,
@@ -95,16 +89,23 @@ export class AdministrarViaticosComponent implements OnInit {
     this.ciclos$ = this.cicloState.ciclos$;
     this.ciclosLoading$ = this.cicloState.getCiclosLoading();
     this.cicloState.fetchCiclos();
-
+  
     this.cicloOpciones$ = this.ciclos$.pipe(
-      map((ciclos) =>
-        ciclos.map((c) => ({
+      map((ciclos) => {
+        const cicloActivo = ciclos.find(c => c.estado); 
+        if (cicloActivo) {
+          this.cicloSeleccionado = cicloActivo.id;
+          this.onCicloChange();
+        }
+  
+        return ciclos.map((c) => ({
           label: c.nombre,
           value: c.id,
-        }))
-      )
+        }));
+      })
     );
   }
+  
 
   onCicloChange(): void {
     if (!this.cicloSeleccionado) return;
@@ -114,40 +115,8 @@ export class AdministrarViaticosComponent implements OnInit {
 
     this.solicitudState.fetchSolicitudViaticos(this.cicloSeleccionado);
 
-    combineLatest([this.solicitudViatico$, this.isMobile$]).subscribe(([data, isMobile]) => {
-      this.totalRegistros = data.length;
-      this.totalViaticos = data.reduce((acc, curr) => acc + curr.Monto, 0);
-
-      if (data.length > 0) {
-        this.columns = this.generateColumnsFromData(data[0], isMobile);
-      }
-    });
   }
 
-  generateColumnsFromData(sample: SolicitudViatico, isMobile: boolean): TableColumn[] {
-    const visibleFields = Object.keys(sample).filter((key) => {
-      if (key === 'id') return false;
-      if (isMobile) return ['usuarioNombre', 'estado'].includes(key);
-      return true;
-    });
-
-    return visibleFields.map((key) => {
-      const column: TableColumn = {
-        title: this.fieldLabels[key] || key,
-        dataIndex: key,
-      };
-
-      if (key === 'Estado') {
-        column.renderFn = this.stateTemplate;
-      }
-
-      return column;
-    });
-  }
-
-  getTotalViaticosTexto(): string {
-    return `${this.totalRegistros} registros — $${this.totalViaticos.toFixed(2)} total`;
-  }
 
   handleEdit(id: number): void {
     console.log('Editar solicitud:', id);

@@ -1,0 +1,14 @@
+<nz-card nzTitle={{titulo}}>
+  <div class="estado" *ngFor="let estado of estados">
+    <div class="titulo">
+      <span>{{ estado.nombre }}</span>
+      <span class="valor">${{ estado.monto | number: '1.0-0' }}</span>
+    </div>
+    <nz-progress
+      [nzPercent]="estado.porcentaje"
+      [nzStrokeColor]="estado.color"
+      [nzShowInfo]="false"
+      nzStrokeLinecap="round"
+    ></nz-progress>
+  </div>
+</nz-card>

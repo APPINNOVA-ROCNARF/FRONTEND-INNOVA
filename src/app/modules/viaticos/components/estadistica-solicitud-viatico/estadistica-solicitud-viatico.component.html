@@ -1,0 +1,36 @@
+<nz-row [nzGutter]="16" style="margin-bottom: 16px">
+    <!-- Total Viáticos -->
+    <nz-col [nzSpan]="6">
+      <app-total-viaticos
+        [totalViaticos]="(totalViaticos$ | async) ?? 0"
+        [totalRegistros]="(totalRegistros$ | async) ?? 0">
+      </app-total-viaticos>
+    </nz-col>
+  
+    <!-- Distribución por Estado -->
+    <nz-col [nzSpan]="6">
+      <app-estado-viaticos
+        [datos]="(distribucionEstado$ | async) ?? []"
+        [titulo]="'Distribución por Estado'">
+      </app-estado-viaticos>
+    </nz-col>
+  
+    <!-- Distribución por Categoría -->
+    <nz-col [nzSpan]="6">
+      <app-estado-viaticos
+        [datos]="(distribucionCategoria$ | async) ?? []"
+        [titulo]="'Distribución por Categoría'">
+      </app-estado-viaticos>
+    </nz-col>
+  
+    <!-- Estado del Ciclo -->
+    <nz-col [nzSpan]="6">
+      <app-estado-ciclo
+        [porcentaje]="(porcentajeCiclo$ | async) ?? 0"
+        [completado]="(porcentajeCiclo$ | async) ?? 0"
+        [tooltip]="(tooltipCiclo$ | async) ?? ''"
+        [estadoTexto]="(estadoTextoCiclo$ | async) ?? ''">
+      </app-estado-ciclo>
+    </nz-col>
+  </nz-row>
+  

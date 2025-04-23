@@ -1,0 +1,17 @@
+<nz-card  [nzTitle]="'Estado del Ciclo'" >
+    <div class="contenido">
+      <nz-progress
+        nz-tooltip
+        [nzTooltipTitle]="tooltip"
+        nzType="circle"
+        [nzPercent]="porcentaje"
+        [nzSuccessPercent]="completado"
+        [nzWidth]="135"
+      ></nz-progress>
+  
+      <div class="etiqueta-estado">
+        <div class="titulo">{{ estadoTexto }}</div>
+      </div>
+    </div>
+  </nz-card>
+  
