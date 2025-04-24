@@ -18,4 +18,5 @@ export class EstadoCicloComponent {
   @Input() completado: number = 0; 
   @Input() tooltip: string = '';
   @Input() estadoTexto: string = 'Ciclo en progreso';
+  @Input() color: string = 'blue';
 }

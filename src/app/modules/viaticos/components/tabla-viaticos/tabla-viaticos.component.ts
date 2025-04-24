@@ -4,6 +4,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { TablaBaseComponent } from '../../../../shared/components/tabla-base/tabla-base.component';
 import { SolicitudViatico } from '../../interfaces/viatico-api-response';
 import { TableColumn } from '../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-tabla-viaticos',
@@ -20,6 +21,8 @@ export class TablaViaticosComponent {
   estadoTemplate!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
+
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.columns = [
@@ -65,7 +68,6 @@ export class TablaViaticosComponent {
         dataIndex: 'estado',
         renderFn: this.estadoTemplate,
         nzFilters: [
-          { text: 'No enviada', value: 'No enviada' },
           { text: 'En revisión', value: 'En revisión' },
           { text: 'Aprobado', value: 'Aprobado' },
           { text: 'Rechazado', value: 'Rechazado' },
@@ -77,5 +79,12 @@ export class TablaViaticosComponent {
         },
       },
     ];
+  }
+
+  editarViatico(item: any): void {
+    const id = item?.id || item?.Id; // adapta si tu campo ID se llama distinto
+    if (id != null) {
+      this.router.navigate(['detalle', id], { relativeTo: this.route });
+    }
   }
 }

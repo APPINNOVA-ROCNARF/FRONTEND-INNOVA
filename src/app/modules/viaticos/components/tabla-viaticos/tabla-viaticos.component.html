@@ -3,8 +3,7 @@
     [nzColor]="estado === 'Aprobado' ? 'green' :
                 estado === 'Rechazado' ? 'red' :
                 estado === 'Para corregir' ? 'orange' :
-                estado === 'En revisión' ? 'yellow' :
-                estado === 'No enviada' ? 'default' : 'default'">
+                estado === 'En revisión' ? 'blue' : 'default'">
     {{ estado }}
   </nz-tag>
 </ng-template>
@@ -15,4 +14,5 @@
   [loading]="loading"
   [showEditButton]="true"
   [showDeleteButton]="false"
+  (edit)="editarViatico($event)"
 />

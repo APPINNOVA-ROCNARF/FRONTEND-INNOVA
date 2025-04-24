@@ -1,4 +1,4 @@
-<nz-card  [nzTitle]="'Estado del Ciclo'" >
+<nz-card>
     <div class="contenido">
       <nz-progress
         nz-tooltip
@@ -6,11 +6,11 @@
         nzType="circle"
         [nzPercent]="porcentaje"
         [nzSuccessPercent]="completado"
-        [nzWidth]="135"
+        [nzWidth]="90"
       ></nz-progress>
   
       <div class="etiqueta-estado">
-        <div class="titulo">{{ estadoTexto }}</div>
+        <div class="titulo" [ngClass]="color">{{ estadoTexto }}</div>
       </div>
     </div>
   </nz-card>

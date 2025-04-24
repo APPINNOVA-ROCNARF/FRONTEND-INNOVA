@@ -32,8 +32,10 @@ export class EstadisticaSolicitudViaticoComponent implements OnChanges {
   distribucionEstado$!: Observable<any[]>;
   distribucionCategoria$!: Observable<any[]>;
   porcentajeCiclo$!: Observable<number>;
+  successCiclo$!: Observable<number>;
   tooltipCiclo$!: Observable<string>;
   estadoTextoCiclo$!: Observable<string>;
+  estadoTextoColor$!: Observable<string>;
 
   estadisticaLoading$!: Observable<boolean>;
 
@@ -51,6 +53,8 @@ export class EstadisticaSolicitudViaticoComponent implements OnChanges {
         map((e) => e?.total_solicitudes ?? 0)
       );
 
+
+
       this.distribucionEstado$ = this.estadistica$.pipe(
         map((e) => [
           {
@@ -61,12 +65,12 @@ export class EstadisticaSolicitudViaticoComponent implements OnChanges {
           {
             nombre: 'Aprobado',
             monto: e?.total_aprobado ?? 0,
-            color: '#b2f2bb',
+            color: '#B7EB8F',
           },
           {
             nombre: 'Rechazado',
             monto: e?.total_rechazado ?? 0,
-            color: '#e0e0e0',
+            color: '#FFA39E',
           },
         ])
       );
@@ -90,6 +94,61 @@ export class EstadisticaSolicitudViaticoComponent implements OnChanges {
           },
         ])
       );
+
+      this.porcentajeCiclo$ = this.estadistica$.pipe(
+        map((e) => {
+          const total = (e?.cantidad_aprobado ?? 0) + (e?.cantidad_en_revision ?? 0) + (e?.cantidad_rechazado ?? 0);
+          const completados = (e?.cantidad_aprobado ?? 0) + (e?.cantidad_rechazado ?? 0);
+          return total > 0 ? Math.round((completados / total) * 100) : 0;
+        })
+      );
+      
+      this.successCiclo$ = this.estadistica$.pipe(
+        map((e) => {
+          const total = (e?.cantidad_aprobado ?? 0) + (e?.cantidad_en_revision ?? 0) + (e?.cantidad_rechazado ?? 0);
+          return total > 0 ? Math.round((e?.cantidad_aprobado ?? 0) / total * 100) : 0;
+        })
+      );
+      
+      this.tooltipCiclo$ = this.estadistica$.pipe(
+        map((e) => {
+          const enRevision = e?.cantidad_en_revision ?? 0;
+          const aprobado = e?.cantidad_aprobado ?? 0;
+          const rechazado = e?.cantidad_rechazado ?? 0;
+          return `${aprobado} aprobados / ${enRevision} en revisión / ${rechazado} rechazados`;
+        })
+      );
+
+      this.estadoTextoCiclo$ = this.estadistica$.pipe(
+        map((e) => {
+          const total = (e?.cantidad_en_revision ?? 0) +
+                        (e?.cantidad_aprobado ?? 0) +
+                        (e?.cantidad_rechazado ?? 0);
+          const aprobados = e?.cantidad_aprobado ?? 0;
+      
+          if (total > 0 && aprobados === total) {
+            return 'Ciclo Completo';
+          }
+      
+          return 'Ciclo en proceso';
+        })
+      );
+
+      this.estadoTextoColor$ = this.estadistica$.pipe(
+        map((e) => {
+          const total = (e?.cantidad_en_revision ?? 0) +
+                        (e?.cantidad_aprobado ?? 0) +
+                        (e?.cantidad_rechazado ?? 0);
+          const aprobados = e?.cantidad_aprobado ?? 0;
+      
+          if (total > 0 && aprobados === total) {
+            return 'green';
+          }
+      
+          return 'blue';
+        })
+      );
+      
     }
 
     if (this.cicloId != null) {

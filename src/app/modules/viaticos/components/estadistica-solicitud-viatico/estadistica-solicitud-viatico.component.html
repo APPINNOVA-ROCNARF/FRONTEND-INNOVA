@@ -32,9 +32,10 @@
       <nz-col [nzSpan]="6">
         <app-estado-ciclo
           [porcentaje]="(porcentajeCiclo$ | async) ?? 0"
-          [completado]="(porcentajeCiclo$ | async) ?? 0"
+          [completado]="(successCiclo$ | async) ?? 0"
           [tooltip]="(tooltipCiclo$ | async) ?? ''"
           [estadoTexto]="(estadoTextoCiclo$ | async) ?? ''"
+          [color]="(estadoTextoColor$ | async) ?? ''"
         >
         </app-estado-ciclo>
       </nz-col>
