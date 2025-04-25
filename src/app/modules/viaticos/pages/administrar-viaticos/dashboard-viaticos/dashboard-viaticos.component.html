@@ -19,6 +19,6 @@
 [cicloId]="cicloSeleccionado"
 ></app-estadistica-solicitud-viatico>
 
-<nz-card style="padding: 0px">
-  <app-tabla-viaticos [data]="(solicitudViatico$ | async) ?? []" [loading]="(loading$ | async) ?? false" />
+<nz-card nzSize="small" style="padding: 0px">
+  <app-tabla-solicitud-viaticos [data]="(solicitudViatico$ | async) ?? []" [loading]="(loading$ | async) ?? false" />
 </nz-card>

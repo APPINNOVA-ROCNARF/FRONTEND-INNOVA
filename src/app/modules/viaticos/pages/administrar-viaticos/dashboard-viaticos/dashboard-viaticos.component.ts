@@ -20,8 +20,8 @@ import { SolicitudViatico } from '../../../interfaces/viatico-api-response';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UiService } from '../../../../../core/services/ui-service/ui.service';
 import { SolicitudViaticoStateService } from '../../../services/solicitudViatico/solicitudViatico-state.service';
-import { TablaViaticosComponent } from "../../../components/tabla-viaticos/tabla-viaticos.component";
-import { EstadisticaSolicitudViaticoComponent } from "../../../components/estadistica-solicitud-viatico/estadistica-solicitud-viatico.component";
+import { TablaSolicitudViaticoComponent } from "../../../components/dashboard-viaticos/tabla-solicitud-viatico/tabla-solicitud-viatico.component";
+import { EstadisticaSolicitudViaticoComponent } from "../../../components/dashboard-viaticos/estadistica-solicitud-viatico/estadistica-solicitud-viatico.component";
 
 @Component({
   selector: 'app-administrar-viaticos',
@@ -40,16 +40,13 @@ import { EstadisticaSolicitudViaticoComponent } from "../../../components/estadi
     NzProgressModule,
     NzDividerModule,
     NzToolTipModule,
-    TablaViaticosComponent,
+    TablaSolicitudViaticoComponent,
     EstadisticaSolicitudViaticoComponent
 ],
   templateUrl: './dashboard-viaticos.component.html',
   styleUrl: './dashboard-viaticos.component.less',
 })
 export class AdministrarViaticosComponent implements OnInit {
-  @ViewChild('stateTemplate') stateTemplate!: TemplateRef<any>;
-
-  columns: TableColumn[] = [];
   canEdit = true;
   canDelete = true;
 
@@ -57,15 +54,11 @@ export class AdministrarViaticosComponent implements OnInit {
   loading$!: Observable<boolean>;
   isMobile$: Observable<boolean>;
 
-  asesorSeleccionado: string | null = null;
   cicloSeleccionado: number | null = null;
 
   ciclos$!: Observable<CicloSelectDTO[]>;
   ciclosLoading$!: Observable<boolean>;
   cicloOpciones$!: Observable<{ label: string; value: number }[]>;
-
-  totalViaticos = 64;
-  totalRegistros = 1;
 
   constructor(
     private cicloState: CiclotateService,
@@ -113,13 +106,5 @@ export class AdministrarViaticosComponent implements OnInit {
 
   }
 
-
-  handleEdit(id: number): void {
-    console.log('Editar solicitud:', id);
-  }
-
-  handleDelete(id: number): void {
-    console.log('Eliminar solicitud:', id);
-  }
 }
 

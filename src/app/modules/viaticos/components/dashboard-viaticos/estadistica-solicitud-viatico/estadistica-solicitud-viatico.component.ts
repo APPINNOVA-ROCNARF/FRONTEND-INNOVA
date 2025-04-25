@@ -1,10 +1,10 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, combineLatest, map } from 'rxjs';
-import { SolicitudViaticoStateService } from '../../services/solicitudViatico/solicitudViatico-state.service';
-import { EstadisticaSolicitudViatico } from '../../interfaces/viatico-api-response';
-import { TotalViaticosComponent } from '../total-viaticos/total-viaticos.component';
-import { EstadoViaticosComponent } from '../estado-viaticos/estado-viaticos.component';
+import { Observable, map } from 'rxjs';
+import { SolicitudViaticoStateService } from '../../../services/solicitudViatico/solicitudViatico-state.service';
+import { EstadisticaSolicitudViatico } from '../../../interfaces/viatico-api-response';
+import { TotalSolicitudViaticoComponent} from '../total-solicitud-viatico/total-solicitud-viatico.component';
+import { EstadoSolicitudViaticoComponent } from '../estado-solicitud-viatico/estado-viaticos.component';
 import { EstadoCicloComponent } from '../estado-ciclo/estado-ciclo.component';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
@@ -14,8 +14,8 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
   standalone: true,
   imports: [
     CommonModule,
-    TotalViaticosComponent,
-    EstadoViaticosComponent,
+    TotalSolicitudViaticoComponent,
+    EstadoSolicitudViaticoComponent,
     EstadoCicloComponent,
     NzGridModule,
     NzSpinModule

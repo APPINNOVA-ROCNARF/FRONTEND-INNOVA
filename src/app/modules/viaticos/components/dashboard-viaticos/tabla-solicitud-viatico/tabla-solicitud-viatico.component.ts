@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { TablaBaseComponent } from '../../../../shared/components/tabla-base/tabla-base.component';
-import { SolicitudViatico } from '../../interfaces/viatico-api-response';
-import { TableColumn } from '../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
+import { TablaBaseComponent } from '../../../../../shared/components/tabla-base/tabla-base.component';
+import { SolicitudViatico } from '../../../interfaces/viatico-api-response';
+import { TableColumn } from '../../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-tabla-viaticos',
+  selector: 'app-tabla-solicitud-viaticos',
   standalone: true,
   imports: [CommonModule, TablaBaseComponent, NzTagModule],
-  templateUrl: './tabla-viaticos.component.html',
-  styleUrl: './tabla-viaticos.component.less',
+  templateUrl: './tabla-solicitud-viatico.component.html',
+  styleUrl: './tabla-solicitud-viatico.component.less',
 })
-export class TablaViaticosComponent {
+export class TablaSolicitudViaticoComponent {
   @Input() data: SolicitudViatico[] = [];
   @Input() loading: boolean = false;
 
@@ -29,10 +29,6 @@ export class TablaViaticosComponent {
       {
         title: 'Asesor',
         dataIndex: 'usuarioNombre',
-      },
-      {
-        title: 'Ciclo',
-        dataIndex: 'cicloNombre',
       },
       {
         title: 'Fecha Registro',
@@ -82,7 +78,7 @@ export class TablaViaticosComponent {
   }
 
   editarViatico(item: any): void {
-    const id = item?.id || item?.Id; // adapta si tu campo ID se llama distinto
+    const id = item?.id || item?.Id; 
     if (id != null) {
       this.router.navigate(['detalle', id], { relativeTo: this.route });
     }

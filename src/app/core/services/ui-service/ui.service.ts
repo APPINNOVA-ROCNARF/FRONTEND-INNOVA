@@ -31,7 +31,7 @@ export class UiService {
     private breakpointObserver: BreakpointObserver
   ) {
     this.isMobile$ = this.breakpointObserver
-      .observe([Breakpoints.XSmall, Breakpoints.Small])
+      .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium])
       .pipe(map((result) => result.matches));
 
     this.isMobile$.pipe(take(1)).subscribe((isMobile) => {

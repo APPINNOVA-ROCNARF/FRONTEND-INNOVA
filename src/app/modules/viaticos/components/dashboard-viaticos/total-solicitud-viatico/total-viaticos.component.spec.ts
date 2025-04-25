@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TotalViaticosComponent } from './total-viaticos.component';
+import { TotalViaticosComponent } from './total-solicitud-viatico.component';
 
 describe('TotalViaticosComponent', () => {
   let component: TotalViaticosComponent;

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TablaViaticosComponent } from './tabla-viaticos.component';
+import { DatosSolicitudComponent } from './datos-solicitud.component';
 
-describe('TablaViaticosComponent', () => {
-  let component: TablaViaticosComponent;
-  let fixture: ComponentFixture<TablaViaticosComponent>;
+describe('DatosSolicitudComponent', () => {
+  let component: DatosSolicitudComponent;
+  let fixture: ComponentFixture<DatosSolicitudComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TablaViaticosComponent]
+      imports: [DatosSolicitudComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TablaViaticosComponent);
+    fixture = TestBed.createComponent(DatosSolicitudComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

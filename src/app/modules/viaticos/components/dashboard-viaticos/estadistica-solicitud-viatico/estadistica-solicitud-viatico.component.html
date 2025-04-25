@@ -12,20 +12,20 @@
 
       <!-- Distribución por Estado -->
       <nz-col [nzSpan]="6">
-        <app-estado-viaticos
+        <app-estado-solicitud-viatico
           titulo="Distribución por Estado"
           [datos]="(distribucionEstado$ | async) ?? []"
         >
-        </app-estado-viaticos>
+        </app-estado-solicitud-viatico>
       </nz-col>
 
       <!-- Distribución por Categoría -->
       <nz-col [nzSpan]="6">
-        <app-estado-viaticos
+        <app-estado-solicitud-viatico
           titulo="Distribución por Categoria"
           [datos]="(distribucionCategoria$ | async) ?? []"
         >
-        </app-estado-viaticos>
+        </app-estado-solicitud-viatico>
       </nz-col>
 
       <!-- Estado del Ciclo -->

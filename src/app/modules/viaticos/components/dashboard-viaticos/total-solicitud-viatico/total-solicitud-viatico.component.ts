@@ -8,10 +8,10 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
   selector: 'app-total-viaticos',
   standalone: true,
   imports: [CommonModule, NzCardModule, NzDividerModule, NzTagModule],
-  templateUrl: './total-viaticos.component.html',
-  styleUrl: './total-viaticos.component.less'
+  templateUrl: './total-solicitud-viatico.component.html',
+  styleUrl: './total-solicitud-viatico.component.less'
 })
-export class TotalViaticosComponent {
+export class TotalSolicitudViaticoComponent {
   @Input() totalViaticos: number = 0;
   @Input() totalRegistros: number = 0;
 }

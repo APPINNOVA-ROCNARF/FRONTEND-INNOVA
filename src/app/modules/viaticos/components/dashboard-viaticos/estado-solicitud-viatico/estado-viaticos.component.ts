@@ -4,13 +4,13 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 
 @Component({
-  selector: 'app-estado-viaticos',
+  selector: 'app-estado-solicitud-viatico',
   standalone: true,
   imports: [CommonModule, NzCardModule, NzProgressModule],
-  templateUrl: './estado-viaticos.component.html',
-  styleUrl: './estado-viaticos.component.less',
+  templateUrl: './estado-solicitud-viatico.component.html',
+  styleUrl: './estado-solicitud-viatico.component.less',
 })
-export class EstadoViaticosComponent {
+export class EstadoSolicitudViaticoComponent {
   @Input() titulo: string = '';
   @Input() datos: { nombre: string; monto: number; color: string }[] = [];
 
