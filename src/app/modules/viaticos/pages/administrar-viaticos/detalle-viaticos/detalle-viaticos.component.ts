@@ -16,6 +16,7 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzDividerComponent, NzDividerModule } from 'ng-zorro-antd/divider';
 import { DatosSolicitudComponent } from "../../../components/detalle-viaticos/datos-solicitud/datos-solicitud.component";
 import { EstadisticaViaticoComponent } from "../../../components/detalle-viaticos/estadistica-viatico/estadistica-viatico.component";
+import { TablaViaticoComponent } from "../../../components/detalle-viaticos/tabla-viatico/tabla-viatico.component";
 
 
 @Component({
@@ -35,7 +36,7 @@ import { EstadisticaViaticoComponent } from "../../../components/detalle-viatico
     NzToolTipModule,
     NzCollapseModule,
     NzDividerModule,
-    DatosSolicitudComponent, EstadisticaViaticoComponent],
+    DatosSolicitudComponent, EstadisticaViaticoComponent, TablaViaticoComponent],
   templateUrl: './detalle-viaticos.component.html',
   styleUrl: './detalle-viaticos.component.less'
 })

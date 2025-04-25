@@ -1,0 +1,35 @@
+<nz-card nzSize="small">
+<nz-table
+  [nzData]="viaticos"
+  [nzBordered]="true"
+nzSize="small"
+  [nzScroll]="{ x: '1000px' }"
+>
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Categoría</th>
+      <th>Proveedor</th>
+      <th>N° Factura</th>
+      <th>Comentario</th>
+      <th>Monto</th>
+      <th>Estado</th>
+      <th>Imagen</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let v of viaticos">
+      <td>{{ v.fechaFactura | date: 'shortDate' }}</td>
+      <td>{{ v.nombreCategoria }}</td>
+      <td>{{ v.nombreProveedor }}</td>
+      <td>{{ v.numeroFactura }}</td>
+      <td>{{ v.comentario || '-' }}</td>
+      <td>{{ v.monto | currency: 'USD' }}</td>
+      <td>{{ v.estadoViatico }}</td>
+      <td>
+        <a *ngIf="v.rutaImagen" [href]="v.rutaImagen" target="_blank">Ver</a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+</nz-card>

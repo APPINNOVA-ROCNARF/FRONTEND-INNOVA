@@ -26,3 +26,20 @@ export interface EstadisticaSolicitudViatico {
   monto_hospedaje: number;
 }
   
+export interface Viatico{
+    id: number,
+    fechaFactura: string,
+    nombreCategoria: string,
+    nombreProveedor: string,
+    numeroFactura: string,
+    comentario: string,
+    monto: number,
+    estadoViatico: string,
+    rutaImagen: string,
+    campoRechazado: CampoRechazado[],
+}
+
+export interface CampoRechazado{
+  campo: string,
+  comentario: string,
+}
