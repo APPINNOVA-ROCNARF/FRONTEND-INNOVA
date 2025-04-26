@@ -70,7 +70,6 @@ export class TablaSolicitudViaticoComponent {
           { text: 'Para corregir', value: 'Para corregir' },
         ],
         nzFilterFn: (selected: string[], item: any) => {
-          console.log('Filtro:', selected, 'Item:', item.estado);
           return selected.includes(item.estado);
         },
       },

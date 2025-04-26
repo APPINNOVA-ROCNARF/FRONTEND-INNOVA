@@ -20,7 +20,7 @@ export const VIATICOS_ROUTES: Routes = [
           import('./pages/administrar-viaticos/dashboard-viaticos/dashboard-viaticos.component').then(
             (c) => c.AdministrarViaticosComponent
           ),
-        title: 'Roles y Permisos',
+        title: 'Gestión de Viáticos',
       },
       {
         path: 'detalle/:id',

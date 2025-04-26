@@ -1,35 +1,117 @@
-<nz-card nzSize="small">
-<nz-table
-  [nzData]="viaticos"
-  [nzBordered]="true"
-nzSize="small"
-  [nzScroll]="{ x: '1000px' }"
->
-  <thead>
-    <tr>
-      <th>Fecha</th>
-      <th>Categoría</th>
-      <th>Proveedor</th>
-      <th>N° Factura</th>
-      <th>Comentario</th>
-      <th>Monto</th>
-      <th>Estado</th>
-      <th>Imagen</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let v of viaticos">
-      <td>{{ v.fechaFactura | date: 'shortDate' }}</td>
-      <td>{{ v.nombreCategoria }}</td>
-      <td>{{ v.nombreProveedor }}</td>
-      <td>{{ v.numeroFactura }}</td>
-      <td>{{ v.comentario || '-' }}</td>
-      <td>{{ v.monto | currency: 'USD' }}</td>
-      <td>{{ v.estadoViatico }}</td>
-      <td>
-        <a *ngIf="v.rutaImagen" [href]="v.rutaImagen" target="_blank">Ver</a>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
+<nz-card nzSize="small" class="tabla-card">
+  <nz-table #dynamicTable [nzData]="viaticos" nzSize="middle" [nzScroll]="{ y: '500px' }" nzShowPagination="false">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th [nzFilters]="categoriasFiltro" [nzFilterFn]="filtroCategoria">Concepto</th>
+        <th>Proveedor</th>
+        <th>N° Factura</th>
+        <th>Monto</th>
+        <th [nzFilters]="estadosFiltro" [nzFilterFn]="filtroEstado">Estado</th>
+        <th nzWidth="80px">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let v of dynamicTable.data">
+        <td>{{ v.fechaFactura | date: 'shortDate' }}</td>
+        <td>{{ v.nombreCategoria }}</td>
+        <td>{{ v.nombreProveedor }}</td>
+        <td>{{ v.numeroFactura }}</td>
+        <td>{{ v.monto | currency: 'USD' }}</td>
+        <td>
+          <nz-tag *ngIf="estadoViaticoTags[v.estadoViatico]" [nzColor]="estadoViaticoTags[v.estadoViatico].color">
+            {{ estadoViaticoTags[v.estadoViatico].texto }}
+          </nz-tag>
+        </td>
+        <td style="text-align: right;">
+          <div style="display: flex; gap: 4px; justify-content: flex-end;">
+            <button nz-button nzType="link" nzSize="default" (click)="previewImagen(v.rutaImagen)" nz-tooltip
+              nzTooltipTitle="Ver factura">
+              <i nz-icon nzType="file-search"></i>
+            </button>
+
+            <a nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
+              <button nz-button nzType="link" nzSize="default" nz-tooltip nzTooltipTitle="Opciones">
+                <i nz-icon nzType="ellipsis"></i>
+              </button>
+            </a>
+          </div>
+
+          <nz-dropdown-menu #menu="nzDropdownMenu">
+            <ul nz-menu>
+              <li nz-menu-item (click)="aprobarViatico(v.id)">
+                <i nz-icon nzType="edit" nzTheme="fill"></i> Editar
+              </li>
+              <li nz-menu-item (click)="aprobarViatico(v.id)">
+                <i nz-icon nzType="check"></i> Aprobar
+              </li>
+              <li nz-menu-item (click)="abrirModalRechazo(v)">
+                <i nz-icon nzType="close"></i> Rechazar
+              </li>
+            </ul>
+          </nz-dropdown-menu>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
 </nz-card>
+
+<nz-modal
+  [(nzVisible)]="modalRechazoVisible"
+  nzTitle="Rechazar viático"
+  (nzOnCancel)="cerrarModalRechazo()"
+  (nzOnOk)="cerrarModalRechazo()"
+>
+<ng-container *nzModalContent>
+  <div>
+    <label>Campo con error:</label>
+    <nz-select
+      [(ngModel)]="campoRechazado"
+      nzPlaceHolder="Seleccione un campo"
+      style="width: 100%; margin-bottom: 12px;"
+    >
+      <nz-option *ngFor="let campo of camposViatico" [nzValue]="campo" [nzLabel]="campo"></nz-option>
+    </nz-select>
+
+    <label>Comentario:</label>
+    <textarea
+      nz-input
+      rows="3"
+      [(ngModel)]="comentarioTemporal"
+      placeholder="Explique el motivo del rechazo"
+      style="width: 100%; margin-bottom: 12px;"
+    ></textarea>
+
+    <div style="text-align: right;">
+      <button nz-button nzType="dashed" nzSize="small" (click)="agregarCampoRechazado()">
+        Añadir campo rechazado
+      </button>
+    </div>
+
+    <nz-list *ngIf="rechazosTemp.length > 0">
+      <nz-list-item *ngFor="let item of rechazosTemp; let i = index" style="display: flex; align-items: center; justify-content: space-between;">
+        <nz-list-item-meta
+          [nzTitle]="item.campo"
+          [nzDescription]="item.comentario"
+        ></nz-list-item-meta>
+    
+        <div style="text-align: right;">
+          <button
+            nz-button
+            nzType="link"
+            nzDanger
+            nzSize="small"
+            (click)="eliminarCampoRechazado(i)"
+            nz-tooltip
+            nzTooltipTitle="Eliminar"
+          >
+            <i nz-icon nzType="delete"></i>
+          </button>
+        </div>
+      </nz-list-item>
+    </nz-list>
+    
+  </div>
+</ng-container>
+</nz-modal>
+
