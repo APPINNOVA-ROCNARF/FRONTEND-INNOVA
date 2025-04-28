@@ -81,11 +81,11 @@ export class TablaSolicitudViaticoComponent {
         title: 'Monto',
         dataIndex: 'monto',
         formatFn: (valor: number) =>
-          `$${valor.toLocaleString('en-US', {
+          `${valor.toLocaleString('es-EC', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
-          })}`,
-      },
+          })} US$`,
+      },      
       {
         title: 'Estado',
         dataIndex: 'estado',

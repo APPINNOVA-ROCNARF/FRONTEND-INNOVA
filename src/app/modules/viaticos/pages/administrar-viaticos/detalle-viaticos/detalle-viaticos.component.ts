@@ -34,12 +34,12 @@ export class DetalleViaticosComponent {
   ngOnInit(): void {
     this.solicitudId = +this.route.snapshot.paramMap.get('id')!;
 
-    this.viatico = this.viaticoState.viaticos;
+    this.viatico = this.viaticoState.viaticos(this.solicitudId);
     this.loadingViatico = this.viaticoState.getViaticosLoading(this.solicitudId);
     this.viaticoState.fetchViaticos(this.solicitudId);
 
-    this.detalleSolicitudViatico = this.solicitudViaticoState.detalleSolicitudViatico;
+    this.detalleSolicitudViatico = this.solicitudViaticoState.detalleSolicitudViatico(this.solicitudId);
     this.loadingDetalleSolicitudViatico = this.solicitudViaticoState.getDetalleSolicitudViaticoLoading(this.solicitudId);
-    this.solicitudViaticoState.fetchDetalleSolicitudViatico(this.solicitudId, true);
+    this.solicitudViaticoState.fetchDetalleSolicitudViatico(this.solicitudId);
   }
 }

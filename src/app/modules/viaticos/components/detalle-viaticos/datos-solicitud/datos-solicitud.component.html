@@ -5,7 +5,7 @@
     </nz-typography>
   </nz-page-header-title>
   <nz-page-header-tags>
-    <nz-tag nzColor="green">{{estado}}</nz-tag>
+    <nz-tag [nzColor]="estadoColor">{{estado}}</nz-tag>
   </nz-page-header-tags>
 </nz-page-header>
 
@@ -13,8 +13,8 @@
   <nz-spin [nzSpinning]="loading">
     <nz-descriptions nzSize="middle" nzBordered *ngIf="datos">
       <nz-descriptions-item nzTitle="Ciclo">{{ cicloNombre }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Fecha de Registro">{{ fechaRegistro }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Fecha de Modificación">{{ fechaModificacion }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Fecha de Registro">{{ fechaRegistro | date : "medium" }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Fecha de Modificación">{{ fechaModificacion | date : "medium" }}</nz-descriptions-item>
       <nz-descriptions-item nzTitle="Asesor">{{ usuarioNombre }}</nz-descriptions-item>
     </nz-descriptions>
   </nz-spin>

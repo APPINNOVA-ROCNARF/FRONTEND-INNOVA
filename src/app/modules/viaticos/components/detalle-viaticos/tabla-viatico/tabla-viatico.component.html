@@ -1,10 +1,9 @@
-<nz-card nzSize="small" class="tabla-card">
   <nz-table
+    [nzOuterBordered]	= "true"
     #dynamicTable
     [nzData]="datos"
     [nzLoading]="loadingDatos"
     nzSize="middle"
-    [nzScroll]="{ y: '300px' }"
     nzShowPagination="false"
     (nzCurrentPageDataChange)="onCurrentPageDataChange(datos)"
   >
@@ -34,11 +33,11 @@
           [nzChecked]="setOfCheckedId.has(v.id)"
           (nzCheckedChange)="onItemChecked(v.id, $event)"
         ></td>
-        <td>{{ v.fechaFactura | date : "shortDate" }}</td>
+        <td>{{ v.fechaFactura | date : "medium" }}</td>
         <td>{{ v.nombreCategoria }}</td>
         <td>{{ v.nombreProveedor }}</td>
         <td>{{ v.numeroFactura }}</td>
-        <td>{{ v.monto | currency : "USD" }}</td>
+        <td>{{ v.monto | currency : 'USD':'symbol' }}</td>
         <td>
           <nz-tag
             *ngIf="estadoViaticoTags[v.estadoViatico]"
@@ -92,7 +91,6 @@
       </tr>
     </tbody>
   </nz-table>
-</nz-card>
 
 <app-modal-rechazo
   [visible]="modalRechazoVisible"
@@ -131,7 +129,7 @@
       >
         <i nz-icon nzType="close-circle" nzTheme="outline"></i> Rechazar
       </button>
-      <button nz-button nzType="text" nzShape="circle">
+      <button nz-button nzType="text" nzShape="circle" (click)="limpiarSeleccion()">
         <i nz-icon nzType="close"></i>
       </button>
     </div>

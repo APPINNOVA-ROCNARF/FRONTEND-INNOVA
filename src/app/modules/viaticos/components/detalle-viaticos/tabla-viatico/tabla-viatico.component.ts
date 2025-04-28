@@ -1,12 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit, Signal } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { Viatico } from '../../../interfaces/viatico-api-response';
-import { ViaticoStateService } from '../../../services/viatico/viatico-state.service';
-import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzImageService } from 'ng-zorro-antd/image';
 import { NzImageModule } from 'ng-zorro-antd/image';
-import { environment } from '../../../../../../environments/environment';
 import { ImagenService } from '../../../../../core/services/image-service/image.service';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -27,7 +24,6 @@ import { animate, style, transition, trigger } from '@angular/animations';
     FormsModule,
     NzTableModule,
     CommonModule,
-    NzCardModule,
     NzImageModule,
     NzTagModule,
     NzIconModule,

@@ -1,5 +1,6 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://api.miapp.com/api' 
+    apiUrl: 'https://localhost:5001/api',
+    rootUrl: 'http://localhost:5001/'
 };
   

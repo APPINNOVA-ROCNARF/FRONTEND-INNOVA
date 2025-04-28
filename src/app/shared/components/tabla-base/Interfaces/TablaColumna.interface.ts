@@ -16,4 +16,6 @@ export interface TableColumn<T = any> {
   nzFilterFn?: boolean | NzTableFilterFn<T>;
   nzSortFn?: boolean | NzTableSortFn<T>;
   defaultSortOrder?: NzTableSortOrder;
+  pipe?: string;
+  pipeArgs?: any[];
 }

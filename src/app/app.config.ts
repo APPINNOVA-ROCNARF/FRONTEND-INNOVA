@@ -1,4 +1,4 @@
-import { ApplicationConfig, InjectionToken} from '@angular/core';
+import { ApplicationConfig, InjectionToken, LOCALE_ID} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { environment } from '../environments/environment';
@@ -38,6 +38,7 @@ export const appConfig: ApplicationConfig = {
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     provideNzIcons(icons),
     provideNzI18n(es_ES),
+    { provide: LOCALE_ID, useValue: 'es' },
     { provide: API_BASE_URL, useValue: environment.apiUrl },
   ],
 };

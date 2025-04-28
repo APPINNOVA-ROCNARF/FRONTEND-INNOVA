@@ -48,4 +48,20 @@ export class DatosSolicitudComponent {
   get cicloNombre(): string {
     return this.datos?.cicloNombre ?? '';
   }
+
+  get estadoColor(): string {
+    switch (this.estado) {
+      case 'Aprobado':
+        return 'green';
+      case 'Rechazado':
+        return 'red';
+      case 'En revisión':
+        return 'blue';
+      case 'Para corregir':
+        return 'orange';
+      default:
+        return 'default'; 
+    }
+  }
+  
 }

@@ -20,10 +20,7 @@ export class SolicitudViaticoStateService {
   private estadisticasMap = signal<Map<number, EstadisticaSolicitudViatico>>(
     new Map()
   );
-  private detalleSolicitudViaticoSignal =
-    signal<DetalleSolicitudViatico | null>(null);
-
-  readonly detalleSolicitudViatico = this.detalleSolicitudViaticoSignal.asReadonly();
+  private detalleSolicitudMap = signal<Map<number, DetalleSolicitudViatico>>(new Map());
 
   constructor(
     private solicitudService: SolicitudViaticoService,
@@ -108,13 +105,17 @@ export class SolicitudViaticoStateService {
 
   // DETALLE SOLICITUD VIATICO
 
-  fetchDetalleSolicitudViatico(
-    solicitudId: number,
-    forceRefresh: boolean = false
-  ): void {
+  detalleSolicitudViatico = (solicitudId: number) =>
+    computed(() => this.detalleSolicitudMap().get(solicitudId) ?? null);
+
+  fetchDetalleSolicitudViatico(solicitudId: number, forceRefresh: boolean = false): void {
     const key = `fetchDetalleSolicitudViatico-${solicitudId}`;
 
-    if (!forceRefresh && this.detalleSolicitudViatico()) return;
+    const currentMap = this.detalleSolicitudMap();
+
+    if (!forceRefresh && currentMap.has(solicitudId)) {
+      return;
+    }
 
     this.loadingService.setLoading(key, true);
 
@@ -122,9 +123,15 @@ export class SolicitudViaticoStateService {
       .getDetalleSolicitudViatico(solicitudId)
       .pipe(
         tap((detalle) => {
-          this.detalleSolicitudViaticoSignal.set(detalle);
+          const updatedMap = new Map(this.detalleSolicitudMap());
+          updatedMap.set(solicitudId, detalle);
+          this.detalleSolicitudMap.set(updatedMap);
         }),
-        finalize(() => this.loadingService.setLoading(key, false))
+        finalize(() => this.loadingService.setLoading(key, false)),
+        catchError((error) => {
+          this.message.error('Error al obtener detalle de solicitud de viático');
+          return of(null);
+        })
       )
       .subscribe();
   }
