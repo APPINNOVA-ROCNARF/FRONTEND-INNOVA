@@ -1,18 +1,43 @@
 <ng-template #estadoTemplate let-estado>
   <nz-tag
-    [nzColor]="estado === 'Aprobado' ? 'green' :
-                estado === 'Rechazado' ? 'red' :
-                estado === 'Para corregir' ? 'orange' :
-                estado === 'En revisión' ? 'blue' : 'default'">
+    [nzColor]="
+      estado === 'Aprobado'
+        ? 'green'
+        : estado === 'Rechazado'
+        ? 'red'
+        : estado === 'Para corregir'
+        ? 'orange'
+        : estado === 'En revisión'
+        ? 'blue'
+        : 'default'
+    "
+  >
     {{ estado }}
   </nz-tag>
 </ng-template>
 
-<app-tabla-base
-  [data]="data"
-  [columns]="columns"
-  [loading]="loading"
-  [showEditButton]="true"
-  [showDeleteButton]="false"
-  (edit)="editarViatico($event)"
-/>
+<div class="contenedor-filtro">
+  <nz-input-group nzSize="large" [nzSuffix]="suffixIconSearch">
+    <input
+      nz-input
+      nzBorderless
+      placeholder="Filtrar por asesor"
+      [(ngModel)]="filtro"
+      (ngModelChange)="aplicarFiltro()"
+    />
+  </nz-input-group>
+  <ng-template #suffixIconSearch>
+    <nz-icon nzType="search" />
+  </ng-template>
+</div>
+<nz-card class="tabla-card">
+  <app-tabla-base
+    [data]="datosFiltrados"
+    [columns]="columns"
+    [loading]="loading"
+    [showEditButton]="true"
+    [showDeleteButton]="false"
+    [showPagination]="false"
+    (edit)="editarViatico($event)"
+  />
+</nz-card>

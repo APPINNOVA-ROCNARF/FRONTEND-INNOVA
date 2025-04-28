@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -24,6 +24,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrl: './header.component.less',
 })
 export class HeaderComponent {
+  @Input() isMobile: boolean = false;
+
   isCollapsed$: Observable<boolean>;
   isMobile$: Observable<boolean>;
 

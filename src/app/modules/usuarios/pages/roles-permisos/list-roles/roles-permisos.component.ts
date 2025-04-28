@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  Signal,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -48,7 +49,7 @@ export class RolesPermisosComponent implements OnInit {
   canDelete = true;
 
   roles$!: Observable<RolSimple[]>;
-  loading$!: Observable<boolean>;
+  loading$!: Signal<boolean>;
   isMobile$: Observable<boolean>;
 
   private fieldLabels: Record<string, string> = {

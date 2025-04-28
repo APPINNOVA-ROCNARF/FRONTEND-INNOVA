@@ -1,35 +1,37 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, tap } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { finalize, tap } from 'rxjs';
 import { Viatico } from '../../interfaces/viatico-api-response';
 import { ViaticoService } from './viatico.service';
 import { LoadingService } from '../../../../core/services/loading-service/loading.service';
-import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Injectable({ providedIn: 'root' })
 export class ViaticoStateService {
-  private viaticosSubject = new BehaviorSubject<Viatico[]>([]);
+  private viaticosSignal = signal<Viatico[]>([]);
 
-  viaticos$ = this.viaticosSubject.asObservable();
+  readonly viaticos = this.viaticosSignal.asReadonly();
 
   constructor(
     private viaticoService: ViaticoService,
-    private loadingService: LoadingService,
-    private message: NzMessageService
+    private loadingService: LoadingService
   ) {}
 
-  fetchViaticos(forceRefresh: boolean = false, solicitudId: number): void {
+  fetchViaticos(solicitudId: number, forceRefresh: boolean = false): void {
     const loadingKey = `fetchViaticos-${solicitudId}`;
 
-    if (!forceRefresh && this.viaticosSubject.value.length > 0) return;
+    if (!forceRefresh && this.viaticosSignal().length > 0) return;
 
     this.loadingService.setLoading(loadingKey, true);
 
     this.viaticoService
       .getViaticos(solicitudId)
       .pipe(
-        tap((viatico) => this.viaticosSubject.next(viatico)),
+        tap((viaticos) => this.viaticosSignal.set(viaticos)),
         finalize(() => this.loadingService.setLoading(loadingKey, false))
       )
       .subscribe();
+  }
+
+  getViaticosLoading(solicitudId: number) {
+    return this.loadingService.getLoading(`fetchViaticos-${solicitudId}`);
   }
 }

@@ -1,19 +1,11 @@
-<nz-page-header nzBackIcon>
-  <nz-page-header-title>
-    <nz-typography>
-      <h3 nz-typography style="margin: 0; line-height: 1;">Detalle Solicitud</h3>
-    </nz-typography>
-  </nz-page-header-title>
-  <nz-page-header-tags>
-    <nz-tag nzColor="green">Aprobado</nz-tag>
-  </nz-page-header-tags>
-</nz-page-header>
-
-<app-datos-solicitud></app-datos-solicitud>
+<app-datos-solicitud
+[datos]="detalleSolicitudViatico()"
+[loading]="loadingDetalleSolicitudViatico()"
+></app-datos-solicitud>
 
 <br>
 <app-estadistica-viatico></app-estadistica-viatico>
 
 <br>
 
-<app-tabla-viatico [solicitudId]="viaticoId"></app-tabla-viatico>
+<app-tabla-viatico [datos]="viatico()" [loadingDatos]="loadingViatico()"></app-tabla-viatico>

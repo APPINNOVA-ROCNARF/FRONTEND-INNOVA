@@ -25,7 +25,7 @@
   <!-- Card de la tabla -->
 <nz-card>
   <nz-skeleton
-    [nzLoading]="(loading$ | async) ?? false"
+    [nzLoading]="loading$()"
     [nzActive]="true"
     [nzParagraph]="{ rows: 4 }"
   >
@@ -33,7 +33,7 @@
       [data]="(roles$ | async) ?? []"
       [columns]="columns"
       [pageSize]="10"
-      [loading]="(loading$ | async) ?? false"
+      [loading]="loading$()"
       [stateTemplate]="stateTemplate"
       [showActions]="true"
       [showEditButton]="canEdit"

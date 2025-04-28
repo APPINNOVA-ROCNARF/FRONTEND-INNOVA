@@ -1,4 +1,46 @@
 ::ng-deep .tabla-card .ant-card-body {
-    padding: 0 !important;
-  }
-  
+  padding: 0 !important;
+}
+
+.floating-action-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+}
+
+.floating-action-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 200px; 
+  flex-wrap: nowrap; 
+  min-width: 300px;
+}
+
+.floating-selected-info {
+  display: flex;
+  align-items: center;
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  gap: 8px;
+}
+
+.floating-selected-text {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.floating-actions-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

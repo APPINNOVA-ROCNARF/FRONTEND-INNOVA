@@ -24,6 +24,7 @@ export class TablaBaseComponent {
   @Input() showActions: boolean = true;
   @Input() showEditButton: boolean = true;
   @Input() showDeleteButton: boolean = true;
+  @Input() showPagination: boolean = true;
 
   // Eventos
   @Output() edit = new EventEmitter<any>();

@@ -8,7 +8,7 @@
   <nz-form-item>
     <nz-form-control>
       <nz-select [(ngModel)]="cicloSeleccionado" (ngModelChange)="onCicloChange()"
-        [nzLoading]="(ciclosLoading$ | async)!" [nzOptions]="(cicloOpciones$ | async)!"
+        [nzLoading]="ciclosLoading$()" [nzOptions]="(cicloOpciones$ | async)!"
         nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px">
       </nz-select>
     </nz-form-control>
@@ -16,9 +16,8 @@
 </div>
 
 <app-estadistica-solicitud-viatico
-[cicloId]="cicloSeleccionado"
+[estadistica]="estadisticas()"
 ></app-estadistica-solicitud-viatico>
+<nz-divider></nz-divider>
 
-<nz-card nzSize="small" style="padding: 0px">
-  <app-tabla-solicitud-viaticos [data]="(solicitudViatico$ | async) ?? []" [loading]="(loading$ | async) ?? false" />
-</nz-card>
+  <app-tabla-solicitud-viaticos [data]="solicitudViatico()" [loading]="loading$()" />

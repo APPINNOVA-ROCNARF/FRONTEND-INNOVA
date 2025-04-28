@@ -1,4 +1,4 @@
-<nz-card  nzTitle="Estado Ciclo">
+<nz-card  nzTitle="Estado Ciclo" [nzExtra]="extraTemplate">
     <div class="contenido">
       <nz-progress
         nz-tooltip
@@ -15,3 +15,8 @@
     </div>
   </nz-card>
   
+  <ng-template #extraTemplate>
+  <button nz-button nzSize="default" nzType="primary" >
+    <i nz-icon nzType="export"></i> Exportar Ciclo
+  </button>
+</ng-template>

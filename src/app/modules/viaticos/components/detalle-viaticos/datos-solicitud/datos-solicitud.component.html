@@ -1,8 +1,21 @@
-<nz-card  nzTitle="Datos Solicitud" class="datos-card">
-    <nz-descriptions nzSize="middle" nzBordered >
-      <nz-descriptions-item nzTitle="Ciclo">Inicio Ciclo - Abril 2025</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Fecha de Registro">18/04/2025</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Fecha de Modificación">20/04/2025</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Asesor">ALEJANDRO JAVIER ORTEGA BRAVO</nz-descriptions-item>
+<nz-page-header nzBackIcon>
+  <nz-page-header-title>
+    <nz-typography>
+      <h3 nz-typography style="margin: 0; line-height: 1;">Detalle Solicitud</h3>
+    </nz-typography>
+  </nz-page-header-title>
+  <nz-page-header-tags>
+    <nz-tag nzColor="green">{{estado}}</nz-tag>
+  </nz-page-header-tags>
+</nz-page-header>
+
+<nz-card nzTitle="Datos Solicitud" class="datos-card">
+  <nz-spin [nzSpinning]="loading">
+    <nz-descriptions nzSize="middle" nzBordered *ngIf="datos">
+      <nz-descriptions-item nzTitle="Ciclo">{{ cicloNombre }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Fecha de Registro">{{ fechaRegistro }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Fecha de Modificación">{{ fechaModificacion }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Asesor">{{ usuarioNombre }}</nz-descriptions-item>
     </nz-descriptions>
+  </nz-spin>
 </nz-card>

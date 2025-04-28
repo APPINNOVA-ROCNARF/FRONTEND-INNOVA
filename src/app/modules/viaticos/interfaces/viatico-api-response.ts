@@ -7,6 +7,14 @@ export interface SolicitudViatico{
     Monto: number
 }
 
+export interface DetalleSolicitudViatico{
+    usuarioNombre: string,
+    fechaRegistro: string,
+    fechaModificacion: string,
+    estado: string,
+    cicloNombre: string
+}
+
 export interface EstadisticaSolicitudViatico {
   ciclo_id: number;
 

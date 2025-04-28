@@ -7,11 +7,13 @@ import { Observable } from 'rxjs';
 import { UiService } from '../../../core/services/ui-service/ui.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { MobileLayoutComponent } from "../../mobile/mobile-layout/mobile-layout.component";
+import { MobileHeaderComponent } from "../../mobile/mobile-header/mobile-header.component";
+import { MobileDrawerComponent } from "../../mobile/mobile-drawer/mobile-drawer.component";
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SidebarComponent, HeaderComponent, NzLayoutModule, MobileLayoutComponent],
+  imports: [CommonModule, RouterOutlet, SidebarComponent, HeaderComponent, NzLayoutModule, MobileHeaderComponent, MobileDrawerComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.less'
 })

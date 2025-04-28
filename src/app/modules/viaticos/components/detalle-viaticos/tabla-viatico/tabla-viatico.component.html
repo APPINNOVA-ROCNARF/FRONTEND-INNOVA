@@ -1,40 +1,78 @@
 <nz-card nzSize="small" class="tabla-card">
-  <nz-table #dynamicTable [nzData]="viaticos" nzSize="middle" [nzScroll]="{ y: '500px' }" nzShowPagination="false">
+  <nz-table
+    #dynamicTable
+    [nzData]="datos"
+    [nzLoading]="loadingDatos"
+    nzSize="middle"
+    [nzScroll]="{ y: '300px' }"
+    nzShowPagination="false"
+    (nzCurrentPageDataChange)="onCurrentPageDataChange(datos)"
+  >
     <thead>
       <tr>
+        <th
+          nzWidth="60px"
+          [(nzChecked)]="checked"
+          [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="onAllChecked($event)"
+        ></th>
         <th>Fecha</th>
-        <th [nzFilters]="categoriasFiltro" [nzFilterFn]="filtroCategoria">Concepto</th>
+        <th [nzFilters]="categoriasFiltro" [nzFilterFn]="filtroCategoria">
+          Concepto
+        </th>
         <th>Proveedor</th>
         <th>N° Factura</th>
         <th>Monto</th>
         <th [nzFilters]="estadosFiltro" [nzFilterFn]="filtroEstado">Estado</th>
-        <th nzWidth="80px">Acciones</th>
+        <th nzWidth="100px">Acciones</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let v of dynamicTable.data">
-        <td>{{ v.fechaFactura | date: 'shortDate' }}</td>
+        <td
+          nzShowCheckbox
+          [nzChecked]="setOfCheckedId.has(v.id)"
+          (nzCheckedChange)="onItemChecked(v.id, $event)"
+        ></td>
+        <td>{{ v.fechaFactura | date : "shortDate" }}</td>
         <td>{{ v.nombreCategoria }}</td>
         <td>{{ v.nombreProveedor }}</td>
         <td>{{ v.numeroFactura }}</td>
-        <td>{{ v.monto | currency: 'USD' }}</td>
+        <td>{{ v.monto | currency : "USD" }}</td>
         <td>
-          <nz-tag *ngIf="estadoViaticoTags[v.estadoViatico]" [nzColor]="estadoViaticoTags[v.estadoViatico].color">
+          <nz-tag
+            *ngIf="estadoViaticoTags[v.estadoViatico]"
+            [nzColor]="estadoViaticoTags[v.estadoViatico].color"
+          >
             {{ estadoViaticoTags[v.estadoViatico].texto }}
           </nz-tag>
         </td>
-        <td style="text-align: right;">
-          <div style="display: flex; gap: 4px; justify-content: flex-end;">
-            <button nz-button nzType="link" nzSize="default" (click)="previewImagen(v.rutaImagen)" nz-tooltip
-              nzTooltipTitle="Ver factura">
+        <td style="text-align: right">
+          <div style="display: flex; gap: 4px; justify-content: flex-end">
+            <button
+              nz-button
+              nzType="link"
+              nzSize="default"
+              (click)="previewImagen(v.rutaImagen)"
+              nz-tooltip
+              nzTooltipTitle="Ver factura"
+            >
               <i nz-icon nzType="file-search"></i>
             </button>
 
+            <ng-container *ngIf="!(setOfCheckedId.size > 0)">
             <a nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
-              <button nz-button nzType="link" nzSize="default" nz-tooltip nzTooltipTitle="Opciones">
+              <button
+                nz-button
+                nzType="link"
+                nzSize="default"
+                nz-tooltip
+                nzTooltipTitle="Opciones"
+              >
                 <i nz-icon nzType="ellipsis"></i>
               </button>
             </a>
+            </ng-container>
           </div>
 
           <nz-dropdown-menu #menu="nzDropdownMenu">
@@ -43,10 +81,10 @@
                 <i nz-icon nzType="edit" nzTheme="fill"></i> Editar
               </li>
               <li nz-menu-item (click)="aprobarViatico(v.id)">
-                <i nz-icon nzType="check"></i> Aprobar
+                <i nz-icon nzType="check-circle"></i> Aprobar
               </li>
-              <li nz-menu-item (click)="abrirModalRechazo(v)">
-                <i nz-icon nzType="close"></i> Rechazar
+              <li nz-menu-item nzDanger (click)="abrirModalRechazo(v)">
+                <i nz-icon nzType="close-circle"></i> Rechazar
               </li>
             </ul>
           </nz-dropdown-menu>
@@ -56,62 +94,46 @@
   </nz-table>
 </nz-card>
 
-<nz-modal
-  [(nzVisible)]="modalRechazoVisible"
-  nzTitle="Rechazar viático"
-  (nzOnCancel)="cerrarModalRechazo()"
-  (nzOnOk)="cerrarModalRechazo()"
+<app-modal-rechazo
+  [visible]="modalRechazoVisible"
+  [camposViatico]="camposViatico"
+  (cancel)="cerrarModalRechazo()"
+  (confirm)="confirmarRechazo($event)"
+></app-modal-rechazo>
+
+<div
+  *ngIf="mostrarBarraAcciones"
+  class="floating-action-bar"
+  [@slideUpFadeDown]
 >
-<ng-container *nzModalContent>
-  <div>
-    <label>Campo con error:</label>
-    <nz-select
-      [(ngModel)]="campoRechazado"
-      nzPlaceHolder="Seleccione un campo"
-      style="width: 100%; margin-bottom: 12px;"
-    >
-      <nz-option *ngFor="let campo of camposViatico" [nzValue]="campo" [nzLabel]="campo"></nz-option>
-    </nz-select>
-
-    <label>Comentario:</label>
-    <textarea
-      nz-input
-      rows="3"
-      [(ngModel)]="comentarioTemporal"
-      placeholder="Explique el motivo del rechazo"
-      style="width: 100%; margin-bottom: 12px;"
-    ></textarea>
-
-    <div style="text-align: right;">
-      <button nz-button nzType="dashed" nzSize="small" (click)="agregarCampoRechazado()">
-        Añadir campo rechazado
-      </button>
+  <div class="floating-action-content">
+    <div class="floating-selected-info">
+      <nz-badge
+        nzStandalone
+        [nzCount]="setOfCheckedId.size"
+        [nzStyle]="{
+          backgroundColor: '#e9f2f3',
+          color: '#007f8c'
+        }"
+      ></nz-badge>
+      <span class="floating-selected-text">Viáticos seleccionados</span>
     </div>
 
-    <nz-list *ngIf="rechazosTemp.length > 0">
-      <nz-list-item *ngFor="let item of rechazosTemp; let i = index" style="display: flex; align-items: center; justify-content: space-between;">
-        <nz-list-item-meta
-          [nzTitle]="item.campo"
-          [nzDescription]="item.comentario"
-        ></nz-list-item-meta>
-    
-        <div style="text-align: right;">
-          <button
-            nz-button
-            nzType="link"
-            nzDanger
-            nzSize="small"
-            (click)="eliminarCampoRechazado(i)"
-            nz-tooltip
-            nzTooltipTitle="Eliminar"
-          >
-            <i nz-icon nzType="delete"></i>
-          </button>
-        </div>
-      </nz-list-item>
-    </nz-list>
-    
+    <div class="floating-actions-buttons">
+      <button nz-button nzType="primary" (click)="aprobarSeleccionados()">
+        <i nz-icon nzType="check-circle" nzTheme="outline"></i> Aprobar
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        nzDanger
+        (click)="rechazarSeleccionados()"
+      >
+        <i nz-icon nzType="close-circle" nzTheme="outline"></i> Rechazar
+      </button>
+      <button nz-button nzType="text" nzShape="circle">
+        <i nz-icon nzType="close"></i>
+      </button>
+    </div>
   </div>
-</ng-container>
-</nz-modal>
-
+</div>

@@ -1,11 +1,12 @@
-<nz-spin [nzSpinning]="estadisticaLoading$ | async">
-  <ng-container *ngIf="estadistica$ | async as estadistica">
+<nz-spin [nzSpinning]="estadistica == null">
+  <ng-container *ngIf="estadistica as estadistica">
     <nz-row [nzGutter]="16" style="margin-bottom: 16px">
+      
       <!-- Total Viáticos -->
       <nz-col [nzSpan]="6">
         <app-total-viaticos
-          [totalViaticos]="(totalViaticos$ | async) ?? 0"
-          [totalRegistros]="(totalRegistros$ | async) ?? 0"
+          [totalViaticos]="totalViaticos"
+          [totalRegistros]="totalRegistros"
         >
         </app-total-viaticos>
       </nz-col>
@@ -14,7 +15,7 @@
       <nz-col [nzSpan]="6">
         <app-estado-solicitud-viatico
           titulo="Distribución por Estado"
-          [datos]="(distribucionEstado$ | async) ?? []"
+          [datos]="distribucionEstado"
         >
         </app-estado-solicitud-viatico>
       </nz-col>
@@ -22,8 +23,8 @@
       <!-- Distribución por Categoría -->
       <nz-col [nzSpan]="6">
         <app-estado-solicitud-viatico
-          titulo="Distribución por Categoria"
-          [datos]="(distribucionCategoria$ | async) ?? []"
+          titulo="Distribución por Categoría"
+          [datos]="distribucionCategoria"
         >
         </app-estado-solicitud-viatico>
       </nz-col>
@@ -31,14 +32,15 @@
       <!-- Estado del Ciclo -->
       <nz-col [nzSpan]="6">
         <app-estado-ciclo
-          [porcentaje]="(porcentajeCiclo$ | async) ?? 0"
-          [completado]="(successCiclo$ | async) ?? 0"
-          [tooltip]="(tooltipCiclo$ | async) ?? ''"
-          [estadoTexto]="(estadoTextoCiclo$ | async) ?? ''"
-          [color]="(estadoTextoColor$ | async) ?? ''"
+          [porcentaje]="porcentajeCiclo"
+          [completado]="successCiclo"
+          [tooltip]="tooltipCiclo"
+          [estadoTexto]="estadoTextoCiclo"
+          [color]="estadoTextoColor"
         >
         </app-estado-ciclo>
       </nz-col>
+
     </nz-row>
   </ng-container>
 </nz-spin>

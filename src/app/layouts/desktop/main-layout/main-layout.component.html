@@ -1,28 +1,40 @@
 <nz-layout class="app-layout">
-  <ng-container *ngIf="!(isMobile$ | async); else mobileLayout">
-    <nz-sider
-      class="menu-sidebar"
-      nzCollapsible
-      nzWidth="256px"
-      nzBreakpoint="md"
-      [nzCollapsed]="(isCollapsed$ | async) ?? false"
-      [nzTrigger]="null"
-    >
-      <app-sidebar></app-sidebar>
-    </nz-sider>
 
-    <nz-layout class="main-content">
-      <nz-header class="app-header">
+  <!-- Sidebar solo para escritorio -->
+  <nz-sider
+    *ngIf="!(isMobile$ | async)"
+    class="menu-sidebar"
+    nzCollapsible
+    nzWidth="256px"
+    nzBreakpoint="md"
+    [nzCollapsed]="(isCollapsed$ | async) ?? false"
+    [nzTrigger]="null"
+  >
+    <app-sidebar></app-sidebar>
+  </nz-sider>
+
+  <!-- Layout principal -->
+  <nz-layout class="main-content">
+
+    <!-- Header adaptativo -->
+    <nz-header class="app-header">
+      <ng-container *ngIf="!(isMobile$ | async); else mobileHeader">
         <app-header></app-header>
-      </nz-header>
+      </ng-container>
 
-      <nz-content class="inner-content">
-        <router-outlet></router-outlet>
-      </nz-content>
-    </nz-layout>
-  </ng-container>
+      <ng-template #mobileHeader>
+        <app-mobile-header></app-mobile-header>
+      </ng-template>
+    </nz-header>
 
-  <ng-template #mobileLayout>
-    <app-mobile-layout> </app-mobile-layout>
-  </ng-template>
+    <!-- Contenido -->
+    <nz-content class="inner-content">
+      <router-outlet></router-outlet>
+    </nz-content>
+
+  </nz-layout>
+
+  <!-- Drawer siempre presente pero invisible si no es móvil -->
+  <app-mobile-drawer *ngIf="isMobile$ | async"></app-mobile-drawer>
+
 </nz-layout>

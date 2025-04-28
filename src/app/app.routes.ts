@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layouts/desktop/main-layout/main-layout.component';
 import { AuthGuard } from './core/auth/guards/auth.guard';
 import { RolGuard } from './core/auth/guards/rol.guard';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+
+const protectedGuards = [AuthGuard, RolGuard];
 
 export const routes: Routes = [
   {
@@ -12,15 +15,15 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: protectedGuards,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: '/login' },
+      { path: '', pathMatch: 'full', redirectTo: '/welcome' },
       {
         path: 'welcome',
         loadChildren: () =>
           import('./pages/welcome/welcome.routes').then(
             (m) => m.WELCOME_ROUTES
           ),
-        canActivate: [AuthGuard, RolGuard],
       },
       {
         path: 'viaticos',
@@ -28,7 +31,6 @@ export const routes: Routes = [
           import('./modules/viaticos/viaticos.routes').then(
             (m) => m.VIATICOS_ROUTES
           ),
-        canActivate: [AuthGuard, RolGuard],
       },
       {
         path: 'usuarios',
@@ -36,9 +38,11 @@ export const routes: Routes = [
           import('./modules/usuarios/usuarios.routes').then(
             (m) => m.USUARIOS_ROUTES
           ),
-        canActivate: [AuthGuard, RolGuard],
+      },
+      {
+        path: '**',
+        component: NotFoundComponent,
       },
     ],
   },
 ];
-
