@@ -12,7 +12,8 @@ export interface DetalleSolicitudViatico{
     fechaRegistro: string,
     fechaModificacion: string,
     estado: string,
-    cicloNombre: string
+    cicloNombre: string,
+    cicloId: number
 }
 
 export interface EstadisticaSolicitudViatico {

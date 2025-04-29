@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { Viatico } from '../../../interfaces/viatico-api-response';
 import { NzImageService } from 'ng-zorro-antd/image';
@@ -59,6 +59,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 export class TablaViaticoComponent {
   @Input() datos: Viatico[] = [];
   @Input() loadingDatos: Boolean = false;
+  @Output() aprobar = new EventEmitter<number>();
 
   listOfCurrentPageData: any[] = [];
 
@@ -121,8 +122,7 @@ export class TablaViaticoComponent {
   };
 
   aprobarViatico(viaticoId: number): void {
-    // lógica para aprobar viático
-    console.log('Aprobar viático:', viaticoId);
+    this.aprobar.emit(viaticoId);
   }
 
   rechazarViatico(viaticoId: number): void {

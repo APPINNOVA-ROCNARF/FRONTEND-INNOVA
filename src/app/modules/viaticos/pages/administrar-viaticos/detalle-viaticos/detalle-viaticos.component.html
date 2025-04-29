@@ -1,11 +1,29 @@
 <app-datos-solicitud
-[datos]="detalleSolicitudViatico()"
-[loading]="loadingDetalleSolicitudViatico()"
+  [datos]="detalleSolicitudViatico()"
+  [loading]="loadingDetalleSolicitudViatico()"
 ></app-datos-solicitud>
 
-<br>
+<br />
 <app-estadistica-viatico></app-estadistica-viatico>
 
-<br>
+<br />
 
-<app-tabla-viatico [datos]="viatico()" [loadingDatos]="loadingViatico()"></app-tabla-viatico>
+<app-tabla-viatico
+  [datos]="viatico()"
+  [loadingDatos]="loadingViatico()"
+  (aprobar)="abrirModalAprovar($event)"
+></app-tabla-viatico>
+
+<nz-modal
+  [(nzVisible)]="modalAprobacionVisible"
+  [nzTitle]="'Aprobar viático'"
+  [nzOkLoading]="
+    idAprobacionActual !== null && viaticosEnProceso.has(idAprobacionActual)
+  "
+  (nzOnCancel)="cerrarModalAprobacion()"
+  (nzOnOk)="confirmarAprobacion()"
+>
+  <ng-container *nzModalContent>
+    <p>¿Está seguro de que desea aprobar este viático?</p>
+  </ng-container>
+</nz-modal>

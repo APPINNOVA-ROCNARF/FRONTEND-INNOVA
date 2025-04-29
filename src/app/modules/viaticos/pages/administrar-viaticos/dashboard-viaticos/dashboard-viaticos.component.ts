@@ -1,20 +1,14 @@
 import { Component, OnInit, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzRadioModule } from 'ng-zorro-antd/radio';
-import { NzButtonModule } from 'ng-zorro-antd/button';
 import { CommonModule } from '@angular/common';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { CicloSelectDTO } from '../../../../../shared/services/ciclos-service/Interfaces/CicloSelectDTO';
 import { map, Observable } from 'rxjs';
 import { CiclotateService } from '../../../../../shared/services/ciclos-service/ciclo-state.service';
-import { NzTagModule } from 'ng-zorro-antd/tag';
-import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { EstadisticaSolicitudViatico, SolicitudViatico } from '../../../interfaces/viatico-api-response';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UiService } from '../../../../../core/services/ui-service/ui.service';
@@ -29,16 +23,10 @@ import { EstadisticaSolicitudViaticoComponent } from "../../../components/dashbo
     FormsModule,
     NzSelectModule,
     CommonModule,
-    NzCardModule,
     NzFormModule,
-    NzRadioModule,
-    NzButtonModule,
     NzTypographyModule,
     NzIconModule,
-    NzTagModule,
-    NzProgressModule,
     NzDividerModule,
-    NzToolTipModule,
     TablaSolicitudViaticoComponent,
     EstadisticaSolicitudViaticoComponent,
   ],

@@ -1,10 +1,11 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { finalize, tap } from 'rxjs';
+import { catchError, finalize, map, Observable, of, tap, throwError } from 'rxjs';
 import { Viatico } from '../../interfaces/viatico-api-response';
 import { ViaticoService } from './viatico.service';
 import { LoadingService } from '../../../../core/services/loading-service/loading.service';
 import { ActualizarEstadoViaticoRequest } from '../../interfaces/actualizar-estado-viatico-request';
 import { AccionViatico } from '../../enums/accion-viatico.enum';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Injectable({ providedIn: 'root' })
 export class ViaticoStateService {
@@ -12,10 +13,11 @@ export class ViaticoStateService {
 
   constructor(
     private viaticoService: ViaticoService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private message: NzMessageService
   ) {}
 
-  //VIATICOS 
+  //VIATICOS
 
   viaticos = (solicitudId: number) =>
     computed(() => this.viaticosMapSignal().get(solicitudId) ?? []);
@@ -49,25 +51,28 @@ export class ViaticoStateService {
   }
 
   // APROBAR VIATICOS
-
-  aprobarViaticos(ids: number[], solicitudId: number): void {
-    const loadingKey = `aprobarViaticos-${solicitudId}`;
   
-    this.loadingService.setLoading(loadingKey, true);
-  
+  aprobarViaticos(
+    ids: number[],
+    solicitudId: number,
+    mensajeExito: string = 'Viáticos aprobados exitosamente.'
+  ): Observable<void> {
     const request: ActualizarEstadoViaticoRequest = {
       accion: AccionViatico.Aprobado,
-      viaticos: ids.map(id => ({ id }))
+      viaticos: ids.map((id) => ({ id })),
     };
-  
-    this.viaticoService.actualizarEstadoViaticos(request)
-      .pipe(
-        tap(() => {
-          this.fetchViaticos(solicitudId, true);
-        }),
-        finalize(() => this.loadingService.setLoading(loadingKey, false))
-      )
-      .subscribe();
+
+    return this.viaticoService.actualizarEstadoViaticos(request).pipe(
+      tap(() => {
+        this.fetchViaticos(solicitudId, true);
+        this.message.success(mensajeExito);
+      }),
+      catchError((error) => {
+        const msg = error?.error?.message ?? 'Error al aprobar viáticos.';
+        this.message.error(msg);
+        return throwError(() => error);
+      }),
+      map(() => void 0)
+    );
   }
-  
 }
