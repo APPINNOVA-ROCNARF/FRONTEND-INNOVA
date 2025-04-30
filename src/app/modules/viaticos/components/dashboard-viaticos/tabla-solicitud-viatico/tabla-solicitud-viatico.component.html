@@ -1,20 +1,11 @@
 <ng-template #estadoTemplate let-estado>
-  <nz-tag
-    [nzColor]="
-      estado === 'Aprobado'
-        ? 'green'
-        : estado === 'Rechazado'
-        ? 'red'
-        : estado === 'Para corregir'
-        ? 'orange'
-        : estado === 'En revisión'
-        ? 'blue'
-        : 'default'
-    "
-  >
-    {{ estado }}
-  </nz-tag>
+  <ng-container *ngIf="estado | estadoViatico as tag">
+    <nz-tag [nzColor]="tag.color">
+      {{ tag.texto }}
+    </nz-tag>
+  </ng-container>
 </ng-template>
+
 
 <div class="contenedor-filtro">
   <nz-input-group nzSize="large" [nzSuffix]="suffixIconSearch">

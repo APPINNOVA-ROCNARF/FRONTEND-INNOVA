@@ -3,9 +3,8 @@ import { catchError, finalize, map, Observable, of, tap, throwError } from 'rxjs
 import { Viatico } from '../../interfaces/viatico-api-response';
 import { ViaticoService } from './viatico.service';
 import { LoadingService } from '../../../../core/services/loading-service/loading.service';
-import { ActualizarEstadoViaticoRequest } from '../../interfaces/actualizar-estado-viatico-request';
+import { ActualizarEstadoViaticoRequest, ActualizarViaticoItem } from '../../interfaces/actualizar-estado-viatico-request';
 import { AccionViatico } from '../../enums/accion-viatico.enum';
-import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Injectable({ providedIn: 'root' })
 export class ViaticoStateService {
@@ -14,7 +13,6 @@ export class ViaticoStateService {
   constructor(
     private viaticoService: ViaticoService,
     private loadingService: LoadingService,
-    private message: NzMessageService
   ) {}
 
   //VIATICOS
@@ -54,24 +52,30 @@ export class ViaticoStateService {
   
   aprobarViaticos(
     ids: number[],
-    solicitudId: number,
-    mensajeExito: string = 'Viáticos aprobados exitosamente.'
+    solicitudId: number
   ): Observable<void> {
     const request: ActualizarEstadoViaticoRequest = {
       accion: AccionViatico.Aprobado,
       viaticos: ids.map((id) => ({ id })),
     };
-
+  
     return this.viaticoService.actualizarEstadoViaticos(request).pipe(
-      tap(() => {
-        this.fetchViaticos(solicitudId, true);
-        this.message.success(mensajeExito);
-      }),
-      catchError((error) => {
-        const msg = error?.error?.message ?? 'Error al aprobar viáticos.';
-        this.message.error(msg);
-        return throwError(() => error);
-      }),
+      tap(() => this.fetchViaticos(solicitudId, true)),
+      map(() => void 0)
+    );
+  }
+
+  rechazarViatico(
+    viatico: ActualizarViaticoItem,
+    solicitudId: number
+  ): Observable<void> {
+    const request: ActualizarEstadoViaticoRequest = {
+      accion: AccionViatico.Rechazado,
+      viaticos: [viatico],
+    };
+  
+    return this.viaticoService.actualizarEstadoViaticos(request).pipe(
+      tap(() => this.fetchViaticos(solicitudId, true)),
       map(() => void 0)
     );
   }

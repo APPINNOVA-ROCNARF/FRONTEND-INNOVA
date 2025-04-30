@@ -14,9 +14,9 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { FormsModule } from '@angular/forms';
-import { ModalRechazoComponent } from '../modal-rechazo/modal-rechazo.component';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
 @Component({
   selector: 'app-tabla-viatico',
   standalone: true,
@@ -33,9 +33,9 @@ import { animate, style, transition, trigger } from '@angular/animations';
     NzDropDownModule,
     NzMenuModule,
     NzModalModule,
-    ModalRechazoComponent,
     NzBadgeModule,
-  ],
+    EstadoViaticoPipe
+],
   templateUrl: './tabla-viatico.component.html',
   styleUrl: './tabla-viatico.component.less',
   animations: [
@@ -60,7 +60,8 @@ export class TablaViaticoComponent {
   @Input() datos: Viatico[] = [];
   @Input() loadingDatos: Boolean = false;
   @Output() aprobar = new EventEmitter<number>();
-
+  @Output() aprobarMasivo = new EventEmitter<number[]>();
+  @Output() rechazar = new EventEmitter<number>();
   listOfCurrentPageData: any[] = [];
 
   checked = false;
@@ -68,19 +69,6 @@ export class TablaViaticoComponent {
 
   setOfCheckedId = new Set<number>();
   mostrarBarraAcciones = false;
-  animatingOut = false;
-
-  modalRechazoVisible = false;
-
-  camposViatico = [
-    'Proveedor',
-    'Monto',
-    'Número de Factura',
-    'Comentario',
-    'Categoría',
-  ];
-
-  rechazosSeleccionados: { campo: string; comentario: string }[] = [];
 
   constructor(
     private imageService: NzImageService,
@@ -91,13 +79,6 @@ export class TablaViaticoComponent {
     const urlCompleta = this.imagenService.getUrlAbsoluta(rutaRelativa);
     this.imageService.preview([{ src: urlCompleta, alt: 'Factura' }]);
   }
-
-  estadoViaticoTags: Record<string, { texto: string; color: string }> = {
-    Borrador: { texto: 'Borrador', color: 'default' },
-    'En revisión': { texto: 'En revisión', color: 'blue' },
-    Aprobado: { texto: 'Aprobado', color: 'green' },
-    Rechazado: { texto: 'Rechazado', color: 'red' },
-  };
 
   // Filtros
   categoriasFiltro = [
@@ -126,22 +107,7 @@ export class TablaViaticoComponent {
   }
 
   rechazarViatico(viaticoId: number): void {
-    // lógica para aprobar viático
-    console.log('Rechazar viático:', viaticoId);
-  }
-
-  abrirModalRechazo(v: any): void {
-    this.modalRechazoVisible = true;
-  }
-
-  cerrarModalRechazo(): void {
-    this.modalRechazoVisible = false;
-  }
-
-  confirmarRechazo(rechazos: { campo: string; comentario: string }[]): void {
-    console.log('Campos rechazados:', rechazos);
-    this.modalRechazoVisible = false;
-    // Aquí haces la llamada al servicio si quieres
+    this.rechazar.emit(viaticoId);
   }
 
   onCurrentPageDataChange(listOfCurrentPageData: Viatico[]): void {
@@ -180,11 +146,10 @@ export class TablaViaticoComponent {
   }
 
   aprobarSeleccionados(): void {
-    console.log('peneisto');
-  }
-
-  rechazarSeleccionados(): void {
-    console.log('peneisto');
+    const ids = Array.from(this.setOfCheckedId);
+    if (ids.length === 0) return;
+  
+    this.aprobarMasivo.emit(ids);
   }
 
   limpiarSeleccion(): void {

@@ -1,4 +1,4 @@
-import { Component, Signal } from '@angular/core';
+import { Component, Signal, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DatosSolicitudComponent } from '../../../components/detalle-viaticos/datos-solicitud/datos-solicitud.component';
@@ -11,6 +11,11 @@ import {
 import { ViaticoStateService } from '../../../services/viatico/viatico-state.service';
 import { SolicitudViaticoStateService } from '../../../services/solicitudViatico/solicitudViatico-state.service';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { ModalRechazoComponent } from "../../../components/detalle-viaticos/modal-rechazo/modal-rechazo.component";
+import { ActualizarViaticoItem } from '../../../interfaces/actualizar-estado-viatico-request';
+
+
 
 @Component({
   selector: 'app-detalle-viaticos',
@@ -21,11 +26,15 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
     EstadisticaViaticoComponent,
     TablaViaticoComponent,
     NzModalModule,
+    ModalRechazoComponent
   ],
   templateUrl: './detalle-viaticos.component.html',
   styleUrl: './detalle-viaticos.component.less',
 })
 export class DetalleViaticosComponent {
+  @ViewChild(TablaViaticoComponent) tablaViaticoComponent!: TablaViaticoComponent;
+
+
   solicitudId!: number;
 
   viatico!: Signal<Viatico[]>;
@@ -34,15 +43,24 @@ export class DetalleViaticosComponent {
   detalleSolicitudViatico!: Signal<DetalleSolicitudViatico | null>;
   loadingDetalleSolicitudViatico!: Signal<Boolean>;
 
+  // MODAL APROBAR
   modalAprobacionVisible = false;
+  modoAprobacion: 'individual' | 'masivo' = 'individual';
+
   idAprobacionActual: number | null = null;
+  idsAprobacionMasiva: number[] = [];
   viaticosEnProceso = new Set<number>();
+
+  // MODAL RECHAZAR
+  modalRechazoVisible = false;
+  viaticoIdRechazoActual: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private viaticoState: ViaticoStateService,
-    private solicitudViaticoState: SolicitudViaticoStateService
-  ) {}
+    private solicitudViaticoState: SolicitudViaticoStateService,
+    private message: NzMessageService
+  ) { }
 
   ngOnInit(): void {
     this.solicitudId = +this.route.snapshot.paramMap.get('id')!;
@@ -62,7 +80,7 @@ export class DetalleViaticosComponent {
     this.solicitudViaticoState.fetchDetalleSolicitudViatico(this.solicitudId);
   }
 
-  refrescarTodo(): void {
+  refresh(): void {
     const detalle = this.detalleSolicitudViatico();
 
     if (!detalle) return;
@@ -78,33 +96,83 @@ export class DetalleViaticosComponent {
     );
   }
 
-  abrirModalAprovar(id: number): void {
+  abrirModalAprobacionIndividual(id: number): void {
+    this.modoAprobacion = 'individual';
     this.idAprobacionActual = id;
     this.modalAprobacionVisible = true;
   }
-
-  cerrarModalAprobacion(): void {
-    this.modalAprobacionVisible = false;
-    this.idAprobacionActual = null;
+  
+  abrirModalAprobacionMasiva(ids: number[]): void {
+    this.modoAprobacion = 'masivo';
+    this.idsAprobacionMasiva = ids;
+    this.modalAprobacionVisible = true;
   }
 
   confirmarAprobacion(): void {
-    if (this.idAprobacionActual == null) return;
-
-    const id = this.idAprobacionActual;
-    this.viaticosEnProceso.add(id);
-
-    this.viaticoState
-      .aprobarViaticos([id], this.solicitudId, 'Viático aprobado exitosamente.')
-      .subscribe({
+    if (this.modoAprobacion === 'individual' && this.idAprobacionActual !== null) {
+      const id = this.idAprobacionActual;
+      this.viaticosEnProceso.add(id);
+  
+      this.viaticoState.aprobarViaticos([id], this.solicitudId).subscribe({
         next: () => {
-          this.cerrarModalAprobacion();
+          this.message.success('Viático aprobado exitosamente.');
           this.viaticosEnProceso.delete(id);
-          this.refrescarTodo();
+          this.cerrarModalAprobacion();
+          this.refresh();
         },
         error: () => {
           this.viaticosEnProceso.delete(id);
-        },
+        }
       });
+    }
+  
+    if (this.modoAprobacion === 'masivo' && this.idsAprobacionMasiva.length > 0) {
+      this.idsAprobacionMasiva.forEach(id => this.viaticosEnProceso.add(id));
+  
+      this.viaticoState.aprobarViaticos(this.idsAprobacionMasiva, this.solicitudId).subscribe({
+        next: () => {
+          this.message.success('Viáticos aprobados exitosamente.');
+          this.idsAprobacionMasiva.forEach(id => this.viaticosEnProceso.delete(id));
+          this.tablaViaticoComponent.limpiarSeleccion();
+          this.cerrarModalAprobacion();
+          this.refresh();
+        },
+        error: () => {
+          this.idsAprobacionMasiva.forEach(id => this.viaticosEnProceso.delete(id));
+        }
+      });
+    }
+  }
+  
+  cerrarModalAprobacion(): void {
+    this.modalAprobacionVisible = false;
+    this.idAprobacionActual = null;
+    this.idsAprobacionMasiva = [];
+  }
+
+  abrirModalRechazo(viaticoId: number): void {
+    this.viaticoIdRechazoActual = viaticoId;
+    this.modalRechazoVisible = true;
+  }
+
+  cerrarModalRechazo(): void {
+    this.modalRechazoVisible = false;
+    this.viaticoIdRechazoActual = null;
+  }
+
+  onConfirmarRechazo(item: ActualizarViaticoItem): void {
+    if (!this.viaticoIdRechazoActual) return;
+  
+    this.viaticoState.rechazarViatico(item, this.solicitudId).subscribe({
+      next: () => {
+        this.message.success('Viático rechazado exitosamente.');
+        this.cerrarModalRechazo();
+        this.refresh();
+      },
+      error: (err) => {
+        const msg = err?.error?.message ?? 'Error al rechazar viático.';
+        this.message.error(msg);
+      }
+    });
   }
 }

@@ -11,12 +11,14 @@
 <app-tabla-viatico
   [datos]="viatico()"
   [loadingDatos]="loadingViatico()"
-  (aprobar)="abrirModalAprovar($event)"
+  (aprobar)="abrirModalAprobacionIndividual($event)"
+  (aprobarMasivo)="abrirModalAprobacionMasiva($event)"
+  (rechazar)="abrirModalRechazo($event)"
 ></app-tabla-viatico>
 
 <nz-modal
-  [(nzVisible)]="modalAprobacionVisible"
-  [nzTitle]="'Aprobar viático'"
+[(nzVisible)]="modalAprobacionVisible"
+[nzTitle]="modoAprobacion === 'masivo' ? 'Aprobar viáticos' : 'Aprobar viático'"
   [nzOkLoading]="
     idAprobacionActual !== null && viaticosEnProceso.has(idAprobacionActual)
   "
@@ -24,6 +26,19 @@
   (nzOnOk)="confirmarAprobacion()"
 >
   <ng-container *nzModalContent>
-    <p>¿Está seguro de que desea aprobar este viático?</p>
+    <p *ngIf="modoAprobacion === 'masivo'">
+      ¿Está seguro de que desea aprobar los {{ idsAprobacionMasiva.length }} viáticos seleccionados?
+    </p>
+    <p *ngIf="modoAprobacion === 'individual'">
+      ¿Está seguro de que desea aprobar este viático?
+    </p>
   </ng-container>
 </nz-modal>
+
+<app-modal-rechazo
+  [visible]="modalRechazoVisible"
+  [viaticoId]="viaticoIdRechazoActual!"
+  (cancel)="cerrarModalRechazo()"
+  (confirm)="onConfirmarRechazo($event)">
+</app-modal-rechazo>
+

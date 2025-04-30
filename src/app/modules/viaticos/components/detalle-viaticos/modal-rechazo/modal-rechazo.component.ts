@@ -26,22 +26,35 @@ import { CommonModule } from '@angular/common';
 })
 export class ModalRechazoComponent {
   @Input() visible = false;
-  @Input() camposViatico: string[] = [];
+  @Input() viaticoId!: number;
+
   @Output() cancel = new EventEmitter<void>();
-  @Output() confirm = new EventEmitter<
-    { campo: string; comentario: string }[]
-  >();
+  @Output() confirm = new EventEmitter<{
+    id: number;
+    comentario?: string;
+    camposRechazados?: { campo: string; comentario: string }[];
+  }>();
 
   campoRechazado: string | null = null;
   comentarioTemporal: string = '';
   rechazosTemp: { campo: string; comentario: string }[] = [];
+  
+  camposViatico = [
+    'Proveedor',
+    'Monto',
+    'Número de Factura',
+    'Categoría',
+  ];
 
   cerrar(): void {
     this.cancel.emit();
   }
 
   confirmar(): void {
-    this.confirm.emit(this.rechazosTemp);
+    this.confirm.emit({
+      id: this.viaticoId,
+      camposRechazados: this.rechazosTemp.length > 0 ? this.rechazosTemp : undefined
+    });
   }
 
   agregarCampoRechazado(): void {

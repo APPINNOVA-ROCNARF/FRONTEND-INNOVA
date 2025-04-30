@@ -10,6 +10,7 @@ import { debounceTime, Subject } from 'rxjs';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
 
 @Component({
   selector: 'app-tabla-solicitud-viaticos',
@@ -21,8 +22,9 @@ import { NzCardModule } from 'ng-zorro-antd/card';
     FormsModule,
     NzInputModule,
     NzIconModule,
-    NzCardModule
-  ],
+    NzCardModule,
+    EstadoViaticoPipe
+],
   templateUrl: './tabla-solicitud-viatico.component.html',
   styleUrl: './tabla-solicitud-viatico.component.less',
 })
