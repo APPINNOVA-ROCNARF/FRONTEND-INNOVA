@@ -7,6 +7,7 @@ import { NzListModule } from 'ng-zorro-antd/list';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { CommonModule } from '@angular/common';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
 @Component({
   selector: 'app-modal-rechazo',
@@ -19,7 +20,8 @@ import { CommonModule } from '@angular/common';
     NzButtonModule,
     NzIconModule,
     FormsModule,
-    CommonModule
+    CommonModule,
+    NzToolTipModule
   ],
   templateUrl: './modal-rechazo.component.html',
   styleUrl: './modal-rechazo.component.less',
@@ -27,8 +29,9 @@ import { CommonModule } from '@angular/common';
 export class ModalRechazoComponent {
   @Input() visible = false;
   @Input() viaticoId!: number;
+  @Input() loading = false;
 
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelar = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<{
     id: number;
     comentario?: string;
@@ -36,7 +39,7 @@ export class ModalRechazoComponent {
   }>();
 
   campoRechazado: string | null = null;
-  comentarioTemporal: string = '';
+  comentarioTemporal = '';
   rechazosTemp: { campo: string; comentario: string }[] = [];
   
   camposViatico = [
@@ -47,7 +50,7 @@ export class ModalRechazoComponent {
   ];
 
   cerrar(): void {
-    this.cancel.emit();
+    this.cancelar.emit();
   }
 
   confirmar(): void {

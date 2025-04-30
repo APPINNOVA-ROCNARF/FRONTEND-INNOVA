@@ -38,6 +38,7 @@
 <app-modal-rechazo
   [visible]="modalRechazoVisible"
   [viaticoId]="viaticoIdRechazoActual!"
+  [loading]="viaticoIdRechazoActual !== null && viaticosEnProceso.has(viaticoIdRechazoActual)"
   (cancel)="cerrarModalRechazo()"
   (confirm)="onConfirmarRechazo($event)">
 </app-modal-rechazo>

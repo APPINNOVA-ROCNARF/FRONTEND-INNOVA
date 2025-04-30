@@ -13,14 +13,14 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  private errorShownMap: Map<number, boolean> = new Map();
+  private errorShownMap = new Map<number, boolean>();
 
   constructor(private message: NzMessageService, private router: Router) {}
 
   intercept(
-    req: HttpRequest<any>,
+    req: HttpRequest<unknown>,
     next: HttpHandler
-  ): Observable<HttpEvent<any>> {
+  ): Observable<HttpEvent<unknown>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
         const status = error.status;
@@ -36,7 +36,7 @@ export class ErrorInterceptor implements HttpInterceptor {
               this.message.warning('Solicitud incorrecta.');
               break;
             case 401:
-              this.message.warning('No autorizado. Redirigiendo...');
+              this.message.warning('No autorizado');
               this.router.navigate(['/login']);
               break;
             case 403:

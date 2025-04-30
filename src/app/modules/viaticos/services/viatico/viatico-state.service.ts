@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { catchError, finalize, map, Observable, of, tap, throwError } from 'rxjs';
+import { finalize, map, Observable, tap } from 'rxjs';
 import { Viatico } from '../../interfaces/viatico-api-response';
 import { ViaticoService } from './viatico.service';
 import { LoadingService } from '../../../../core/services/loading-service/loading.service';
@@ -20,7 +20,7 @@ export class ViaticoStateService {
   viaticos = (solicitudId: number) =>
     computed(() => this.viaticosMapSignal().get(solicitudId) ?? []);
 
-  fetchViaticos(solicitudId: number, forceRefresh: boolean = false): void {
+  fetchViaticos(solicitudId: number, forceRefresh = false): void {
     const loadingKey = `fetchViaticos-${solicitudId}`;
 
     const currentMap = this.viaticosMapSignal();

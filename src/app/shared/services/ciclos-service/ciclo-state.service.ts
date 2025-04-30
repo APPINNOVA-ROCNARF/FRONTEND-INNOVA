@@ -17,7 +17,7 @@ export class CiclotateService {
     private loadingService: LoadingService
   ) {}
 
-  fetchCiclos(forceRefresh: boolean = false): void {
+  fetchCiclos(forceRefresh = false): void {
     const loadingKey = 'fetchCiclos';
 
     if (!forceRefresh && this.ciclosSubject.value.length > 0) return;

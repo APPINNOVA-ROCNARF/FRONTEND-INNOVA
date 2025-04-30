@@ -1,6 +1,7 @@
 <nz-modal
   [(nzVisible)]="visible"
   nzTitle="Rechazar viático"
+  [nzOkLoading]="loading"
   (nzOnCancel)="cerrar()"
   (nzOnOk)="confirmar()"
 >
