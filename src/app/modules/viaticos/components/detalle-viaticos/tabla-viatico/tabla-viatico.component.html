@@ -17,7 +17,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let v of dynamicTable.data">
-      <td nzShowCheckbox  [nzChecked]="setOfCheckedId.has(v.id)" (nzCheckedChange)="onItemChecked(v.id, $event)"></td>
+      <td nzShowCheckbox [nzDisabled]="v.estadoViatico === 'Aprobado'"  [nzChecked]="setOfCheckedId.has(v.id)" (nzCheckedChange)="onItemChecked(v.id, $event)"></td>
       <td>{{ v.fechaFactura | date : "medium" }}</td>
       <td>{{ v.nombreCategoria }}</td>
       <td>{{ v.nombreProveedor }}</td>
@@ -47,13 +47,13 @@
 
         <nz-dropdown-menu #menu="nzDropdownMenu">
           <ul nz-menu>
-            <li nz-menu-item (click)="aprobarViatico(v.id)">
+            <li nz-menu-item role="button" tabindex="0" (click)="aprobarViatico(v.id)" (keydown.enter)="aprobarViatico(v.id)">
               <i nz-icon nzType="edit" nzTheme="fill"></i> Editar
             </li>
-            <li nz-menu-item [nzDisabled]="v.estadoViatico === 'Aprobado'" (click)="aprobarViatico(v.id)">
+            <li nz-menu-item role="button" tabindex="0" [nzDisabled]="v.estadoViatico === 'Aprobado'" (click)="aprobarViatico(v.id)" (keydown.enter)="aprobarViatico(v.id)">
               <i nz-icon nzType="check-circle"></i> Aprobar
             </li>
-            <li nz-menu-item nzDanger [nzDisabled]="v.estadoViatico === 'Rechazado'" (click)="rechazarViatico(v.id)">
+            <li nz-menu-item role="button" tabindex="0" nzDanger [nzDisabled]="v.estadoViatico === 'Rechazado'" (click)="rechazarViatico(v.id)" (keydown.enter)="rechazarViatico(v.id)">
               <i nz-icon nzType="close-circle"></i> Rechazar
             </li>
           </ul>

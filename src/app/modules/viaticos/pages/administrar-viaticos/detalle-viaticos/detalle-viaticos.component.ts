@@ -33,6 +33,9 @@ export class DetalleViaticosComponent implements OnInit {
   @ViewChild(TablaViaticoComponent)
   tablaViaticoComponent!: TablaViaticoComponent;
 
+  @ViewChild(ModalRechazoComponent)
+  modalRechazoComponent!: ModalRechazoComponent;
+
   solicitudId!: number;
 
   viatico!: Signal<Viatico[]>;
@@ -180,6 +183,7 @@ export class DetalleViaticosComponent implements OnInit {
     this.viaticoState.rechazarViatico(item, this.solicitudId).subscribe({
       next: () => {
         this.message.success('Viático rechazado exitosamente.');
+        this.modalRechazoComponent.limpiarCampos();
         this.cerrarModalRechazo();
         this.refresh();
       },

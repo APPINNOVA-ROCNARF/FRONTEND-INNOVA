@@ -58,11 +58,11 @@ import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
 })
 export class TablaViaticoComponent {
   @Input() datos: Viatico[] = [];
-  @Input() loadingDatos: Boolean = false;
+  @Input() loadingDatos = false;
   @Output() aprobar = new EventEmitter<number>();
   @Output() aprobarMasivo = new EventEmitter<number[]>();
   @Output() rechazar = new EventEmitter<number>();
-  listOfCurrentPageData: any[] = [];
+  listOfCurrentPageData: Viatico[] = [];
 
   checked = false;
   indeterminate = false;
@@ -94,11 +94,11 @@ export class TablaViaticoComponent {
   ];
 
   // Funciones de filtro
-  filtroCategoria = (filtros: string[], item: any): boolean => {
+  filtroCategoria = (filtros: string[], item: Viatico): boolean => {
     return filtros.length === 0 || filtros.includes(item.nombreCategoria);
   };
 
-  filtroEstado = (filtros: string[], item: any): boolean => {
+  filtroEstado = (filtros: string[], item: Viatico): boolean => {
     return filtros.length === 0 || filtros.includes(item.estadoViatico);
   };
 
@@ -115,9 +115,11 @@ export class TablaViaticoComponent {
   }
 
   onAllChecked(value: boolean): void {
-    this.listOfCurrentPageData.forEach((item) =>
-      this.updateCheckedSet(item.id, value)
-    );
+    this.listOfCurrentPageData.forEach((item) => {
+      if (item.estadoViatico !== 'Aprobado') {
+        this.updateCheckedSet(item.id, value);
+      }
+    });
     this.refreshCheckedStatus();
   }
 
@@ -130,13 +132,11 @@ export class TablaViaticoComponent {
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every((item) =>
-      this.setOfCheckedId.has(item.id)
-    );
-    this.indeterminate =
-      this.listOfCurrentPageData.some((item) =>
-        this.setOfCheckedId.has(item.id)
-      ) && !this.checked;
+    const itemsValidos = this.listOfCurrentPageData.filter(item => item.estadoViatico !== 'Aprobado');
+  
+    this.checked = itemsValidos.length > 0 && itemsValidos.every(item => this.setOfCheckedId.has(item.id));
+    this.indeterminate = itemsValidos.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+  
     this.mostrarBarraAcciones = this.setOfCheckedId.size > 0;
   }
 
@@ -158,7 +158,7 @@ export class TablaViaticoComponent {
   }
 
   @HostListener('document:keydown.escape', ['$event'])
-  onEscapePress(event: KeyboardEvent): void {
+  onEscapePress(): void {
     this.limpiarSeleccion();
   }
 }

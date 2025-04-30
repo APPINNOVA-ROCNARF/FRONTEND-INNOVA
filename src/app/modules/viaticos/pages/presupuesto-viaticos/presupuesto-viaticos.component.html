@@ -1,0 +1,75 @@
+<h2 nz-typography>Carga de Presupuesto</h2>
+<p style="margin: 4px 0 0 0; color: #888">
+    Seleccione un ciclo y cargue el archivo correspondiente para previsualizar el presupuesto antes de enviarlo.
+</p>
+
+<nz-divider></nz-divider>
+  
+<nz-steps [nzCurrent]="currentStep" class="espacio">
+    <nz-step nzTitle="Seleccionar ciclo" nzDescription="This is a description."></nz-step>
+    <nz-step nzTitle="Revisar información" nzDescription="This is a description."></nz-step>
+    <nz-step nzTitle="Confirmación" nzDescription="This is a description."></nz-step>
+  </nz-steps>
+  
+  <nz-select  [(ngModel)]="cicloSeleccionado"
+  [nzLoading]="ciclosLoading$()" [nzOptions]="(cicloOpciones$ | async)!"
+  nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px" class="espacio">
+</nz-select>
+
+<nz-card nzSize="small" *ngIf="!archivoCargado">
+<nz-upload
+nzType="drag"
+[nzShowUploadList]="false"
+[nzBeforeUpload]="beforeUpload"
+[nzMultiple]="false"
+[nzAccept]="'.xlsx,.csv'"
+>
+<p class="ant-upload-drag-icon"><i nz-icon nzType="inbox"></i></p>
+<p class="ant-upload-text">Arrastra y suelta tu archivo Excel aquí
+</p>
+<p class="ant-upload-hint">Formatos soportados: Excel (.xlsx) y CSV (.csv)</p>
+</nz-upload>
+</nz-card>
+
+<nz-table
+  *ngIf="archivoCargado"
+  [nzData]="datosMock"
+  [nzBordered]="true"
+  [nzSize]="'small'"
+  [nzPageSize]="25"
+  [nzShowPagination]="false"
+  [nzScroll]="{ y:'400px' }"
+  class="espacio"
+>
+  <thead>
+    <tr>
+      <th *ngFor="let key of datosMock[0] | keyvalue">{{ key.key }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of datosMock">
+      <td *ngFor="let key of row | keyvalue">{{ key.value }}</td>
+    </tr>
+  </tbody>
+  <tfoot nzSummary>
+    <tr>
+        <td>Total</td>
+        <td>
+            <span nz-typography>1000</span>
+        </td>
+        <td>
+            <span nz-typography>2000</span>
+        </td>
+        <td>
+            <span nz-typography>2000</span>
+        </td>
+    </tr>
+  </tfoot>
+</nz-table>
+
+<!-- Botón cancelar -->
+<div *ngIf="archivoCargado" class="espacio">
+    <button nz-button nzType="default" (click)="cancelarCarga()">
+      Cancelar
+    </button>
+  </div>

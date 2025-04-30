@@ -1,14 +1,13 @@
 import { Routes } from '@angular/router';
-import { AdministrarViaticosComponent } from './pages/administrar-viaticos/dashboard-viaticos/dashboard-viaticos.component';
 
 export const VIATICOS_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'admin',
+    redirectTo: 'dashboard',
     pathMatch: 'full',
   },
   {
-    path: 'admin',
+    path: 'dashboard',
     loadComponent: () =>
       import(
         './pages/administrar-viaticos/administrar-viaticos-main'
@@ -30,6 +29,23 @@ export const VIATICOS_ROUTES: Routes = [
           ).then((c) => c.DetalleViaticosComponent),
         title: 'Detalle Viático',
       },
+    ],
+  },
+  {
+    path: 'presupuesto',
+    loadComponent: () =>
+      import(
+        './pages/presupuesto-viaticos/presupuesto-viaticos-main'
+      ).then((c) => c.PresupuestoViaticosMainComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/presupuesto-viaticos/presupuesto-viaticos.component').then(
+            (c) => c.PresupuestoViaticosComponent
+          ),
+        title: 'Presupuesto Viáticos',
+      }
     ],
   },
 ];

@@ -50,6 +50,7 @@ export class ModalRechazoComponent {
   ];
 
   cerrar(): void {
+    this.limpiarCampos();
     this.cancelar.emit();
   }
 
@@ -74,5 +75,11 @@ export class ModalRechazoComponent {
 
   eliminarCampoRechazado(index: number): void {
     this.rechazosTemp.splice(index, 1);
+  }
+
+  limpiarCampos(): void {
+    this.rechazosTemp = [];
+    this.campoRechazado = null;
+    this.comentarioTemporal = '';
   }
 }
