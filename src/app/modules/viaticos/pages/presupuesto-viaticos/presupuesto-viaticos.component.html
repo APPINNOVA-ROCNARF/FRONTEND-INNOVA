@@ -3,18 +3,22 @@
     Seleccione un ciclo y cargue el archivo correspondiente para previsualizar el presupuesto antes de enviarlo.
 </p>
 
+<br>
+
+  <nz-select  [(ngModel)]="cicloSeleccionado"
+  [nzLoading]="ciclosLoading$()" [nzOptions]="(cicloOpciones$ | async)!"
+  nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px">
+</nz-select>
+
 <nz-divider></nz-divider>
   
 <nz-steps [nzCurrent]="currentStep" class="espacio">
-    <nz-step nzTitle="Seleccionar ciclo" nzDescription="This is a description."></nz-step>
-    <nz-step nzTitle="Revisar información" nzDescription="This is a description."></nz-step>
-    <nz-step nzTitle="Confirmación" nzDescription="This is a description."></nz-step>
+    <nz-step nzTitle="Cargar archivo" nzDescription="Seleccione el archivo a cargar."></nz-step>
+    <nz-step nzTitle="Validar información" nzDescription="Compruebe que los datos sean correctos."></nz-step>
+    <nz-step nzTitle="Confirmación" nzDescription="Carga finalizada."></nz-step>
   </nz-steps>
   
-  <nz-select  [(ngModel)]="cicloSeleccionado"
-  [nzLoading]="ciclosLoading$()" [nzOptions]="(cicloOpciones$ | async)!"
-  nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px" class="espacio">
-</nz-select>
+<br>
 
 <nz-card nzSize="small" *ngIf="!archivoCargado">
 <nz-upload
@@ -23,8 +27,9 @@ nzType="drag"
 [nzBeforeUpload]="beforeUpload"
 [nzMultiple]="false"
 [nzAccept]="'.xlsx,.csv'"
+[nzShowButton] 
 >
-<p class="ant-upload-drag-icon"><i nz-icon nzType="inbox"></i></p>
+<p class="ant-upload-drag-icon"><i nz-icon nzType="file-excel"></i></p>
 <p class="ant-upload-text">Arrastra y suelta tu archivo Excel aquí
 </p>
 <p class="ant-upload-hint">Formatos soportados: Excel (.xlsx) y CSV (.csv)</p>
@@ -35,7 +40,6 @@ nzType="drag"
   *ngIf="archivoCargado"
   [nzData]="datosMock"
   [nzBordered]="true"
-  [nzSize]="'small'"
   [nzPageSize]="25"
   [nzShowPagination]="false"
   [nzScroll]="{ y:'400px' }"
@@ -43,33 +47,46 @@ nzType="drag"
 >
   <thead>
     <tr>
-      <th *ngFor="let key of datosMock[0] | keyvalue">{{ key.key }}</th>
+      <th>Asesor</th>
+      <th>Cupo Movilidad</th>
+      <th>Cupo Hospedaje</th>
+      <th>Cupo Alimentación</th>
     </tr>
   </thead>
-  <tbody>
+ <tbody>
     <tr *ngFor="let row of datosMock">
-      <td *ngFor="let key of row | keyvalue">{{ key.value }}</td>
+      <td>{{ row['ASESOR'] }}</td>
+      <td>{{ row['CUPO MOVILIDAD'] | currency }}</td>
+      <td>{{ row['CUPO HOSPEDAJE'] | currency }}</td>
+      <td>{{ row['CUPO ALIMENTACION'] | currency }}</td>
     </tr>
   </tbody>
-  <tfoot nzSummary>
+  <tfoot nzSummary nzFixed>
     <tr>
         <td>Total</td>
         <td>
-            <span nz-typography>1000</span>
+            <span nz-typography>{{ totalMovilidad | currency }}</span>
         </td>
         <td>
-            <span nz-typography>2000</span>
+            <span nz-typography>{{ totalHospedaje | currency }}</span>
         </td>
         <td>
-            <span nz-typography>2000</span>
+            <span nz-typography>{{ totalAlimentacion | currency }}</span>
         </td>
     </tr>
+            <tr>
+          <td>Balance</td>
+          <td colspan="3">
+            <span nz-typography>{{ totalGeneral | currency }}</span>
+          </td>
+        </tr>
   </tfoot>
 </nz-table>
 
 <!-- Botón cancelar -->
-<div *ngIf="archivoCargado" class="espacio">
-    <button nz-button nzType="default" (click)="cancelarCarga()">
+<div *ngIf="archivoCargado" class="botones">
+    <button nz-button nzSize="large" nzType="default" (click)="cancelarCarga()">
       Cancelar
     </button>
+    <button nz-button nzSize="large" nzType="primary" (click)="confirmarcarga()">Confirmar carga</button>
   </div>

@@ -16,30 +16,45 @@ import { CiclotateService } from '../../../../shared/services/ciclos-service/cic
 import { NzCardModule } from 'ng-zorro-antd/card';
 import type { NzUploadFile } from 'ng-zorro-antd/upload';
 import * as XLSX from 'xlsx';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 
 interface PresupuestoRow {
-  Nombre: string;
-  Categoria: string;
-  Monto: number;
+  ASESOR: string;
+  'CUPO MOVILIDAD': number;
+  'CUPO HOSPEDAJE': number;
+  'CUPO ALIMENTACION': number;
 }
 
 @Component({
   selector: 'app-presupuesto-viaticos',
   standalone: true,
-  imports: [NzCardModule, NzUploadModule, NzIconModule, NzSelectModule, NzStepsModule, CommonModule, FormsModule, NzTableModule, NzResultModule, NzTypographyModule, NzDividerModule],
+  imports: [
+    NzCardModule,
+    NzUploadModule,
+    NzIconModule,
+    NzSelectModule,
+    NzStepsModule,
+    CommonModule,
+    FormsModule,
+    NzTableModule,
+    NzResultModule,
+    NzTypographyModule,
+    NzDividerModule,
+    NzButtonModule,
+  ],
   templateUrl: './presupuesto-viaticos.component.html',
-  styleUrl: './presupuesto-viaticos.component.less'
+  styleUrl: './presupuesto-viaticos.component.less',
 })
 export class PresupuestoViaticosComponent implements OnInit {
-
   cicloSeleccionado: number | null = null;
   ciclos$!: Observable<CicloSelectDTO[]>;
   ciclosLoading$!: Signal<boolean>;
   cicloOpciones$!: Observable<{ label: string; value: number }[]>;
 
-
-  constructor(private message: NzMessageService, private cicloState: CiclotateService) { }
-
+  constructor(
+    private message: NzMessageService,
+    private cicloState: CiclotateService
+  ) {}
 
   ngOnInit(): void {
     this.cargarCiclos();
@@ -65,29 +80,90 @@ export class PresupuestoViaticosComponent implements OnInit {
     );
   }
 
-  currentStep = 1;
+  currentStep = 0;
   archivoCargado = false;
   datosMock: PresupuestoRow[] = [];
 
   beforeUpload = (file: NzUploadFile): boolean => {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(sheet) as PresupuestoRow[];
-  
-      this.datosMock = jsonData;
-      this.archivoCargado = true;
-    };
-    reader.readAsArrayBuffer(file as any as File);
+    if (
+      !file.type ||
+      ![
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/csv',
+      ].includes(file.type)
+    ) {
+      this.message.error('Solo se permiten archivos .xlsx o .csv');
+      return false;
+    }
+
+    this.leerArchivoComoArrayBuffer(file as unknown as File)
+      .then((buffer) => {
+        const data = new Uint8Array(buffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(sheet) as PresupuestoRow[];
+
+        this.datosMock = jsonData;
+        this.archivoCargado = true;
+        this.currentStep = 1;
+        this.calcularTotales();
+      })
+      .catch((error) => {
+        console.error('Error al procesar el archivo:', error);
+      });
+
     return false;
   };
 
+  private leerArchivoComoArrayBuffer(file: File): Promise<ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const result = e.target?.result;
+        if (result instanceof ArrayBuffer) {
+          resolve(result);
+        } else {
+          reject(new Error('El archivo no se pudo leer como ArrayBuffer.'));
+        }
+      };
+
+      reader.onerror = () => {
+        reject(new Error('Error al leer el archivo.'));
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  totalMovilidad = 0;
+  totalHospedaje = 0;
+  totalAlimentacion = 0;
+  totalGeneral = 0;
+
+  calcularTotales(): void {
+    this.totalMovilidad = this.datosMock.reduce(
+      (acc, row) => acc + (row['CUPO MOVILIDAD'] || 0),
+      0
+    );
+    this.totalHospedaje = this.datosMock.reduce(
+      (acc, row) => acc + (row['CUPO HOSPEDAJE'] || 0),
+      0
+    );
+    this.totalAlimentacion = this.datosMock.reduce(
+      (acc, row) => acc + (row['CUPO ALIMENTACION'] || 0),
+      0
+    );
+    this.totalGeneral =
+      this.totalMovilidad + this.totalHospedaje + this.totalAlimentacion;
+  }
 
   cancelarCarga(): void {
     this.archivoCargado = false;
-    // Opcional: limpiar datos previos
-    // this.datosMock = [];
+    this.currentStep = 0;
+  }
+
+  confirmarcarga(): void {
+    this.currentStep = 2;
   }
 }
