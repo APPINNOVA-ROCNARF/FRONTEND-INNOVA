@@ -35,7 +35,10 @@
             nzTooltipTitle="Ver factura">
             <i nz-icon nzType="file-search"></i>
           </button>
-
+          <button *ngIf="v.nombreCategoria ==='Movilización'" nz-button nzType="link" nzSize="default" (click)="verVehiculo(v.vehiculo)" nz-tooltip
+            nzTooltipTitle="Ver vehiculo">
+            <i nz-icon nzType="car"></i>
+          </button>
           <ng-container *ngIf="!(setOfCheckedId.size > 0)">
             <a nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
               <button nz-button nzType="link" nzSize="default" nz-tooltip nzTooltipTitle="Opciones">

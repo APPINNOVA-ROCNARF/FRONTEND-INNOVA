@@ -46,9 +46,17 @@ export interface Viatico{
     estadoViatico: string,
     rutaImagen: string,
     campoRechazado: CampoRechazado[],
+    vehiculo: Vehiculo
 }
 
 export interface CampoRechazado{
   campo: string,
   comentario: string,
+}
+
+export interface Vehiculo{
+  placa: string,
+  modelo: string,
+  color: string,
+  fabricante: string
 }

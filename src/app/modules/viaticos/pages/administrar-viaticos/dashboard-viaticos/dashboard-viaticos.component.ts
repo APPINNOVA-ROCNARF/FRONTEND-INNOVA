@@ -4,7 +4,6 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { CommonModule } from '@angular/common';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
-import { NzIconModule } from 'ng-zorro-antd/icon';
 import { CicloSelectDTO } from '../../../../../shared/services/ciclos-service/Interfaces/CicloSelectDTO';
 import { map, Observable } from 'rxjs';
 import { CiclotateService } from '../../../../../shared/services/ciclos-service/ciclo-state.service';
@@ -15,6 +14,9 @@ import { UiService } from '../../../../../core/services/ui-service/ui.service';
 import { SolicitudViaticoStateService } from '../../../services/solicitudViatico/solicitudViatico-state.service';
 import { TablaSolicitudViaticoComponent } from "../../../components/dashboard-viaticos/tabla-solicitud-viatico/tabla-solicitud-viatico.component";
 import { EstadisticaSolicitudViaticoComponent } from "../../../components/dashboard-viaticos/estadistica-solicitud-viatico/estadistica-solicitud-viatico.component";
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
 @Component({
   selector: 'app-administrar-viaticos',
@@ -25,8 +27,10 @@ import { EstadisticaSolicitudViaticoComponent } from "../../../components/dashbo
     CommonModule,
     NzFormModule,
     NzTypographyModule,
-    NzIconModule,
     NzDividerModule,
+    NzSwitchModule,
+    NzGridModule,
+    NzToolTipModule,
     TablaSolicitudViaticoComponent,
     EstadisticaSolicitudViaticoComponent,
   ],

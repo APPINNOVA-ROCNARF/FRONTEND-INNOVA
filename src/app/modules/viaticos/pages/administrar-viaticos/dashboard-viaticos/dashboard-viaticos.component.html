@@ -4,20 +4,30 @@
 </p>
 
 <nz-divider></nz-divider>
-<div nz-col [nzSpan]="8">
-  <nz-form-item>
-    <nz-form-control>
-      <nz-select [(ngModel)]="cicloSeleccionado" (ngModelChange)="onCicloChange()"
-        [nzLoading]="ciclosLoading$()" [nzOptions]="(cicloOpciones$ | async)!"
-        nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px">
-      </nz-select>
-    </nz-form-control>
-  </nz-form-item>
+
+<div nz-row nzJustify="space-between" nzAlign="middle">
+  <div nz-col>
+    <nz-form-item>
+      <nz-form-control>
+        <nz-select [(ngModel)]="cicloSeleccionado" (ngModelChange)="onCicloChange()" [nzLoading]="ciclosLoading$()"
+          [nzOptions]="(cicloOpciones$ | async)!" nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch
+          style="width: 300px">
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+    <h5 nz-typography>Permitir solicitudes fuera del ciclo</h5>
+    <nz-switch
+      [nzCheckedChildren]="'Sí'"
+      [nzUnCheckedChildren]="'No'"
+      nzTooltipTitle="'Permitir que los usuarios registren viáticos fuera del ciclo actual.'"
+    ></nz-switch>
+  </div>
 </div>
 
-<app-estadistica-solicitud-viatico
-[estadistica]="estadisticas()"
-></app-estadistica-solicitud-viatico>
+  <app-estadistica-solicitud-viatico [estadistica]="estadisticas()"></app-estadistica-solicitud-viatico>
 <nz-divider></nz-divider>
 
-  <app-tabla-solicitud-viaticos [data]="solicitudViatico()" [loading]="loading$()" />
+<app-tabla-solicitud-viaticos [data]="solicitudViatico()" [loading]="loading$()" />

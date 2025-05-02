@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { NzTableModule } from 'ng-zorro-antd/table';
-import { Viatico } from '../../../interfaces/viatico-api-response';
+import { Vehiculo, Viatico } from '../../../interfaces/viatico-api-response';
 import { NzImageService } from 'ng-zorro-antd/image';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { ImagenService } from '../../../../../core/services/image-service/image.service';
@@ -9,14 +9,14 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { NzModalModule } from 'ng-zorro-antd/modal';
 import { FormsModule } from '@angular/forms';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { VehiculoModalComponent } from '../modal-vehiculo/vehiculo-modal.component';
 @Component({
   selector: 'app-tabla-viatico',
   standalone: true,
@@ -29,10 +29,8 @@ import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
     NzIconModule,
     NzButtonModule,
     NzToolTipModule,
-    NzPopconfirmModule,
     NzDropDownModule,
     NzMenuModule,
-    NzModalModule,
     NzBadgeModule,
     EstadoViaticoPipe
 ],
@@ -72,13 +70,24 @@ export class TablaViaticoComponent {
 
   constructor(
     private imageService: NzImageService,
-    private imagenService: ImagenService
+    private imagenService: ImagenService,
+    private modal: NzModalService
   ) {}
 
   previewImagen(rutaRelativa: string): void {
     const urlCompleta = this.imagenService.getUrlAbsoluta(rutaRelativa);
     this.imageService.preview([{ src: urlCompleta, alt: 'Factura' }]);
   }
+
+  verVehiculo(vehiculo: Vehiculo): void {
+    this.modal.create({
+      nzTitle: 'Información del Vehículo',
+      nzContent: VehiculoModalComponent,
+      nzData: vehiculo,
+      nzFooter: null
+    });
+  }
+  
 
   // Filtros
   categoriasFiltro = [
