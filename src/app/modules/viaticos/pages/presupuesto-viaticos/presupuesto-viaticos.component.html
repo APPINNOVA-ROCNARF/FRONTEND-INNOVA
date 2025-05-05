@@ -48,6 +48,7 @@ nzType="drag"
   <thead>
     <tr>
       <th>Asesor</th>
+      <th>Usuario</th>
       <th>Cupo Movilidad</th>
       <th>Cupo Hospedaje</th>
       <th>Cupo Alimentación</th>
@@ -56,6 +57,7 @@ nzType="drag"
  <tbody>
     <tr *ngFor="let row of datosMock">
       <td>{{ row['ASESOR'] }}</td>
+      <td>{{ row['USUARIO']}}</td>
       <td>{{ row['CUPO MOVILIDAD'] | currency }}</td>
       <td>{{ row['CUPO HOSPEDAJE'] | currency }}</td>
       <td>{{ row['CUPO ALIMENTACION'] | currency }}</td>
@@ -63,7 +65,7 @@ nzType="drag"
   </tbody>
   <tfoot nzSummary nzFixed>
     <tr>
-        <td>Total</td>
+        <td colspan="2">Total</td>
         <td>
             <span nz-typography>{{ totalMovilidad | currency }}</span>
         </td>
@@ -75,8 +77,8 @@ nzType="drag"
         </td>
     </tr>
             <tr>
-          <td>Balance</td>
-          <td colspan="3">
+          <td colspan="2">Balance</td>
+          <td colspan="4">
             <span nz-typography>{{ totalGeneral | currency }}</span>
           </td>
         </tr>
@@ -90,3 +92,4 @@ nzType="drag"
     </button>
     <button nz-button nzSize="large" nzType="primary" (click)="confirmarcarga()">Confirmar carga</button>
   </div>
+

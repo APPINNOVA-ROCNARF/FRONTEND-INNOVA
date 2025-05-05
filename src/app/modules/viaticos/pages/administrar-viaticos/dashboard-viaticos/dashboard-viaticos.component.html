@@ -1,33 +1,52 @@
 <h2 nz-typography>Gestión de Viáticos</h2>
 <p style="margin: 4px 0 0 0; color: #888">
-  Revise, apruebe o rechaze las solicitudes de viáticos registradas por los asesores.
+  Revise, apruebe o rechaze las solicitudes de viáticos registradas por los
+  asesores.
 </p>
 
 <nz-divider></nz-divider>
 
-<div nz-row nzJustify="space-between" nzAlign="middle">
-  <div nz-col>
-    <nz-form-item>
+<div
+  style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  "
+>
+  <div>
+    <nz-form-item style="margin-bottom: 0">
       <nz-form-control>
-        <nz-select [(ngModel)]="cicloSeleccionado" (ngModelChange)="onCicloChange()" [nzLoading]="ciclosLoading$()"
-          [nzOptions]="(cicloOpciones$ | async)!" nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch
-          style="width: 300px">
+        <nz-select
+          [(ngModel)]="cicloSeleccionado"
+          (ngModelChange)="onCicloChange()"
+          [nzLoading]="ciclosLoading$()"
+          [nzOptions]="(cicloOpciones$ | async)!"
+          nzPlaceHolder="Seleccione un periodo"
+          name="periodo"
+          nzShowSearch
+          style="width: 300px"
+        >
         </nz-select>
       </nz-form-control>
     </nz-form-item>
   </div>
-
-  <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
-    <h5 nz-typography>Permitir solicitudes fuera del ciclo</h5>
+  <div style="display: flex; align-items: center">
+    <span style="margin-right: 8px; color: rgba(0, 0, 0, 0.65)"
+      >Permitir solicitudes fuera de ciclo</span
+    >
     <nz-switch
-      [nzCheckedChildren]="'Sí'"
-      [nzUnCheckedChildren]="'No'"
-      nzTooltipTitle="'Permitir que los usuarios registren viáticos fuera del ciclo actual.'"
+
     ></nz-switch>
   </div>
 </div>
 
-  <app-estadistica-solicitud-viatico [estadistica]="estadisticas()"></app-estadistica-solicitud-viatico>
+<app-estadistica-solicitud-viatico
+  [estadistica]="estadisticas()"
+></app-estadistica-solicitud-viatico>
 <nz-divider></nz-divider>
 
-<app-tabla-solicitud-viaticos [data]="solicitudViatico()" [loading]="loading$()" />
+<app-tabla-solicitud-viaticos
+  [data]="solicitudViatico()"
+  [loading]="loading$()"
+/>

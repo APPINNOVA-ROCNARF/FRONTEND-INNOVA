@@ -7,7 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class EstadoViaticoPipe implements PipeTransform {
   private readonly estadoViaticoTags: Record<string, { texto: string; color: string }> = {
     Borrador: { texto: 'Borrador', color: 'default' },
-    'En revisión': { texto: 'En revisión', color: 'blue' },
+    EnRevision: { texto: 'En revisión', color: 'blue' },
     Aprobado: { texto: 'Aprobado', color: 'green' },
     Rechazado: { texto: 'Rechazado', color: 'red' },
   };

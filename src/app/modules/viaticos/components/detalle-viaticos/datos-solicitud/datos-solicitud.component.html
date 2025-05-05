@@ -1,21 +1,33 @@
 <nz-page-header nzBackIcon>
   <nz-page-header-title>
     <nz-typography>
-      <h3 nz-typography style="margin: 0; line-height: 1;">Detalle Solicitud</h3>
+      <h3 nz-typography style="margin: 0; line-height: 1">Detalle Solicitud</h3>
     </nz-typography>
   </nz-page-header-title>
   <nz-page-header-tags>
-    <nz-tag [nzColor]="estadoColor">{{estado}}</nz-tag>
+    <ng-container *ngIf="estado | estadoViatico as estadoTag">
+      <nz-tag [nzColor]="estadoTag.color">
+        {{ estadoTag.texto }}
+      </nz-tag>
+    </ng-container>
   </nz-page-header-tags>
 </nz-page-header>
 
 <nz-card nzTitle="Datos Solicitud" class="datos-card">
   <nz-spin [nzSpinning]="loading">
     <nz-descriptions nzSize="middle" nzBordered *ngIf="datos">
-      <nz-descriptions-item nzTitle="Ciclo">{{ cicloNombre }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Fecha de Registro">{{ fechaRegistro | date : "medium" }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Fecha de Modificación">{{ fechaModificacion | date : "medium" }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Asesor">{{ usuarioNombre }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Ciclo">{{
+        cicloNombre
+      }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Fecha de Registro">{{
+        fechaRegistro | date : "medium"
+      }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Fecha de Modificación">{{
+        fechaModificacion | date : "medium"
+      }}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Asesor">{{
+        usuarioNombre
+      }}</nz-descriptions-item>
     </nz-descriptions>
   </nz-spin>
 </nz-card>

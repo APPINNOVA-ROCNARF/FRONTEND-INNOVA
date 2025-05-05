@@ -125,7 +125,7 @@ export class TablaViaticoComponent {
 
   onAllChecked(value: boolean): void {
     this.listOfCurrentPageData.forEach((item) => {
-      if (item.estadoViatico !== 'Aprobado') {
+      if (item.estadoViatico !== 'Aprobado' && item.estadoViatico !== 'Borrador') {
         this.updateCheckedSet(item.id, value);
       }
     });
@@ -141,7 +141,7 @@ export class TablaViaticoComponent {
   }
 
   refreshCheckedStatus(): void {
-    const itemsValidos = this.listOfCurrentPageData.filter(item => item.estadoViatico !== 'Aprobado');
+    const itemsValidos = this.listOfCurrentPageData.filter(item => item.estadoViatico !== 'Aprobado' && item.estadoViatico !== 'Borrador');
   
     this.checked = itemsValidos.length > 0 && itemsValidos.every(item => this.setOfCheckedId.has(item.id));
     this.indeterminate = itemsValidos.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;

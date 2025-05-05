@@ -20,6 +20,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 
 interface PresupuestoRow {
   ASESOR: string;
+  USUARIO: string;
   'CUPO MOVILIDAD': number;
   'CUPO HOSPEDAJE': number;
   'CUPO ALIMENTACION': number;
@@ -84,6 +85,14 @@ export class PresupuestoViaticosComponent implements OnInit {
   archivoCargado = false;
   datosMock: PresupuestoRow[] = [];
 
+  private readonly columnasEsperadas = [
+    'ASESOR',
+    'USUARIO',
+    'CUPO MOVILIDAD',
+    'CUPO HOSPEDAJE',
+    'CUPO ALIMENTACION',
+  ] as const;
+
   beforeUpload = (file: NzUploadFile): boolean => {
     if (
       !file.type ||
@@ -101,7 +110,32 @@ export class PresupuestoViaticosComponent implements OnInit {
         const data = new Uint8Array(buffer);
         const workbook = XLSX.read(data, { type: 'array' });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(sheet) as PresupuestoRow[];
+
+        // Leer los encabezados como matriz
+        const filas: unknown[][] = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+        });
+
+        if (!Array.isArray(filas) || filas.length === 0) {
+          this.message.error('El archivo está vacío o es inválido.');
+          return;
+        }
+
+        const encabezados = filas[0] as string[];
+
+        const columnasValidas = this.columnasEsperadas.every((col) =>
+          encabezados.includes(col)
+        );
+
+        if (!columnasValidas) {
+          this.message.error(
+            'Formato incorrecto. Verifique las columnas del archivo.'
+          );
+          return;
+        }
+
+        // Si todo es correcto, convertir a objetos tipados
+        const jsonData = XLSX.utils.sheet_to_json<PresupuestoRow>(sheet);
 
         this.datosMock = jsonData;
         this.archivoCargado = true;
@@ -110,6 +144,7 @@ export class PresupuestoViaticosComponent implements OnInit {
       })
       .catch((error) => {
         console.error('Error al procesar el archivo:', error);
+        this.message.error('No se pudo procesar el archivo.');
       });
 
     return false;
@@ -166,4 +201,5 @@ export class PresupuestoViaticosComponent implements OnInit {
   confirmarcarga(): void {
     this.currentStep = 2;
   }
+
 }

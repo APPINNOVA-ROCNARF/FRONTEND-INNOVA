@@ -16,8 +16,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let v of dynamicTable.data">
-      <td nzShowCheckbox [nzDisabled]="v.estadoViatico === 'Aprobado'"  [nzChecked]="setOfCheckedId.has(v.id)" (nzCheckedChange)="onItemChecked(v.id, $event)"></td>
+    <tr *ngFor="let v of dynamicTable.data" [ngClass]="{ 'fila-deshabilitada': v.estadoViatico === 'Borrador' }">
+      <td nzShowCheckbox [nzDisabled]="v.estadoViatico === 'Aprobado' || v.estadoViatico === 'Borrador'"  [nzChecked]="setOfCheckedId.has(v.id)" (nzCheckedChange)="onItemChecked(v.id, $event)"></td>
       <td>{{ v.fechaFactura | date : "medium" }}</td>
       <td>{{ v.nombreCategoria }}</td>
       <td>{{ v.nombreProveedor }}</td>
@@ -46,7 +46,6 @@
               </button>
             </a>
           </ng-container>
-        </div>
 
         <nz-dropdown-menu #menu="nzDropdownMenu">
           <ul nz-menu>
@@ -61,6 +60,8 @@
             </li>
           </ul>
         </nz-dropdown-menu>
+                </div>
+
       </td>
     </tr>
   </tbody>

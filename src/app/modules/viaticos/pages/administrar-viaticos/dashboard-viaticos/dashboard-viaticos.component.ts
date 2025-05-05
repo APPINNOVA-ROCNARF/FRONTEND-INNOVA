@@ -17,6 +17,8 @@ import { EstadisticaSolicitudViaticoComponent } from "../../../components/dashbo
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-administrar-viaticos',
@@ -31,6 +33,8 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
     NzSwitchModule,
     NzGridModule,
     NzToolTipModule,
+    NzCardModule,
+    NzIconModule,
     TablaSolicitudViaticoComponent,
     EstadisticaSolicitudViaticoComponent,
   ],

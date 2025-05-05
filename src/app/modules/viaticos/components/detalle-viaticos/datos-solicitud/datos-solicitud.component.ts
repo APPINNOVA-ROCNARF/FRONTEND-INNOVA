@@ -8,6 +8,7 @@ import { DetalleSolicitudViatico } from '../../../interfaces/viatico-api-respons
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { CommonModule } from '@angular/common';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
 
 @Component({
   selector: 'app-datos-solicitud',
@@ -20,14 +21,15 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NzTagModule,
     NzSkeletonModule,
     CommonModule,
-    NzSpinModule
-  ],
+    NzSpinModule,
+    EstadoViaticoPipe
+],
   templateUrl: './datos-solicitud.component.html',
   styleUrl: './datos-solicitud.component.less',
 })
 export class DatosSolicitudComponent {
   @Input() datos: DetalleSolicitudViatico | null = null;
-  @Input() loading: Boolean = false;
+  @Input() loading = false;
 
   get usuarioNombre(): string {
     return this.datos?.usuarioNombre ?? '';
@@ -49,19 +51,4 @@ export class DatosSolicitudComponent {
     return this.datos?.cicloNombre ?? '';
   }
 
-  get estadoColor(): string {
-    switch (this.estado) {
-      case 'Aprobado':
-        return 'green';
-      case 'Rechazado':
-        return 'red';
-      case 'En revisión':
-        return 'blue';
-      case 'Para corregir':
-        return 'orange';
-      default:
-        return 'default'; 
-    }
-  }
-  
 }
