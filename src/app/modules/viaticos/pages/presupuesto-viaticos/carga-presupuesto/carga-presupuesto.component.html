@@ -38,7 +38,7 @@ nzType="drag"
 
 <nz-table
   *ngIf="archivoCargado"
-  [nzData]="datosMock"
+  [nzData]="datos"
   [nzBordered]="true"
   [nzPageSize]="25"
   [nzShowPagination]="false"
@@ -47,17 +47,15 @@ nzType="drag"
 >
   <thead>
     <tr>
-      <th>Asesor</th>
-      <th>Usuario</th>
+      <th>Sector</th>
       <th>Cupo Movilidad</th>
       <th>Cupo Hospedaje</th>
       <th>Cupo Alimentación</th>
     </tr>
   </thead>
  <tbody>
-    <tr *ngFor="let row of datosMock">
-      <td>{{ row['ASESOR'] }}</td>
-      <td>{{ row['USUARIO']}}</td>
+    <tr *ngFor="let row of datos">
+      <td>{{ row['SECTOR']}}</td>
       <td>{{ row['CUPO MOVILIDAD'] | currency }}</td>
       <td>{{ row['CUPO HOSPEDAJE'] | currency }}</td>
       <td>{{ row['CUPO ALIMENTACION'] | currency }}</td>
@@ -65,7 +63,7 @@ nzType="drag"
   </tbody>
   <tfoot nzSummary nzFixed>
     <tr>
-        <td colspan="2">Total</td>
+        <td colspan="1">Total</td>
         <td>
             <span nz-typography>{{ totalMovilidad | currency }}</span>
         </td>
@@ -77,8 +75,8 @@ nzType="drag"
         </td>
     </tr>
             <tr>
-          <td colspan="2">Balance</td>
-          <td colspan="4">
+          <td colspan="1">Balance</td>
+          <td colspan="3">
             <span nz-typography>{{ totalGeneral | currency }}</span>
           </td>
         </tr>

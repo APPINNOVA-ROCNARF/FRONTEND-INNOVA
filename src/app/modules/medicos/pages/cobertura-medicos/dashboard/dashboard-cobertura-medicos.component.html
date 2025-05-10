@@ -1,0 +1,121 @@
+<h2 nz-typography>Cobertura a Médicos</h2>
+
+
+<form nz-form [formGroup]="filtrosForm" (ngSubmit)="buscar()" nzLayout="horizontal">
+    <!-- Rango de Fechas -->
+      <nz-form-item>
+        <nz-form-control>
+          <nz-range-picker
+            id="rangoFechas"
+            class="w-full"
+            formControlName="rangoFechas"
+            [nzFormat]="'yyyy-MM-dd'"
+          ></nz-range-picker>
+        </nz-form-control>
+      </nz-form-item>
+    
+    <!-- Sección -->
+      <nz-form-item>
+        <nz-form-control>
+          <input
+            id="seccion"
+            nz-input
+            formControlName="seccion"
+            placeholder="Filtrar por sección" 
+          />
+        </nz-form-control>
+      </nz-form-item>
+    
+    <!-- Representante -->
+      <nz-form-item>
+        <nz-form-control>
+          <input
+            id="representante"
+            nz-input
+            formControlName="representante"
+            placeholder="Filtrar por representante" 
+          />
+        </nz-form-control>
+      </nz-form-item>
+        
+    <!-- Botón Buscar -->
+      <nz-form-item>
+        <nz-form-control>
+          <button 
+            nz-button 
+            nzType="primary" 
+            [disabled]="filtrosForm.invalid" 
+            class="w-full"
+          >
+            Buscar
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+
+</form>
+
+
+
+
+<nz-table
+  #tabla
+  [nzData]="data"
+  [nzBordered]="true"
+  [nzSize]="'small'"
+  [nzPageSize]=15
+>
+  <thead>
+    <tr>
+      <th rowspan="2">Sección</th>
+      <th rowspan="2">Representante</th>
+      <th rowspan="2">Fuerza</th>
+      <th colspan="4">Total</th>
+      <th colspan="4">Revisitas</th>
+      <th colspan="4">Clase A</th>
+      <th colspan="4">Clase B</th>
+      <th colspan="4">Clase C</th>
+      <th colspan="4">PC</th>
+    </tr>
+    <tr>
+      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
+      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
+      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
+      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
+      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
+      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of tabla.data">
+      <td>{{ row.seccion }}</td>
+      <td>{{ row.representante }}</td>
+      <td>{{ row.fuerzaVenta }}</td>
+      <td>{{ row.totalMed }}</td>
+      <td>{{ row.totalEfect }}</td>
+      <td>{{ row.potencial }}</td>
+      <td>{{ row.puntos }}</td>
+      <td>{{ row.rvMed }}</td>
+      <td>{{ row.rvEfect }}</td>
+      <td>{{ row.rvPot }}</td>
+      <td>{{ row.rvPuntos }}</td>
+      <td>{{ row.aMed }}</td>
+      <td>{{ row.aEfect }}</td>
+      <td>{{ row.aPot }}</td>
+      <td>{{ row.aPuntos }}</td>
+      <td>{{ row.bMed }}</td>
+      <td>{{ row.bEfect }}</td>
+      <td>{{ row.bPot }}</td>
+      <td>{{ row.bPuntos }}</td>
+      <td>{{ row.cMed }}</td>
+      <td>{{ row.cEfect }}</td>
+      <td>{{ row.cPot }}</td>
+      <td>{{ row.cPuntos }}</td>
+      <td>{{ row.pcMed }}</td>
+      <td>{{ row.pcEfect }}</td>
+      <td>{{ row.pcPot }}</td>
+      <td>{{ row.pcPuntos }}</td>
+    </tr>
+  </tbody>
+</nz-table>
+
+

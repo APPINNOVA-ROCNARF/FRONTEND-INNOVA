@@ -34,7 +34,7 @@ export class SolicitudViaticoStateService {
     return computed(() => this.solicitudesMap().get(cicloId) ?? []);
   }
 
-  fetchSolicitudViaticos(cicloId: number, forceRefresh: boolean = false): void {
+  fetchSolicitudViaticos(cicloId: number, forceRefresh = false): void {
     const key = `fetchSolicitudViatico-${cicloId}`;
     const currentMap = this.solicitudesMap();
 
@@ -52,6 +52,7 @@ export class SolicitudViaticoStateService {
         }),
         finalize(() => this.loadingService.setLoading(key, false)),
         catchError((error) => {
+          console.log(error);
           this.message.error('Error al obtener solicitudes de viático');
           return of([]);
         })
@@ -71,7 +72,7 @@ export class SolicitudViaticoStateService {
 
   fetchEstadisticaSolicitudViatico(
     cicloId: number,
-    forceRefresh: boolean = false
+    forceRefresh = false
   ): void {
     const key = `fetchEstadisticaSolicitudViatico-${cicloId}`;
     const currentMap = this.estadisticasMap();
@@ -90,6 +91,7 @@ export class SolicitudViaticoStateService {
         }),
         finalize(() => this.loadingService.setLoading(key, false)),
         catchError((error) => {
+          console.log(error);
           this.message.error('Error al obtener estadísticas de solicitudes');
           return of(null);
         })
@@ -108,7 +110,7 @@ export class SolicitudViaticoStateService {
   detalleSolicitudViatico = (solicitudId: number) =>
     computed(() => this.detalleSolicitudMap().get(solicitudId) ?? null);
 
-  fetchDetalleSolicitudViatico(solicitudId: number, forceRefresh: boolean = false): void {
+  fetchDetalleSolicitudViatico(solicitudId: number, forceRefresh = false): void {
     const key = `fetchDetalleSolicitudViatico-${solicitudId}`;
 
     const currentMap = this.detalleSolicitudMap();
@@ -129,6 +131,7 @@ export class SolicitudViaticoStateService {
         }),
         finalize(() => this.loadingService.setLoading(key, false)),
         catchError((error) => {
+          console.log(error);
           this.message.error('Error al obtener detalle de solicitud de viático');
           return of(null);
         })

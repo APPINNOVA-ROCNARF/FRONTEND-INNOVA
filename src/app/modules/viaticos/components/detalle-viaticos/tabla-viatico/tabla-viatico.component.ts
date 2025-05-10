@@ -11,12 +11,13 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { VehiculoModalComponent } from '../modal-vehiculo/vehiculo-modal.component';
+import { NzInputModule } from 'ng-zorro-antd/input';
 @Component({
   selector: 'app-tabla-viatico',
   standalone: true,
@@ -32,7 +33,9 @@ import { VehiculoModalComponent } from '../modal-vehiculo/vehiculo-modal.compone
     NzDropDownModule,
     NzMenuModule,
     NzBadgeModule,
-    EstadoViaticoPipe
+    NzInputModule,
+    EstadoViaticoPipe,
+    ReactiveFormsModule
 ],
   templateUrl: './tabla-viatico.component.html',
   styleUrl: './tabla-viatico.component.less',
@@ -60,6 +63,7 @@ export class TablaViaticoComponent {
   @Output() aprobar = new EventEmitter<number>();
   @Output() aprobarMasivo = new EventEmitter<number[]>();
   @Output() rechazar = new EventEmitter<number>();
+  @Output() editar = new EventEmitter<{ id: number; nombreProveedor: string; numeroFactura: string }>();
   listOfCurrentPageData: Viatico[] = [];
 
   checked = false;
@@ -68,10 +72,15 @@ export class TablaViaticoComponent {
   setOfCheckedId = new Set<number>();
   mostrarBarraAcciones = false;
 
+  setEditId: number | null = null;
+  editForms = new Map<number, FormGroup>();
+
+
   constructor(
     private imageService: NzImageService,
     private imagenService: ImagenService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private fb: FormBuilder
   ) {}
 
   previewImagen(rutaRelativa: string): void {
@@ -118,6 +127,44 @@ export class TablaViaticoComponent {
   rechazarViatico(viaticoId: number): void {
     this.rechazar.emit(viaticoId);
   }
+
+  editarViatico(v: Viatico): void {
+    this.setEditId = v.id;
+
+    this.editForms.set(v.id, this.fb.group({
+      nombreProveedor: [v.nombreProveedor],
+      numeroFactura: [v.numeroFactura]
+    }));
+  }
+
+  guardarEdicion(v: Viatico): void {
+    const form = this.editForms.get(v.id);
+    if (!form || !form.dirty) {
+      this.cancelarEdicion();
+      return;
+    }
+
+    const { nombreProveedor, numeroFactura } = form.value;
+
+    this.editar.emit({
+      id: v.id,
+      nombreProveedor,
+      numeroFactura
+    });
+
+    this.cancelarEdicion();
+  }
+  
+
+  cancelarEdicion(): void {
+    if (this.setEditId !== null) {
+      this.editForms.delete(this.setEditId);
+    }
+    this.setEditId = null;
+  }
+
+
+  
 
   onCurrentPageDataChange(listOfCurrentPageData: Viatico[]): void {
     this.listOfCurrentPageData = listOfCurrentPageData;

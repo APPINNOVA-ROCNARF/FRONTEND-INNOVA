@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../../app.config';
-import { Viatico } from '../../interfaces/viatico-api-response';
+import { EditarViaticoDTO, Viatico } from '../../interfaces/viatico-api-response';
 import { ActualizarEstadoViaticoRequest, ActualizarEstadoViaticoResponse } from '../../interfaces/actualizar-estado-viatico-request';
 
 @Injectable({ providedIn: 'root' })
@@ -21,4 +21,8 @@ export class ViaticoService {
     return this.http.post<ActualizarEstadoViaticoResponse>(`${this.apiUrl}${this.actualizarEstadoViaticosUrl}`, request);
   }
 
+  editarViatico(id: number, data: EditarViaticoDTO): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}${this.ViaticoUrl}${id}`, data);
+  }  
+  
 }

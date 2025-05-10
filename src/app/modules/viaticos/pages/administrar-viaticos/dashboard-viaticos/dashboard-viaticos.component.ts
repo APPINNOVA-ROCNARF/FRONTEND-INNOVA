@@ -67,27 +67,25 @@ export class AdministrarViaticosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cargarCiclos();
-  }
-
-  cargarCiclos(): void {
     this.ciclos$ = this.cicloState.ciclos$;
     this.ciclosLoading$ = this.cicloState.getCiclosLoading();
     this.cicloState.fetchCiclos();
-
+  
+    this.ciclos$.subscribe((ciclos) => {
+      const cicloActivo = ciclos.find((c) => c.estado);
+      if (cicloActivo) {
+        this.cicloSeleccionado = cicloActivo.id;
+        this.onCicloChange();
+      }
+    });
+  
     this.cicloOpciones$ = this.ciclos$.pipe(
-      map((ciclos) => {
-        const cicloActivo = ciclos.find((c) => c.estado);
-        if (cicloActivo) {
-          this.cicloSeleccionado = cicloActivo.id;
-          this.onCicloChange();
-        }
-
-        return ciclos.map((c) => ({
+      map((ciclos) =>
+        ciclos.map((c) => ({
           label: c.nombre,
           value: c.id,
-        }));
-      })
+        }))
+      )
     );
   }
 

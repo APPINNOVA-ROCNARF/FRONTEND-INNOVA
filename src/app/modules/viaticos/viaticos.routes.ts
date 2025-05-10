@@ -41,7 +41,7 @@ export const VIATICOS_ROUTES: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./pages/presupuesto-viaticos/presupuesto-viaticos.component').then(
+          import('./pages/presupuesto-viaticos/carga-presupuesto/carga-presupuesto.component').then(
             (c) => c.PresupuestoViaticosComponent
           ),
         title: 'Presupuesto Viáticos',

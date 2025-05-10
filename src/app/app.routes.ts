@@ -40,6 +40,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'medicos',
+        loadChildren: () =>
+          import('./modules/medicos/medicos.routes').then(
+            (m) => m.MEDICOS_ROUTES
+          ),
+      },
+      {
         path: '**',
         component: NotFoundComponent,
       },

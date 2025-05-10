@@ -10,7 +10,7 @@ import {
 } from '../../../interfaces/viatico-api-response';
 import { ViaticoStateService } from '../../../services/viatico/viatico-state.service';
 import { SolicitudViaticoStateService } from '../../../services/solicitudViatico/solicitudViatico-state.service';
-import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ModalRechazoComponent } from '../../../components/detalle-viaticos/modal-rechazo/modal-rechazo.component';
 import { ActualizarViaticoItem } from '../../../interfaces/actualizar-estado-viatico-request';
@@ -60,7 +60,8 @@ export class DetalleViaticosComponent implements OnInit {
     private route: ActivatedRoute,
     private viaticoState: ViaticoStateService,
     private solicitudViaticoState: SolicitudViaticoStateService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private modal : NzModalService
   ) {}
 
   ngOnInit(): void {
@@ -196,4 +197,36 @@ export class DetalleViaticosComponent implements OnInit {
       },
     });
   }
+
+  abrirModalEditar(cambios: {
+    id: number;
+    numeroFactura?: string;
+    nombreProveedor?: string;
+  }): void {
+    const { id, numeroFactura, nombreProveedor } = cambios;
+  
+    if (!numeroFactura && !nombreProveedor) {
+      return; 
+    }
+  
+    this.modal.confirm({
+      nzTitle: 'Editar viático',
+      nzContent: '¿Está seguro de que desea editar este viático?',
+      nzOkText: 'Aceptar',
+      nzCancelText: 'Cancelar',
+      nzOnOk: () =>
+        this.viaticoState
+          .editarFacturaViatico(id, this.solicitudId ,{ numeroFactura, nombreProveedor })
+          .subscribe({
+            next: () => {
+              this.message.success(`Viático actualizado correctamente`);
+              this.refresh()
+            },
+            error: () => {
+              this.message.error(`Error al actualizar viático`);
+            },
+          }),
+    });
+  }
 }
+

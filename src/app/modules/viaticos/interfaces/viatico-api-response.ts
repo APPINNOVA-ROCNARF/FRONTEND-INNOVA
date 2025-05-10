@@ -67,3 +67,8 @@ export interface Vehiculo{
   color: string,
   fabricante: string
 }
+
+export interface EditarViaticoDTO{
+  nombreProveedor?: string,
+  numeroFactura?: string
+}

@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { finalize, map, Observable, tap } from 'rxjs';
-import { Viatico } from '../../interfaces/viatico-api-response';
+import { EditarViaticoDTO, Viatico } from '../../interfaces/viatico-api-response';
 import { ViaticoService } from './viatico.service';
 import { LoadingService } from '../../../../core/services/loading-service/loading.service';
 import { ActualizarEstadoViaticoRequest, ActualizarViaticoItem } from '../../interfaces/actualizar-estado-viatico-request';
@@ -65,6 +65,8 @@ export class ViaticoStateService {
     );
   }
 
+  // RECHAZAR VIATICO
+
   rechazarViatico(
     viatico: ActualizarViaticoItem,
     solicitudId: number
@@ -77,6 +79,43 @@ export class ViaticoStateService {
     return this.viaticoService.actualizarEstadoViaticos(request).pipe(
       tap(() => this.fetchViaticos(solicitudId, true)),
       map(() => void 0)
+    );
+  }
+
+  // EDITAR VIATICO
+
+  editarFacturaViatico(
+    viaticoId: number,
+    solicitudId: number,
+    data: EditarViaticoDTO
+  ): Observable<void> {
+    return this.viaticoService.editarViatico(viaticoId, data).pipe(
+      tap(() => {
+        const currentMap = this.viaticosMapSignal();
+        const viaticos = currentMap.get(solicitudId);
+        if (!viaticos) return;
+  
+        const index = viaticos.findIndex(v => v.id === viaticoId);
+        if (index === -1) return;
+  
+        // eslint-disable-next-line security/detect-object-injection
+        const updatedViatico = { ...viaticos[index] };
+  
+        if (data.numeroFactura !== undefined) {
+          updatedViatico.numeroFactura = data.numeroFactura;
+        }
+        if (data.nombreProveedor !== undefined) {
+          updatedViatico.nombreProveedor = data.nombreProveedor;
+        }
+  
+        const updatedViaticos = [...viaticos];
+        // eslint-disable-next-line security/detect-object-injection
+        updatedViaticos[index] = updatedViatico;
+  
+        const updatedMap = new Map(currentMap);
+        updatedMap.set(solicitudId, updatedViaticos);
+        this.viaticosMapSignal.set(updatedMap);
+      })
     );
   }
 }
