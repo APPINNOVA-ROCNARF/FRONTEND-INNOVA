@@ -1,50 +1,38 @@
 <h2 nz-typography>Carga de Presupuesto</h2>
 <p style="margin: 4px 0 0 0; color: #888">
-    Seleccione un ciclo y cargue el archivo correspondiente para previsualizar el presupuesto antes de enviarlo.
+  Seleccione un ciclo y cargue el archivo correspondiente para previsualizar el presupuesto antes de enviarlo.
 </p>
 
 <br>
 
-  <nz-select  [(ngModel)]="cicloSeleccionado"
-  [nzLoading]="ciclosLoading$()" [nzOptions]="(cicloOpciones$ | async)!"
-  nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch style="width: 300px">
+<nz-select [ngModel]="presupuestoState.cicloSeleccionado$()" [nzLoading]="ciclosLoading$()"
+  [nzOptions]="(cicloOpciones$ | async)!" nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch
+  style="width: 300px" (ngModelChange)="presupuestoState.setCiclo($event)">
 </nz-select>
 
 <nz-divider></nz-divider>
-  
-<nz-steps [nzCurrent]="currentStep" class="espacio">
-    <nz-step nzTitle="Cargar archivo" nzDescription="Seleccione el archivo a cargar."></nz-step>
-    <nz-step nzTitle="Validar información" nzDescription="Compruebe que los datos sean correctos."></nz-step>
-    <nz-step nzTitle="Confirmación" nzDescription="Carga finalizada."></nz-step>
-  </nz-steps>
-  
+
+<nz-steps [nzCurrent]="currentStep()" class="espacio">
+  <nz-step nzTitle="Cargar archivo" nzDescription="Seleccione el archivo a cargar."></nz-step>
+  <nz-step nzTitle="Validar información" nzDescription="Compruebe que los datos sean correctos."></nz-step>
+  <nz-step nzTitle="Confirmación"
+    [nzDescription]="presupuestoState.resultado$() ? 'Carga completada' : 'Esperando confirmación.'">
+  </nz-step>
+</nz-steps>
+
 <br>
 
-<nz-card nzSize="small" *ngIf="!archivoCargado">
-<nz-upload
-nzType="drag"
-[nzShowUploadList]="false"
-[nzBeforeUpload]="beforeUpload"
-[nzMultiple]="false"
-[nzAccept]="'.xlsx,.csv'"
-[nzShowButton] 
->
-<p class="ant-upload-drag-icon"><i nz-icon nzType="file-excel"></i></p>
-<p class="ant-upload-text">Arrastra y suelta tu archivo Excel aquí
-</p>
-<p class="ant-upload-hint">Formatos soportados: Excel (.xlsx) y CSV (.csv)</p>
-</nz-upload>
+<nz-card nzSize="small" *ngIf="!presupuestoState.datos$().length && currentStep() === 0">
+  <nz-upload nzType="drag" [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" [nzMultiple]="false"
+    [nzAccept]="'.xlsx,.csv'" [nzShowButton]>
+    <p class="ant-upload-drag-icon"><i nz-icon nzType="file-excel"></i></p>
+    <p class="ant-upload-text">Arrastra y suelta tu archivo Excel aquí</p>
+    <p class="ant-upload-hint">Formatos soportados: Excel (.xlsx) y CSV (.csv)</p>
+  </nz-upload>
 </nz-card>
 
-<nz-table
-  *ngIf="archivoCargado"
-  [nzData]="datos"
-  [nzBordered]="true"
-  [nzPageSize]="25"
-  [nzShowPagination]="false"
-  [nzScroll]="{ y:'400px' }"
-  class="espacio"
->
+<nz-table *ngIf="presupuestoState.datos$().length && currentStep() === 1" [nzData]="presupuestoState.datos$()"
+  [nzBordered]="true" [nzPageSize]="25" [nzShowPagination]="false" [nzScroll]="{ y: '400px' }" class="espacio">
   <thead>
     <tr>
       <th>Sector</th>
@@ -53,9 +41,9 @@ nzType="drag"
       <th>Cupo Alimentación</th>
     </tr>
   </thead>
- <tbody>
-    <tr *ngFor="let row of datos">
-      <td>{{ row['SECTOR']}}</td>
+  <tbody>
+    <tr *ngFor="let row of presupuestoState.datos$()">
+      <td>{{ row['SECTOR'] }}</td>
       <td>{{ row['CUPO MOVILIDAD'] | currency }}</td>
       <td>{{ row['CUPO HOSPEDAJE'] | currency }}</td>
       <td>{{ row['CUPO ALIMENTACION'] | currency }}</td>
@@ -63,31 +51,50 @@ nzType="drag"
   </tbody>
   <tfoot nzSummary nzFixed>
     <tr>
-        <td colspan="1">Total</td>
-        <td>
-            <span nz-typography>{{ totalMovilidad | currency }}</span>
-        </td>
-        <td>
-            <span nz-typography>{{ totalHospedaje | currency }}</span>
-        </td>
-        <td>
-            <span nz-typography>{{ totalAlimentacion | currency }}</span>
-        </td>
+      <td>Total</td>
+      <td><span nz-typography>{{ presupuestoState.totalMovilidad() | currency }}</span></td>
+      <td><span nz-typography>{{ presupuestoState.totalHospedaje() | currency }}</span></td>
+      <td><span nz-typography>{{ presupuestoState.totalAlimentacion() | currency }}</span></td>
     </tr>
-            <tr>
-          <td colspan="1">Balance</td>
-          <td colspan="3">
-            <span nz-typography>{{ totalGeneral | currency }}</span>
-          </td>
-        </tr>
+    <tr>
+      <td>Balance</td>
+      <td colspan="3">
+        <span nz-typography>{{ presupuestoState.totalGeneral() | currency }}</span>
+      </td>
+    </tr>
   </tfoot>
 </nz-table>
 
-<!-- Botón cancelar -->
-<div *ngIf="archivoCargado" class="botones">
-    <button nz-button nzSize="large" nzType="default" (click)="cancelarCarga()">
-      Cancelar
-    </button>
-    <button nz-button nzSize="large" nzType="primary" (click)="confirmarcarga()">Confirmar carga</button>
-  </div>
+<!-- Resultado -->
+<div *ngIf="currentStep() === 3">
+  <nz-spin *ngIf="presupuestoState.loading$()" nzTip="Subiendo la información"></nz-spin>
 
+  <ng-container *ngIf="presupuestoState.resultado$() as resultado">
+    <nz-result nzStatus="success" [nzTitle]="resultado.mensaje" [nzSubTitle]="subtituloResultado">
+
+      <div nz-result-content *ngIf="resultado.sectoresNoEncontrados?.length">
+        <h4 nz-title><strong>Los siguientes sectores no se pudieron cargar:</strong></h4>
+        <ul>
+          <li *ngFor="let error of resultado.sectoresNoEncontrados">
+            <p nz-typography>{{ error }}</p>
+          </li>
+        </ul>
+      </div>
+      <div nz-result-extra>
+        <button nz-button nzType="primary" (click)="cancelarCarga()">Cargar de nuevo</button>
+      </div>
+    </nz-result>
+  </ng-container>
+
+
+</div>
+
+<!-- Botones -->
+<div *ngIf="presupuestoState.datos$().length && currentStep() === 1" class="botones">
+  <button nz-button nzSize="large" nzType="default" (click)="cancelarCarga()">
+    Cancelar
+  </button>
+  <button nz-button nzSize="large" nzType="primary" (click)="confirmarcarga()">
+    Confirmar carga
+  </button>
+</div>

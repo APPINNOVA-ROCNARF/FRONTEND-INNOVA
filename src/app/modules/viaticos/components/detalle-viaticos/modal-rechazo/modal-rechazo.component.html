@@ -1,13 +1,12 @@
 <nz-modal
   [(nzVisible)]="visible"
-  nzTitle="Rechazar viático"
+  nzTitle="Devolver viático"
   [nzOkDisabled]="rechazosTemp.length === 0"
   (nzOnCancel)="cerrar()"
   (nzOnOk)="confirmar()"
 >
 <ng-container *nzModalContent>
   <div>
-    <label>Campo con error:</label>
     <nz-select
       [(ngModel)]="campoRechazado"
       nzPlaceHolder="Seleccione un campo"
@@ -16,7 +15,6 @@
       <nz-option *ngFor="let campo of camposViatico" [nzValue]="campo" [nzLabel]="campo"></nz-option>
     </nz-select>
 
-    <label>Comentario:</label>
     <textarea
       nz-input
       rows="3"

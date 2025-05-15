@@ -4,7 +4,7 @@
     <tr>
       <th nzWidth="60px" [(nzChecked)]="checked" [nzIndeterminate]="indeterminate"
         (nzCheckedChange)="onAllChecked($event)"></th>
-      <th>Fecha</th>
+      <th>Fecha Factura</th>
       <th [nzFilters]="categoriasFiltro" [nzFilterFn]="filtroCategoria">
         Concepto
       </th>
@@ -20,7 +20,9 @@
       <td nzShowCheckbox [nzDisabled]="v.estadoViatico === 'Aprobado' || v.estadoViatico === 'Borrador'"
         [nzChecked]="setOfCheckedId.has(v.id)" (nzCheckedChange)="onItemChecked(v.id, $event)"></td>
       <td>{{ v.fechaFactura | date : "medium" }}</td>
-      <td>{{ v.nombreCategoria }}</td>
+      <td> <nz-tag [nzColor]="v.nombreCategoria | categoriaColor">
+          {{ v.nombreCategoria }}
+        </nz-tag></td>
       <td>
         <ng-container *ngIf="setEditId === v.id; else mostrarProveedor">
           <form [formGroup]="editForms.get(v.id)!">
@@ -55,11 +57,17 @@
             <button nz-button nzType="link" nzSize="small" (click)="cancelarEdicion()">Cancelar</button>
           </ng-container>
           <ng-template #accionesNormales>
-            <button nz-button nzType="link" nzSize="default" (click)="previewImagen(v.rutaImagen)" nz-tooltip nzTooltipTitle="Ver factura">
+            <button nz-button nzType="link" nzSize="default" (click)="previewImagen(v.rutaImagen)" nz-tooltip
+              nzTooltipTitle="Ver factura">
               <i nz-icon nzType="file-search"></i>
             </button>
-            <button *ngIf="v.nombreCategoria === 'Movilización'" nz-button nzType="link" nzSize="default" (click)="verVehiculo(v.vehiculo)" nz-tooltip nzTooltipTitle="Ver vehículo">
+            <button *ngIf="v.nombreCategoria === 'Movilización'" nz-button nzType="link" nzSize="default"
+              (click)="verVehiculo(v.vehiculo)" nz-tooltip nzTooltipTitle="Ver vehículo">
               <i nz-icon nzType="car"></i>
+            </button>
+            <button *ngIf="v.estadoViatico === 'Devuelto'" nz-button nzType="link" nzSize="default"
+              (click)="verCamposRechazados(v)" nz-tooltip nzTooltipTitle="Ver campos devueltos">
+              <i nz-icon nzType="info-circle"></i>
             </button>
             <ng-container *ngIf="!(setOfCheckedId.size > 0)">
               <a nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
@@ -79,6 +87,10 @@
               <li nz-menu-item role="button" tabindex="0" [nzDisabled]="v.estadoViatico === 'Aprobado'"
                 (click)="aprobarViatico(v.id)" (keydown.enter)="aprobarViatico(v.id)">
                 <i nz-icon nzType="check-circle"></i> Aprobar
+              </li>
+              <li nz-menu-item role="button" tabindex="0" [nzDisabled]="v.estadoViatico === 'Devuelto'"
+                (click)="devolverViatico(v.id)" (keydown.enter)="devolverViatico(v.id)">
+                <i nz-icon nzType="redo"></i> Devolver
               </li>
               <li nz-menu-item role="button" tabindex="0" nzDanger [nzDisabled]="v.estadoViatico === 'Rechazado'"
                 (click)="rechazarViatico(v.id)" (keydown.enter)="rechazarViatico(v.id)">
@@ -112,3 +124,4 @@
     </div>
   </div>
 </div>
+

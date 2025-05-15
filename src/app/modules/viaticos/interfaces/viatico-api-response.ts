@@ -34,6 +34,15 @@ export interface EstadisticaSolicitudViatico {
   monto_alimentacion: number;
   monto_hospedaje: number;
 }
+
+export interface EstadisticaViatico {
+  categoria: string;
+  total_registrado: number;
+  total_aprobado: number;
+  total_acreditado: number;
+  diferencia: number;
+  porcentaje_ejecucion: number;
+}
   
 export interface Viatico {
   id: number;
@@ -45,7 +54,7 @@ export interface Viatico {
   monto: number;
   estadoViatico: EstadoViatico;
   rutaImagen: string;
-  campoRechazado: CampoRechazado[];
+  camposRechazados: CampoRechazado[];
   vehiculo: Vehiculo;
 }
 
@@ -53,7 +62,8 @@ export type EstadoViatico =
   | 'Borrador'
   | 'EnRevision'
   | 'Aprobado'
-  | 'Rechazado';
+  | 'Rechazado'
+  | 'Devuelto';
 
 
 export interface CampoRechazado{

@@ -1,4 +1,4 @@
-import { Component, OnInit, Signal } from '@angular/core';
+import { Component, computed, effect, OnInit, Signal } from '@angular/core';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -16,8 +16,10 @@ import { CiclotateService } from '../../../../../shared/services/ciclos-service/
 import { NzCardModule } from 'ng-zorro-antd/card';
 import type { NzUploadFile } from 'ng-zorro-antd/upload';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { PresupuestoRow } from '../../../interfaces/presupuesto-data';
 import { ArchivoPresupuestoService } from '../../../services/presupuesto/archivo-presupuesto.service';
+import { CupoMensualStateService } from '../../../services/presupuesto/cupoMensual-state.service';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-presupuesto-viaticos',
@@ -35,6 +37,8 @@ import { ArchivoPresupuestoService } from '../../../services/presupuesto/archivo
     NzTypographyModule,
     NzDividerModule,
     NzButtonModule,
+    NzSpinModule,
+    NzModalModule
   ],
   templateUrl: './carga-presupuesto.component.html',
   styleUrl: './carga-presupuesto.component.less',
@@ -44,23 +48,38 @@ export class PresupuestoViaticosComponent implements OnInit {
   ciclos$!: Observable<CicloSelectDTO[]>;
   ciclosLoading$!: Signal<boolean>;
   cicloOpciones$!: Observable<{ label: string; value: number }[]>;
+  readonly currentStep = computed(() => {
+    switch (this.presupuestoState.estadoCarga$()) {
+      case 'inicio':
+        return 0;
+      case 'archivoCargado':
+        return 1;
+      case 'confirmacion':
+        return 2;
+      case 'completado':
+        return 3;
+      default:
+        return 0;
+    }
+  });
 
-  currentStep = 0;
-  archivoCargado = false;
-  datos: PresupuestoRow[] = [];
-
-  totalMovilidad = 0;
-  totalHospedaje = 0;
-  totalAlimentacion = 0;
-  totalGeneral = 0;
+  private yaCargadoEffect = effect(() => {
+    if (this.presupuestoState.CuposCargados$()) {
+      this.presupuestoState.setEstadoCarga('completado');
+    }
+  });
 
   constructor(
+    public presupuestoState: CupoMensualStateService,
     private message: NzMessageService,
     private cicloState: CiclotateService,
-    private archivoService: ArchivoPresupuestoService
-  ) {}
+    private archivoService: ArchivoPresupuestoService,
+    private modal: NzModalService
+  ) { }
 
   ngOnInit(): void {
+
+
     this.ciclos$ = this.cicloState.ciclos$;
     this.ciclosLoading$ = this.cicloState.getCiclosLoading();
     this.cicloState.fetchCiclos();
@@ -69,7 +88,7 @@ export class PresupuestoViaticosComponent implements OnInit {
       map((ciclos) => {
         const cicloActivo = ciclos.find((c) => c.estado);
         if (cicloActivo) {
-          this.cicloSeleccionado = cicloActivo.id;
+          this.presupuestoState.setCiclo(cicloActivo.id);
         }
 
         return ciclos.map((c) => ({
@@ -78,54 +97,72 @@ export class PresupuestoViaticosComponent implements OnInit {
         }));
       })
     );
+
+    effect(() => {
+      if (this.presupuestoState.datos$().length && this.presupuestoState.estadoCarga$() === 'inicio') {
+        this.presupuestoState.setEstadoCarga('archivoCargado');
+      }
+    });
+
+    effect(() => {
+      if (this.presupuestoState.resultado$()) {
+        this.presupuestoState.setEstadoCarga('completado');
+      }
+    });
   }
+
+  get subtituloResultado(): string | undefined {
+    const resultado = this.presupuestoState.resultado$();
+    if (!resultado) return undefined;
+    return resultado.cuposInsertados > 0
+      ? `Cupos insertados: ${resultado.cuposInsertados}`
+      : undefined;
+  }
+
 
   beforeUpload = (file: NzUploadFile): boolean => {
     const archivo = file as unknown as File;
-  
+
     if (!this.archivoService.validarTipo(archivo)) {
       this.message.error('Solo se permiten archivos .xlsx o .csv');
       return false;
     }
-  
+
     this.archivoService.procesar(archivo)
       .then((data) => {
-        this.datos = data;
-        this.archivoCargado = true;
-        this.currentStep = 1;
-        this.calcularTotales();
+        this.presupuestoState.setDatos(data);
+        console.log(data);
+        this.presupuestoState.setEstadoCarga('archivoCargado');
       })
       .catch((error) => {
         this.message.error(error.message || 'No se pudo procesar el archivo.');
       });
-  
+
     return false;
   };
-  
-  calcularTotales(): void {
-    this.totalMovilidad = this.datos.reduce(
-      (acc, row) => acc + (row['CUPO MOVILIDAD'] || 0),
-      0
-    );
-    this.totalHospedaje = this.datos.reduce(
-      (acc, row) => acc + (row['CUPO HOSPEDAJE'] || 0),
-      0
-    );
-    this.totalAlimentacion = this.datos.reduce(
-      (acc, row) => acc + (row['CUPO ALIMENTACION'] || 0),
-      0
-    );
-    this.totalGeneral =
-      this.totalMovilidad + this.totalHospedaje + this.totalAlimentacion;
-  }
+
 
   cancelarCarga(): void {
-    this.archivoCargado = false;
-    this.currentStep = 0;
+    this.presupuestoState.reset();
+    this.presupuestoState.setEstadoCarga('inicio');
   }
 
   confirmarcarga(): void {
-    this.currentStep = 2;
+    if (!this.presupuestoState.cicloSeleccionado$() || this.presupuestoState.datos$().length === 0) {
+      this.message.warning("Debe seleccionar un periodo y cargar un archivo.");
+      return;
+    }
+
+    this.modal.confirm({
+      nzTitle: '¿Desea confirmar la carga del presupuesto?',
+      nzContent: 'Esta acción reemplazará los cupos existentes para el ciclo seleccionado.',
+      nzOkText: 'Sí, cargar',
+      nzCancelText: 'Cancelar',
+      nzOnOk: () => {
+        this.presupuestoState.setEstadoCarga('completado');
+        this.presupuestoState.cargarCupos();
+      }
+    });
   }
 
 }

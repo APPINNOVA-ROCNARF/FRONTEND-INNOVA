@@ -1,32 +1,36 @@
-<nz-card nzTitle="Movilización">
-    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+<nz-card [nzTitle]="data.categoria">
+  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+    
+    <div class="info-wrapper" style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px; gap: 16px; flex-wrap: wrap;">
       
-      <!-- Primera fila: Gastado vs Límite -->
-      <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px;">
-        <div>
-          <div style="font-size: 12px; color: #666;">Aprobado</div>
-          <div style="font-size: 24px; font-weight: bold;">$50</div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-size: 12px; color: #999;">Registrado</div>
-          <div style="font-size: 24px; font-weight: 500; color: #999;">$60</div>
+      <div class="info-item" style="flex: 1; min-width: 120px;">
+        <div style="font-size: 12px; color: #666;">Aprobado</div>
+        <div style="font-size: 24px; font-weight: bold;">
+          {{ data.total_aprobado | currency:'USD' }}
         </div>
       </div>
-  
-      <!-- Barra de progreso horizontal -->
-      <div style="width: 100%; margin-bottom: 8px;">
-        <nz-progress
-          nzTooltipTitle="$50 aprobados / $60 registrados"
-          [nzPercent]="60"
-          nzStrokeColor="#82edcd"
-          [nzStrokeWidth]="10"
-        ></nz-progress>
+
+      <div class="info-item" style="flex: 1; min-width: 120px;">
+        <div style="font-size: 12px; color: #999;">Registrado</div>
+        <div style="font-size: 24px; font-weight: 500; color: #999;">
+          {{ data.total_registrado | currency:'USD' }}
+        </div>
       </div>
-  
-      <!-- Renueva o estado -->
-      <div style="font-size: 12px; color: #666;">
-        Acreditado: <strong>$300</strong> &nbsp;&nbsp;|&nbsp;&nbsp; Diferencia: <strong>$300</strong>
-      </div>
-  
+
     </div>
-  </nz-card>
+
+    <div style="width: 100%; margin-bottom: 8px;">
+      <nz-progress
+        [nzPercent]="data.porcentaje_ejecucion"
+        [nzStrokeColor]="color"
+        [nzStrokeWidth]="10"
+      ></nz-progress>
+    </div>
+
+    <div style="font-size: 12px; color: #666;">
+      Acreditado: <strong>{{ data.total_acreditado | currency:'USD' }}</strong> &nbsp;&nbsp;|&nbsp;&nbsp;
+      Diferencia: <strong>{{ data.diferencia | currency:'USD' }}</strong>
+    </div>
+
+  </div>
+</nz-card>

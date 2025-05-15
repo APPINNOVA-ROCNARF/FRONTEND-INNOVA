@@ -10,6 +10,7 @@ export class EstadoViaticoPipe implements PipeTransform {
     EnRevision: { texto: 'En revisión', color: 'blue' },
     Aprobado: { texto: 'Aprobado', color: 'green' },
     Rechazado: { texto: 'Rechazado', color: 'red' },
+    Devuelto: { texto: 'Devuelto', color: 'orange'}
   };
 
   transform(estado: string): { texto: string; color: string } | null {

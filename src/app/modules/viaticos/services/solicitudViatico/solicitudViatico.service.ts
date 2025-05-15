@@ -5,6 +5,7 @@ import { API_BASE_URL } from '../../../../app.config';
 import {
   DetalleSolicitudViatico,
   EstadisticaSolicitudViatico,
+  EstadisticaViatico,
   SolicitudViatico,
 } from '../../interfaces/viatico-api-response';
 
@@ -14,9 +15,11 @@ export class SolicitudViaticoService {
   private solicitudViaticoUrl = '/viaticos/solicitud/ciclo/';
   private estadisticaSolicitudViaticoUrl =
     '/viaticos/estadistica-solicitud-viatico/';
+  private estadisticaViaticoUrl =
+    '/viaticos/estadistica-viatico/';
   private detalleSolicitudViaticoUrl = '/viaticos/solicitud/detalle/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getSolicitudViatico(cicloId: number): Observable<SolicitudViatico[]> {
     return this.http.get<SolicitudViatico[]>(
@@ -29,6 +32,14 @@ export class SolicitudViaticoService {
   ): Observable<EstadisticaSolicitudViatico> {
     return this.http.get<EstadisticaSolicitudViatico>(
       `${this.apiUrl}${this.estadisticaSolicitudViaticoUrl}${cicloId}`
+    );
+  }
+
+  getEstadisticaViatico(
+    solicitudId: number
+  ): Observable<EstadisticaViatico[]> {
+    return this.http.get<EstadisticaViatico[]>(
+      `${this.apiUrl}${this.estadisticaViaticoUrl}${solicitudId}`
     );
   }
 

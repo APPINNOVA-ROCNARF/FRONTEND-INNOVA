@@ -68,7 +68,7 @@ export class EstadisticaSolicitudViaticoComponent {
       {
         nombre: 'Hospedaje',
         monto: this.estadistica?.monto_hospedaje ?? 0,
-        color: '#82edcd',
+        color: '#87E8DE',
       },
       {
         nombre: 'Alimentación',

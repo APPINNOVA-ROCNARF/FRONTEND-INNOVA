@@ -36,7 +36,10 @@ export class ArchivoPresupuestoService {
       throw new Error('Las columnas del archivo no son válidas.');
     }
 
-    return XLSX.utils.sheet_to_json<PresupuestoRow>(sheet);
+    return XLSX.utils.sheet_to_json<PresupuestoRow>(sheet).map(row => ({
+      ...row,
+      SECTOR: String(row['SECTOR'])
+    }));
   }
 
   private validarEncabezados(encabezados: string[]): boolean {

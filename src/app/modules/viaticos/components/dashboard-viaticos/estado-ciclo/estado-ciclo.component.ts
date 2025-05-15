@@ -14,9 +14,9 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
   styleUrl: './estado-ciclo.component.less'
 })
 export class EstadoCicloComponent {
-  @Input() porcentaje: number = 0;
-  @Input() completado: number = 0; 
-  @Input() tooltip: string = '';
-  @Input() estadoTexto: string = 'Ciclo en progreso';
-  @Input() color: string = 'blue';
+  @Input() porcentaje = 0;
+  @Input() completado = 0; 
+  @Input() tooltip = '';
+  @Input() estadoTexto = 'Ciclo en progreso';
+  @Input() color = 'blue';
 }

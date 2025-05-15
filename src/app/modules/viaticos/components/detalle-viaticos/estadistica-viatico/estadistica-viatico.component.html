@@ -1,20 +1,15 @@
 <nz-row [nzGutter]="16">
-    <nz-col [nzSpan]="6">
-        <app-estado-viatico></app-estado-viatico>
-    </nz-col>
+  <nz-col
+    *ngFor="let est of estadisticaCompleta"
+    [nzXs]="24"
+    [nzSm]="12"
+    [nzMd]="6"
+    [nzLg]="6">
+    
+    <app-estado-viatico
+      [data]="est"
+      [color]="coloresPorCategoria[est.categoria || '#ef8b83']">
+    </app-estado-viatico>
 
-    <nz-col [nzSpan]="6">
-        <app-estado-viatico></app-estado-viatico>
-
-    </nz-col>
-
-    <nz-col [nzSpan]="6">
-        <app-estado-viatico></app-estado-viatico>
-
-    </nz-col>
-
-    <nz-col [nzSpan]="6">
-        <app-estado-viatico></app-estado-viatico>
-
-    </nz-col>
-  </nz-row>
+  </nz-col>
+</nz-row>

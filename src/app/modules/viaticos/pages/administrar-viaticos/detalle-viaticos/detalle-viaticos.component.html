@@ -4,7 +4,9 @@
 ></app-datos-solicitud>
 
 <br />
-<app-estadistica-viatico></app-estadistica-viatico>
+<app-estadistica-viatico
+  [estadistica]="estadisticas()"
+></app-estadistica-viatico>
 
 <br />
 
@@ -13,7 +15,8 @@
   [loadingDatos]="loadingViatico()"
   (aprobar)="abrirModalAprobacionIndividual($event)"
   (aprobarMasivo)="abrirModalAprobacionMasiva($event)"
-  (rechazar)="abrirModalRechazo($event)"
+  (devolver)="abrirModalDevolver($event)"
+  (rechazar)="abrirModalRechazoTotal($event)"
   (editar)="abrirModalEditar($event)"
 ></app-tabla-viatico>
 
@@ -36,11 +39,27 @@
   </ng-container>
 </nz-modal>
 
+<nz-modal
+  [(nzVisible)]="modalRechazoTotalVisible"
+  nzTitle="Rechazar viático"
+  [nzOkLoading]="
+    viaticoIdRechazoTotalActual !== null && viaticosEnProceso.has(viaticoIdRechazoTotalActual)
+  "
+  (nzOnCancel)="cerrarModalRechazoTotal()"
+  (nzOnOk)="confirmarRechazoTotal()"
+>
+  <ng-container *nzModalContent>
+    <p>¿Está seguro de que desea rechazar este viático?</p>
+  </ng-container>
+</nz-modal>
+
+
+
 <app-modal-rechazo
-  [visible]="modalRechazoVisible"
-  [viaticoId]="viaticoIdRechazoActual!"
-  [loading]="viaticoIdRechazoActual !== null && viaticosEnProceso.has(viaticoIdRechazoActual)"
-  (cancelar)="cerrarModalRechazo()"
-  (confirm)="onConfirmarRechazo($event)">
+  [visible]="modalDevolverVisible"
+  [viaticoId]="viaticoIdDevolverActual!"
+  [loading]="viaticoIdDevolverActual !== null && viaticosEnProceso.has(viaticoIdDevolverActual)"
+  (cancelar)="cerrarModalDevolver()"
+  (confirm)="onConfirmarDevolver($event)">
 </app-modal-rechazo>
 

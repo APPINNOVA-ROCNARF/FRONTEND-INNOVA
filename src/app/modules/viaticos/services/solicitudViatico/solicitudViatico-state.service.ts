@@ -10,6 +10,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import {
   DetalleSolicitudViatico,
   EstadisticaSolicitudViatico,
+  EstadisticaViatico,
   SolicitudViatico,
 } from '../../interfaces/viatico-api-response';
 import { SolicitudViaticoService } from './solicitudViatico.service';
@@ -20,13 +21,16 @@ export class SolicitudViaticoStateService {
   private estadisticasMap = signal<Map<number, EstadisticaSolicitudViatico>>(
     new Map()
   );
+  private estadisticasViaticoMap = signal<Map<number, EstadisticaViatico[]>>(
+    new Map()
+  );
   private detalleSolicitudMap = signal<Map<number, DetalleSolicitudViatico>>(new Map());
 
   constructor(
     private solicitudService: SolicitudViaticoService,
     private loadingService: LoadingService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
   // SOLICITUD VIATICO
 
@@ -102,6 +106,47 @@ export class SolicitudViaticoStateService {
   getEstadisticaSolicitudViaticoLoading(cicloId: number) {
     return this.loadingService.getLoading(
       `fetchEstadisticaSolicitudViatico-${cicloId}`
+    );
+  }
+
+  // ESTADISTICA VIATICO
+
+  estadisticaViatico$(solicitudId: number) {
+    return computed(() => this.estadisticasViaticoMap().get(solicitudId) ?? []);
+  }
+
+  fetchEstadisticaViatico(
+    solicitudId: number,
+    forceRefresh = false
+  ): void {
+    const key = `fetchEstadisticaViatico-${solicitudId}`;
+    const currentMap = this.estadisticasViaticoMap();
+
+    if (!forceRefresh && currentMap.has(solicitudId)) return;
+
+    this.loadingService.setLoading(key, true);
+
+    this.solicitudService
+      .getEstadisticaViatico(solicitudId)
+      .pipe(
+        tap((estadistica) => {
+          const updated = new Map(this.estadisticasViaticoMap());
+          updated.set(solicitudId, estadistica);
+          this.estadisticasViaticoMap.set(updated);
+        }),
+        finalize(() => this.loadingService.setLoading(key, false)),
+        catchError((error) => {
+          console.log(error);
+          this.message.error('Error al obtener solicitudes de viático');
+          return of([]);
+        })
+      )
+      .subscribe();
+  }
+
+  getEstadisticaViaticoLoading(solicitudId: number) {
+    return this.loadingService.getLoading(
+      `fetchEstadisticaViatico-${solicitudId}`
     );
   }
 

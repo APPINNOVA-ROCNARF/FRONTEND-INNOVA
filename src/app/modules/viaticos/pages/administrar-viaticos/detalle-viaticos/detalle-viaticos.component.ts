@@ -6,6 +6,7 @@ import { EstadisticaViaticoComponent } from '../../../components/detalle-viatico
 import { TablaViaticoComponent } from '../../../components/detalle-viaticos/tabla-viatico/tabla-viatico.component';
 import {
   DetalleSolicitudViatico,
+  EstadisticaViatico,
   Viatico,
 } from '../../../interfaces/viatico-api-response';
 import { ViaticoStateService } from '../../../services/viatico/viatico-state.service';
@@ -44,6 +45,9 @@ export class DetalleViaticosComponent implements OnInit {
   detalleSolicitudViatico!: Signal<DetalleSolicitudViatico | null>;
   loadingDetalleSolicitudViatico!: Signal<boolean>;
 
+  estadisticas!: Signal<EstadisticaViatico[]>;
+
+
   // MODAL APROBAR
   modalAprobacionVisible = false;
   modoAprobacion: 'individual' | 'masivo' = 'individual';
@@ -52,17 +56,21 @@ export class DetalleViaticosComponent implements OnInit {
   idsAprobacionMasiva: number[] = [];
   viaticosEnProceso = new Set<number>();
 
-  // MODAL RECHAZAR
-  modalRechazoVisible = false;
-  viaticoIdRechazoActual: number | null = null;
+  // MODAL DEVOLVER
+  modalDevolverVisible = false;
+  viaticoIdDevolverActual: number | null = null;
+
+  // MODAL RECHAZO
+  modalRechazoTotalVisible = false;
+  viaticoIdRechazoTotalActual: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private viaticoState: ViaticoStateService,
     private solicitudViaticoState: SolicitudViaticoStateService,
     private message: NzMessageService,
-    private modal : NzModalService
-  ) {}
+    private modal: NzModalService
+  ) { }
 
   ngOnInit(): void {
     this.solicitudId = +this.route.snapshot.paramMap.get('id')!;
@@ -80,6 +88,14 @@ export class DetalleViaticosComponent implements OnInit {
         this.solicitudId
       );
     this.solicitudViaticoState.fetchDetalleSolicitudViatico(this.solicitudId);
+
+    this.estadisticas = this.solicitudViaticoState.estadisticaViatico$(
+      this.solicitudId
+    );
+
+    this.solicitudViaticoState.fetchEstadisticaViatico(
+      this.solicitudId
+    );
   }
 
   refresh(): void {
@@ -96,7 +112,10 @@ export class DetalleViaticosComponent implements OnInit {
       this.solicitudId,
       true
     );
+    this.solicitudViaticoState.fetchEstadisticaViatico(this.solicitudId, true);
   }
+
+  // APROBAR VIÁTICOS
 
   abrirModalAprobacionIndividual(id: number): void {
     this.modoAprobacion = 'individual';
@@ -166,26 +185,28 @@ export class DetalleViaticosComponent implements OnInit {
     this.idsAprobacionMasiva = [];
   }
 
-  abrirModalRechazo(viaticoId: number): void {
-    this.viaticoIdRechazoActual = viaticoId;
-    this.modalRechazoVisible = true;
+  // DEVOLVER VIÁTICOS
+
+  abrirModalDevolver(viaticoId: number): void {
+    this.viaticoIdDevolverActual = viaticoId;
+    this.modalDevolverVisible = true;
   }
 
-  cerrarModalRechazo(): void {
-    this.modalRechazoVisible = false;
-    this.viaticoIdRechazoActual = null;
+  cerrarModalDevolver(): void {
+    this.modalDevolverVisible = false;
+    this.viaticoIdDevolverActual = null;
   }
 
-  onConfirmarRechazo(item: ActualizarViaticoItem): void {
+  onConfirmarDevolver(item: ActualizarViaticoItem): void {
     if (!item.id) return;
 
     this.viaticosEnProceso.add(item.id);
 
     this.viaticoState.rechazarViatico(item, this.solicitudId).subscribe({
       next: () => {
-        this.message.success('Viático rechazado exitosamente.');
+        this.message.success('Viático devuelto exitosamente.');
         this.modalRechazoComponent.limpiarCampos();
-        this.cerrarModalRechazo();
+        this.cerrarModalDevolver();
         this.refresh();
       },
       error: (err) => {
@@ -198,17 +219,19 @@ export class DetalleViaticosComponent implements OnInit {
     });
   }
 
+  // EDITAR VIÁTICOS
+
   abrirModalEditar(cambios: {
     id: number;
     numeroFactura?: string;
     nombreProveedor?: string;
   }): void {
     const { id, numeroFactura, nombreProveedor } = cambios;
-  
+
     if (!numeroFactura && !nombreProveedor) {
-      return; 
+      return;
     }
-  
+
     this.modal.confirm({
       nzTitle: 'Editar viático',
       nzContent: '¿Está seguro de que desea editar este viático?',
@@ -216,7 +239,7 @@ export class DetalleViaticosComponent implements OnInit {
       nzCancelText: 'Cancelar',
       nzOnOk: () =>
         this.viaticoState
-          .editarFacturaViatico(id, this.solicitudId ,{ numeroFactura, nombreProveedor })
+          .editarFacturaViatico(id, this.solicitudId, { numeroFactura, nombreProveedor })
           .subscribe({
             next: () => {
               this.message.success(`Viático actualizado correctamente`);
@@ -228,5 +251,47 @@ export class DetalleViaticosComponent implements OnInit {
           }),
     });
   }
+
+  // RECHAZAR VIÁTICOS
+
+  abrirModalRechazoTotal(id: number): void {
+  this.viaticoIdRechazoTotalActual = id;
+  this.modalRechazoTotalVisible = true;
+}
+
+cerrarModalRechazoTotal(): void {
+  this.modalRechazoTotalVisible = false;
+  this.viaticoIdRechazoTotalActual = null;
+}
+
+confirmarRechazoTotal(): void {
+  const id = this.viaticoIdRechazoTotalActual;
+
+  if (id === null) return;
+
+  const item: ActualizarViaticoItem = {
+    id,
+    comentario: 'Viático inválido',
+    camposRechazados: undefined
+  };
+
+  this.viaticosEnProceso.add(id);
+
+  this.viaticoState.rechazarViatico(item, this.solicitudId).subscribe({
+    next: () => {
+      this.message.success('Viático rechazado exitosamente.');
+      this.cerrarModalRechazoTotal();
+      this.refresh();
+    },
+    error: (err) => {
+      const msg = err?.error?.message ?? 'Error al rechazar viático.';
+      this.message.error(msg);
+    },
+    complete: () => {
+      this.viaticosEnProceso.delete(id);
+    }
+  });
+}
+
 }
 
