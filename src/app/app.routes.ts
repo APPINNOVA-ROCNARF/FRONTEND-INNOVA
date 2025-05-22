@@ -47,6 +47,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'administracion',
+        loadChildren: () =>
+          import('./modules/administracion/administracion.routes').then(
+            (m) => m.ADMINISTRACION_ROUTES
+          ),
+      },
+      {
         path: '**',
         component: NotFoundComponent,
       },

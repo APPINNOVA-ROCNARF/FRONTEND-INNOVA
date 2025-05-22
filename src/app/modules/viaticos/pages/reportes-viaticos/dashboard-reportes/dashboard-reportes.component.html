@@ -1,0 +1,40 @@
+<h2 nz-typography>Reporte Viáticos</h2>
+
+<p style="margin: 4px 0 0 0; color: #888">
+  Filtre y exporte la información de viáticos de los asesores.
+</p>
+
+<nz-divider></nz-divider>
+
+<form nz-form [formGroup]="filtroForm">
+  <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+
+    <!-- Selector de ciclo -->
+    <label nz-checkbox formControlName="usarRangoFechas">
+      Filtrar por rango de fechas
+    </label>
+
+    <div *ngIf="!filtroForm.get('usarRangoFechas')?.value">
+      <nz-select formControlName="ciclo" [nzLoading]="ciclosLoading$()" [nzOptions]="(cicloOpciones$ | async)!"
+        nzPlaceHolder="Seleccione un periodo" nzShowSearch style="width: 300px" nzAllowClear></nz-select>
+    </div>
+    <!-- Selector de rango de fechas -->
+    <div *ngIf="filtroForm.get('usarRangoFechas')?.value">
+      <nz-range-picker formControlName="rangoFechas" style="width: 300px"></nz-range-picker>
+    </div>
+    <!-- Botón de Filtrar -->
+    <button nz-button nzType="primary" [disabled]="filtroForm.invalid" (click)="fetchReporte()"
+      [disabled]="!(formularioValido$ | async)">
+      Filtrar
+    </button>
+
+    <!-- Botón de Exportar -->
+    <button nz-button nzType="default" (click)="exportarExcel()" [disabled]="!(exportarHabilitado$ | async)">
+      <i nz-icon nzType="download"></i> Exportar Excel
+    </button>
+  </div>
+</form>
+
+<nz-divider></nz-divider>
+
+<app-tabla-reportes [reporte]="(reporte | async) ?? []"></app-tabla-reportes>

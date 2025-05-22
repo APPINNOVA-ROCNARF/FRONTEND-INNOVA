@@ -26,7 +26,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
   templateUrl: './modal-rechazo.component.html',
   styleUrl: './modal-rechazo.component.less',
 })
-export class ModalRechazoComponent {
+export class  ModalRechazoComponent {
   @Input() visible = false;
   @Input() viaticoId!: number;
   @Input() loading = false;

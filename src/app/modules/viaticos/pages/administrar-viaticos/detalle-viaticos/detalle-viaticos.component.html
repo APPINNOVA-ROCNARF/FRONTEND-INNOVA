@@ -18,6 +18,7 @@
   (devolver)="abrirModalDevolver($event)"
   (rechazar)="abrirModalRechazoTotal($event)"
   (editar)="abrirModalEditar($event)"
+  (historial)="abrirModalHistorial($event)"
 ></app-tabla-viatico>
 
 <nz-modal
@@ -62,4 +63,18 @@
   (cancelar)="cerrarModalDevolver()"
   (confirm)="onConfirmarDevolver($event)">
 </app-modal-rechazo>
+
+<nz-modal
+  [(nzVisible)]="modalHistorialVisible"
+  nzTitle="Historial del viático"
+    [nzFooter]="null"
+  (nzOnCancel)="modalHistorialVisible = false"
+>
+<ng-container *nzModalContent>
+    <app-historial-viatico
+      [datos]="historialViaticoData"
+      [loading]="loadingHistorialViaticoFlag"
+    ></app-historial-viatico>
+</ng-container>
+</nz-modal>
 

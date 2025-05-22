@@ -3,7 +3,8 @@
   Seleccione un ciclo y cargue el archivo correspondiente para previsualizar el presupuesto antes de enviarlo.
 </p>
 
-<br>
+<nz-divider></nz-divider>
+
 
 <nz-select [ngModel]="presupuestoState.cicloSeleccionado$()" [nzLoading]="ciclosLoading$()"
   [nzOptions]="(cicloOpciones$ | async)!" nzPlaceHolder="Seleccione un periodo" name="periodo" nzShowSearch

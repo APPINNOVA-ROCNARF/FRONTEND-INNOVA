@@ -48,4 +48,21 @@ export const VIATICOS_ROUTES: Routes = [
       }
     ],
   },
+  {
+    path: 'reportes',
+    loadComponent: () =>
+      import(
+        './pages/reportes-viaticos/reportes-viaticos-main'
+      ).then((c) => c.ReportesViaticosMainComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/reportes-viaticos/dashboard-reportes/dashboard-reportes.component').then(
+            (c) => c.DashboardReportesComponent
+          ),
+        title: 'Reporte Viáticos',
+      }
+    ],
+  },
 ];

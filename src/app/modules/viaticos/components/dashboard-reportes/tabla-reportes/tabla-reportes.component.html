@@ -1,0 +1,51 @@
+<nz-table
+  [nzData]="reporte"
+  [nzBordered]="true"
+  [nzSize]="'middle'"
+  [nzShowPagination]="false"
+>
+  <thead>
+    <tr>
+      <th rowspan="2">Asesor</th>
+      <th colspan="4">Movilización</th>
+      <th colspan="4">Alimentación</th>
+      <th colspan="4">Hospedaje</th>
+    </tr>
+    <tr>
+      <th>Acreditado</th>
+      <th>Aprobado</th>
+      <th>Rechazado</th>
+      <th>Diferencia</th>
+
+      <th>Acreditado</th>
+      <th>Aprobado</th>
+      <th>Rechazado</th>
+      <th>Diferencia</th>
+
+      <th>Acreditado</th>
+      <th>Aprobado</th>
+      <th>Rechazado</th>
+      <th>Diferencia</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of reporte">
+      <td>{{ item.nombreUsuario }}</td>
+
+      <td>{{ item.movilizacionAcreditado | number: '1.2-2' }}</td>
+      <td>{{ item.movilizacionAprobado | number: '1.2-2' }}</td>
+      <td>{{ item.movilizacionRechazado | number: '1.2-2' }}</td>
+      <td>{{ item.movilizacionDiferencia | number: '1.2-2' }}</td>
+
+      <td>{{ item.alimentacionAcreditado | number: '1.2-2' }}</td>
+      <td>{{ item.alimentacionAprobado | number: '1.2-2' }}</td>
+      <td>{{ item.alimentacionRechazado | number: '1.2-2' }}</td>
+      <td>{{ item.alimentacionDiferencia | number: '1.2-2' }}</td>
+
+      <td>{{ item.hospedajeAcreditado | number: '1.2-2' }}</td>
+      <td>{{ item.hospedajeAprobado | number: '1.2-2' }}</td>
+      <td>{{ item.hospedajeRechazado | number: '1.2-2' }}</td>
+      <td>{{ item.hospedajeDiferencia | number: '1.2-2' }}</td>
+    </tr>
+  </tbody>
+</nz-table>

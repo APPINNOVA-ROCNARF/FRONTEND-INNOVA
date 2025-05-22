@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const MEDICOS_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'cobertura',
     pathMatch: 'full',
   },
   {

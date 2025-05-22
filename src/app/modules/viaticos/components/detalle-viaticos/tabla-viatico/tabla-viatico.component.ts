@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { NzTableModule } from 'ng-zorro-antd/table';
-import { CampoRechazado, Vehiculo, Viatico } from '../../../interfaces/viatico-api-response';
+import { CampoRechazado, Facturas, Vehiculo, Viatico } from '../../../interfaces/viatico-api-response';
 import { NzImageService } from 'ng-zorro-antd/image';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { ImagenService } from '../../../../../core/services/image-service/image.service';
@@ -39,7 +39,7 @@ import { CamposRechazadoModalComponent } from '../modal-campos-devueltos/campo-r
     EstadoViaticoPipe,
     ReactiveFormsModule,
     CategoriaColorPipe
-],
+  ],
   templateUrl: './tabla-viatico.component.html',
   styleUrl: './tabla-viatico.component.less',
   animations: [
@@ -68,6 +68,7 @@ export class TablaViaticoComponent {
   @Output() rechazar = new EventEmitter<number>();
   @Output() devolver = new EventEmitter<number>();
   @Output() editar = new EventEmitter<{ id: number; nombreProveedor: string; numeroFactura: string }>();
+  @Output() historial = new EventEmitter<number>();
   listOfCurrentPageData: Viatico[] = [];
 
   checked = false;
@@ -76,13 +77,13 @@ export class TablaViaticoComponent {
   setOfCheckedId = new Set<number>();
   mostrarBarraAcciones = false;
 
-  setEditId: number | null = null;
-  editForms = new Map<number, FormGroup>();
+  setEditFacturaId: number | null = null;
+  editFacturaForms = new Map<number, FormGroup>();
+
 
   camposDevueltos: CampoRechazado[] = [];
-viaticoSeleccionado: Viatico | null = null;
-modalCamposVisible = false;
-
+  viaticoSeleccionado: Viatico | null = null;
+  modalCamposVisible = false;
 
   constructor(
     private imageService: NzImageService,
@@ -105,7 +106,15 @@ modalCamposVisible = false;
     });
   }
 
+    trackById(_: number, item: Viatico) {
+    return item.id;
+  }
 
+    totalFacturas(facturas: Facturas[]): number {
+    return facturas
+      .map(f => f.monto)
+      .reduce((sum, current) => sum + current, 0);
+  }
   // Filtros
   categoriasFiltro = [
     { text: 'Movilización', value: 'Movilización' },
@@ -142,17 +151,29 @@ modalCamposVisible = false;
     this.devolver.emit(viaticoId);
   }
 
-  editarViatico(v: Viatico): void {
-    this.setEditId = v.id;
-
-    this.editForms.set(v.id, this.fb.group({
-      nombreProveedor: [v.nombreProveedor],
-      numeroFactura: [v.numeroFactura]
-    }));
+  historialViatico(viaticoId: number): void {
+    this.historial.emit(viaticoId);
   }
 
-  guardarEdicion(v: Viatico): void {
-    const form = this.editForms.get(v.id);
+  editarViatico(facturaId: number): void {
+  this.setEditFacturaId = facturaId;
+
+    this.datos.forEach(viatico => {
+      viatico.facturas.forEach(factura => {
+        if (!this.editFacturaForms.has(factura.id)) {
+          this.editFacturaForms.set(factura.id, this.fb.group({
+            nombreProveedor: [factura.proveedorNombre],
+            numeroFactura: [factura.numeroFactura]
+          }));
+        }
+      });
+    });
+  }
+
+
+
+  guardarEdicion(facturaId: number): void {
+  const form = this.editFacturaForms.get(facturaId);
     if (!form || !form.dirty) {
       this.cancelarEdicion();
       return;
@@ -161,7 +182,7 @@ modalCamposVisible = false;
     const { nombreProveedor, numeroFactura } = form.value;
 
     this.editar.emit({
-      id: v.id,
+      id: facturaId,
       nombreProveedor,
       numeroFactura
     });
@@ -170,11 +191,8 @@ modalCamposVisible = false;
   }
 
 
-  cancelarEdicion(): void {
-    if (this.setEditId !== null) {
-      this.editForms.delete(this.setEditId);
-    }
-    this.setEditId = null;
+  cancelarEdicion() {
+    this.setEditFacturaId = null;
   }
 
 
@@ -234,16 +252,16 @@ modalCamposVisible = false;
 
   // Ver campos devueltos
 
-verCamposRechazados(viatico: Viatico): void {
-  this.modal.create({
-    nzTitle: 'Campos devueltos',
-    nzContent: CamposRechazadoModalComponent,
-    nzData: viatico,
-    nzBodyStyle: {
-      padding: '10px'
-    },
-    nzFooter: null
-  });
-}
+  verCamposRechazados(viatico: Viatico): void {
+    this.modal.create({
+      nzTitle: 'Campos devueltos',
+      nzContent: CamposRechazadoModalComponent,
+      nzData: viatico,
+      nzBodyStyle: {
+        padding: '10px'
+      },
+      nzFooter: null
+    });
+  }
 
 }

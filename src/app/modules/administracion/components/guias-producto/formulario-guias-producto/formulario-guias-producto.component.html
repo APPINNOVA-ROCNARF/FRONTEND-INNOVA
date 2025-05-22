@@ -1,0 +1,60 @@
+ <h3 nz-typography> Nueva Guia</h3>
+
+ <nz-divider></nz-divider>
+<nz-row [nzGutter]="16" nzJustify="start">
+  <nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="12" [nzXl]="12">
+    <nz-card nzTitle="Datos de Guia de Producto" [nzBordered]="false">
+      <form [formGroup]="form" nz-form [nzLayout]="'vertical'">
+        <nz-form-item>
+          <nz-form-label nzRequired>Marca</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="marca" placeholder="Ej. Dominal" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Nombre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="nombre" placeholder="Ingresar nombre del producto" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Fuerza</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="fuerzaId" nzPlaceHolder="Seleccionar fuerza">
+              <nz-option *ngFor="let f of fuerzas" [nzValue]="f.id" [nzLabel]="f.nombre"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>URL Video</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="urlVideo" placeholder="Ingresar URL del video" />
+          </nz-form-control>
+        </nz-form-item>
+
+            <nz-form-item>
+      <nz-form-label>Archivos Adjuntos</nz-form-label>
+      <nz-form-control>
+    <nz-upload
+      nzType="drag"
+      [nzMultiple]="true"
+      [nzCustomRequest]="onCustomUpload"
+      >
+      <p class="ant-upload-drag-icon">
+        <nz-icon nzType="inbox" />
+      </p>
+      <p class="ant-upload-text">Haz click aquí o suelta los archivos a subir</p>
+      <p class="ant-upload-hint">
+        Soporte para imágenes, PDF, Word, Excel, Powerpoint
+      </p>
+    </nz-upload>
+      </nz-form-control>
+    </nz-form-item>
+      </form>
+    </nz-card>
+  </nz-col>
+</nz-row>
+

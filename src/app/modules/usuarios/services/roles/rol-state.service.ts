@@ -21,7 +21,7 @@ export class RolStateService {
     private message: NzMessageService
   ) {}
 
-  fetchRoles(forceRefresh: boolean = false): void {
+  fetchRoles(forceRefresh = false): void {
     const loadingKey = 'fetchRoles';
 
     if (!forceRefresh && this.rolesSubject.value.length > 0) return;
@@ -37,7 +37,7 @@ export class RolStateService {
       .subscribe();
   }
 
-  fetchModulos(forceRefresh: boolean = false): void {
+  fetchModulos(forceRefresh = false): void {
     const loadingKey = 'fetchModulos';
 
     if (!forceRefresh && this.moduloSubject.value.length > 0) return;

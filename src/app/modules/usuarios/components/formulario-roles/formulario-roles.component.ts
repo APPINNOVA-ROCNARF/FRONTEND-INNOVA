@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -24,7 +24,7 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { Modulo, RolDetalle } from '../../interfaces/roles/rol-api-response';
+import { Modulo } from '../../interfaces/roles/rol-api-response';
 import { RolStateService } from '../../services/roles/rol-state.service';
 import {
   BehaviorSubject,
@@ -32,7 +32,6 @@ import {
   map,
   Observable,
   take,
-  tap,
 } from 'rxjs';
 import { PermisosPipe } from '../../pipes/PermisosPipe';
 import { ActivatedRoute } from '@angular/router';

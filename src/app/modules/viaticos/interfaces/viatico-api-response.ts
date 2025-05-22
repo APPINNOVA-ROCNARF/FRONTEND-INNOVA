@@ -46,16 +46,24 @@ export interface EstadisticaViatico {
   
 export interface Viatico {
   id: number;
-  fechaFactura: string;
-  nombreCategoria: string;
-  nombreProveedor: string;
-  numeroFactura: string;
+  nombreCategoria: string,
+  nombreSubcategoria: string,
   comentario: string;
-  monto: number;
+  facturas : Facturas[];
   estadoViatico: EstadoViatico;
-  rutaImagen: string;
   camposRechazados: CampoRechazado[];
   vehiculo: Vehiculo;
+  expand: boolean;
+}
+
+export interface Facturas {
+  id: number;
+  numeroFactura: string;
+  fechaFactura: string;
+  proveedorNombre: string;
+  rucProveedor: string;
+  monto: number;
+  rutaImagen: string;
 }
 
 export type EstadoViatico =
@@ -81,4 +89,33 @@ export interface Vehiculo{
 export interface EditarViaticoDTO{
   nombreProveedor?: string,
   numeroFactura?: string
+}
+
+export interface HistorialViatico {
+  fecha: string;
+  usuario: string;
+  tipoEvento: string;
+  campo: string;
+  valorAnterior: string;
+  valorNuevo: string;
+}
+
+export interface ViaticoReporte {
+  usuarioId: number;
+  nombreUsuario: string;
+
+  movilizacionAcreditado: number;
+  movilizacionAprobado: number;
+  movilizacionRechazado: number;
+  movilizacionDiferencia: number;
+
+  alimentacionAcreditado: number;
+  alimentacionAprobado: number;
+  alimentacionRechazado: number;
+  alimentacionDiferencia: number;
+
+  hospedajeAcreditado: number;
+  hospedajeAprobado: number;
+  hospedajeRechazado: number;
+  hospedajeDiferencia: number;
 }

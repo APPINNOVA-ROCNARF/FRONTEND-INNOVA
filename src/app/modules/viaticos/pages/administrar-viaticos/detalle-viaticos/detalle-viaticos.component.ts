@@ -7,6 +7,7 @@ import { TablaViaticoComponent } from '../../../components/detalle-viaticos/tabl
 import {
   DetalleSolicitudViatico,
   EstadisticaViatico,
+  HistorialViatico,
   Viatico,
 } from '../../../interfaces/viatico-api-response';
 import { ViaticoStateService } from '../../../services/viatico/viatico-state.service';
@@ -15,6 +16,7 @@ import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ModalRechazoComponent } from '../../../components/detalle-viaticos/modal-rechazo/modal-rechazo.component';
 import { ActualizarViaticoItem } from '../../../interfaces/actualizar-estado-viatico-request';
+import { HistorialViaticoComponent } from "../../../components/detalle-viaticos/historial-viatico/historial-viatico.component";
 
 @Component({
   selector: 'app-detalle-viaticos',
@@ -26,6 +28,7 @@ import { ActualizarViaticoItem } from '../../../interfaces/actualizar-estado-via
     TablaViaticoComponent,
     NzModalModule,
     ModalRechazoComponent,
+    HistorialViaticoComponent
   ],
   templateUrl: './detalle-viaticos.component.html',
   styleUrl: './detalle-viaticos.component.less',
@@ -63,6 +66,11 @@ export class DetalleViaticosComponent implements OnInit {
   // MODAL RECHAZO
   modalRechazoTotalVisible = false;
   viaticoIdRechazoTotalActual: number | null = null;
+
+  // MODAL HISTORIAL
+  modalHistorialVisible = false;
+  historialViaticoData: HistorialViatico[] = [];
+  loadingHistorialViaticoFlag = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -255,43 +263,56 @@ export class DetalleViaticosComponent implements OnInit {
   // RECHAZAR VIÁTICOS
 
   abrirModalRechazoTotal(id: number): void {
-  this.viaticoIdRechazoTotalActual = id;
-  this.modalRechazoTotalVisible = true;
-}
+    this.viaticoIdRechazoTotalActual = id;
+    this.modalRechazoTotalVisible = true;
+  }
 
-cerrarModalRechazoTotal(): void {
-  this.modalRechazoTotalVisible = false;
-  this.viaticoIdRechazoTotalActual = null;
-}
+  cerrarModalRechazoTotal(): void {
+    this.modalRechazoTotalVisible = false;
+    this.viaticoIdRechazoTotalActual = null;
+  }
 
-confirmarRechazoTotal(): void {
-  const id = this.viaticoIdRechazoTotalActual;
+  confirmarRechazoTotal(): void {
+    const id = this.viaticoIdRechazoTotalActual;
 
-  if (id === null) return;
+    if (id === null) return;
 
-  const item: ActualizarViaticoItem = {
-    id,
-    comentario: 'Viático inválido',
-    camposRechazados: undefined
-  };
+    const item: ActualizarViaticoItem = {
+      id,
+      comentario: 'Viático inválido',
+      camposRechazados: undefined
+    };
 
-  this.viaticosEnProceso.add(id);
+    this.viaticosEnProceso.add(id);
 
-  this.viaticoState.rechazarViatico(item, this.solicitudId).subscribe({
-    next: () => {
-      this.message.success('Viático rechazado exitosamente.');
-      this.cerrarModalRechazoTotal();
-      this.refresh();
-    },
-    error: (err) => {
-      const msg = err?.error?.message ?? 'Error al rechazar viático.';
-      this.message.error(msg);
-    },
-    complete: () => {
-      this.viaticosEnProceso.delete(id);
-    }
-  });
-}
+    this.viaticoState.rechazarViatico(item, this.solicitudId).subscribe({
+      next: () => {
+        this.message.success('Viático rechazado exitosamente.');
+        this.cerrarModalRechazoTotal();
+        this.refresh();
+      },
+      error: (err) => {
+        const msg = err?.error?.message ?? 'Error al rechazar viático.';
+        this.message.error(msg);
+      },
+      complete: () => {
+        this.viaticosEnProceso.delete(id);
+      }
+    });
+  }
+
+  // HISTORIAL VIATICOS
+
+  abrirModalHistorial(viaticoId: number): void {
+    this.viaticoState.fetchHistorial(viaticoId, true);
+
+    setTimeout(() => {
+      this.historialViaticoData = this.viaticoState.historial(viaticoId)();
+      this.loadingHistorialViaticoFlag = this.viaticoState.getHistorialLoading(viaticoId)();
+      this.modalHistorialVisible = true;
+    }, 100); 
+  }
+
 
 }
 
