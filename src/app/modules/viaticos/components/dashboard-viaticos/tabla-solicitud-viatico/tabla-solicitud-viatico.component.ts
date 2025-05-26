@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { TablaBaseComponent } from '../../../../../shared/components/tabla-base/tabla-base.component';
 import { SolicitudViatico } from '../../../interfaces/viatico-api-response';
@@ -28,9 +28,9 @@ import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
   templateUrl: './tabla-solicitud-viatico.component.html',
   styleUrl: './tabla-solicitud-viatico.component.less',
 })
-export class TablaSolicitudViaticoComponent {
+export class TablaSolicitudViaticoComponent implements OnInit, OnChanges{
   @Input() data: SolicitudViatico[] = [];
-  @Input() loading: boolean = false;
+  @Input() loading = false;
 
   @ViewChild('estadoTemplate', { static: true })
   estadoTemplate!: TemplateRef<any>;
@@ -39,14 +39,14 @@ export class TablaSolicitudViaticoComponent {
 
   datosFiltrados: SolicitudViatico[] = [];
 
-  filtro: string = '';
+  filtro = '';
 
   private filtroSubject = new Subject<string>();
 
   constructor(private router: Router, private route: ActivatedRoute) {
     this.filtroSubject
       .pipe(
-        debounceTime(300) // Espera 300ms después de dejar de escribir
+        debounceTime(300) 
       )
       .subscribe((value) => {
         this.realizarFiltro(value);
@@ -107,7 +107,7 @@ export class TablaSolicitudViaticoComponent {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && this.data) {
-      this.datosFiltrados = [...this.data]; // 🔵 Cuando llegan los datos
+      this.datosFiltrados = [...this.data]; 
     }
   }
 

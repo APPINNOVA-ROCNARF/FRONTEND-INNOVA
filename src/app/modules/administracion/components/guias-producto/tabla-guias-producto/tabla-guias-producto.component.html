@@ -1,5 +1,6 @@
 <nz-table
   [nzData]="guias"
+  [nzLoading]="loading"
   [nzBordered]="true"
   [nzSize]="'middle'"
   [nzShowPagination]="false"
@@ -9,6 +10,7 @@
       <th>Marca</th>
       <th>Nombre</th>
       <th>Fuerza</th>
+      <th>Estado</th>
       <th [width]="100">Acciones</th>
     </tr>
   </thead>
@@ -17,14 +19,37 @@
       <td>{{ guia.marca }}</td>
       <td>{{ guia.nombre }}</td>
       <td>{{ guia.fuerza }}</td>
-            <td>
-        <button nz-tooltip nzTooltipTitle="Editar" nz-button nzType="primary" nzSize="small" (click)="router.navigate([guia.id], { relativeTo: route })">
-          <nz-icon nzType="edit" ></nz-icon>
-        </button>
+      <td>
+        <nz-tag [nzColor]="guia.activo ? 'green' : 'red'">
+          {{ guia.activo ? "Activo" : "Inactivo" }}
+        </nz-tag>
+      </td>
+      <td>
+        <button
+          nz-tooltip
+          nzTooltipTitle="Editar"
+          nz-button
+          nzType="link"
+          nzSize="small"
+          (click)="router.navigate([guia.id], { relativeTo: route })"
+        >
+        <nz-icon nzType="edit"></nz-icon>
+      </button>
         <nz-divider nzType="vertical"></nz-divider>
-        <button nz-tooltip nzTooltipTitle="Eliminar" nz-button nzDanger nzSize="small">
-          <nz-icon nzType="delete"></nz-icon>
-        </button>
+        <button
+          nz-tooltip
+          nzTooltipTitle="Eliminar"
+          nz-button
+          nzDanger
+          nzType="link"
+          nz-popconfirm
+          nzPopconfirmTitle="¿Seguro desea eliminar este registro?"
+          (nzOnConfirm)="eliminarGuia(guia.id)"
+          nzSize="small"
+        >
+        <i></i>
+        <nz-icon nzType="delete"></nz-icon>
+      </button>
       </td>
     </tr>
   </tbody>

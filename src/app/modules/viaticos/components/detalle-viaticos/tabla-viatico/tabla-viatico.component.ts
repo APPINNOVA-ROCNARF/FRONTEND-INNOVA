@@ -4,7 +4,6 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { CampoRechazado, Facturas, Vehiculo, Viatico } from '../../../interfaces/viatico-api-response';
 import { NzImageService } from 'ng-zorro-antd/image';
 import { NzImageModule } from 'ng-zorro-antd/image';
-import { ImagenService } from '../../../../../core/services/image-service/image.service';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -20,6 +19,7 @@ import { VehiculoModalComponent } from '../modal-vehiculo/vehiculo-modal.compone
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { CategoriaColorPipe } from "../../../pipes/categoria-color.pipe";
 import { CamposRechazadoModalComponent } from '../modal-campos-devueltos/campo-rechazado-modal.component';
+import { ArchivoService } from '../../../../../core/services/archivo-service/archivo.service';
 @Component({
   selector: 'app-tabla-viatico',
   standalone: true,
@@ -87,13 +87,13 @@ export class TablaViaticoComponent {
 
   constructor(
     private imageService: NzImageService,
-    private imagenService: ImagenService,
+    private archivoService: ArchivoService,
     private modal: NzModalService,
     private fb: FormBuilder
   ) { }
 
   previewImagen(rutaRelativa: string): void {
-    const urlCompleta = this.imagenService.getUrlAbsoluta(rutaRelativa);
+    const urlCompleta = this.archivoService.getUrlAbsoluta(rutaRelativa);
     this.imageService.preview([{ src: urlCompleta, alt: 'Factura' }]);
   }
 

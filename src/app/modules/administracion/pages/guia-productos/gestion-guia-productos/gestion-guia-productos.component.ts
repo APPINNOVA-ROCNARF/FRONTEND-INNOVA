@@ -8,6 +8,8 @@ import { TablaGuiasProductoComponent } from "../../../components/guias-producto/
 import { GuiaProducto } from '../../../interfaces/guias-api-response';
 import { GuiaProductoStateService } from '../../../services/guias-producto/guias-state.service';
 import { CommonModule } from '@angular/common';
+import { GuiaProductoService } from '../../../services/guias-producto/guias.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-gestion-guia-productos',
@@ -24,7 +26,9 @@ export class GestionGuiaProductosComponent implements OnInit{
   constructor(
     public router: Router,
     public route: ActivatedRoute,
-    private guiasState: GuiaProductoStateService
+    private guiasState: GuiaProductoStateService,
+    private guiasService: GuiaProductoService,
+    private message: NzMessageService
   ){
     
   }
@@ -34,5 +38,15 @@ export class GestionGuiaProductosComponent implements OnInit{
     this.loadingGuias = this.guiasState.getGuiasLoading();
 
     this.guiasState.fetchGuias();
+  }
+
+  eliminarGuia(id: number): void {
+    this.guiasService.eliminarGuia(id).subscribe({
+      next: () => {
+        this.message.success("Guía eliminada correctamente");
+        this.guiasState.fetchGuias(true);
+      },
+      error: () => this.message.error("Error al eliminar la guía")
+    })
   }
 }

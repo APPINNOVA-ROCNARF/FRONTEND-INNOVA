@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges} from '@angular/core';
+import { Component, Input} from '@angular/core';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -14,7 +14,7 @@ import { HistorialViatico } from '../../../interfaces/viatico-api-response';
   templateUrl: './historial-viatico.component.html',
   styleUrl: './historial-viatico.component.less'
 })
-export class HistorialViaticoComponent implements OnChanges{
+export class HistorialViaticoComponent{
   @Input() datos: HistorialViatico[] = [];
    @Input() loading = false;
   labelMap: Record<string,string> = {
@@ -37,10 +37,6 @@ export class HistorialViaticoComponent implements OnChanges{
       case 'borrador': return 'default';
       default:          return 'blue';
     }
-  }
-
-  ngOnChanges(){
-    console.log(this.datos);
   }
 
 }

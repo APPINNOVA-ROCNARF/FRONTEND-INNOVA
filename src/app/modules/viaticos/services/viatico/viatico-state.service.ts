@@ -9,13 +9,18 @@ import { AccionViatico } from '../../enums/accion-viatico.enum';
 @Injectable({ providedIn: 'root' })
 export class ViaticoStateService {
   private viaticosMapSignal = signal<Map<number, Viatico[]>>(new Map());
-  private historialMapSignal = signal<Map<number, HistorialViatico[]>>(new Map());
+  private historialMapSignal = signal<Map<number, HistorialViatico[]>>(
+    new Map()
+  );
   private reporteSignal = signal<ViaticoReporte[] | null>(null);
+
+  private _reporteLoading = signal(false);
+  public readonly reporteLoading = this._reporteLoading.asReadonly();
 
   constructor(
     private viaticoService: ViaticoService,
-    private loadingService: LoadingService,
-  ) { }
+    private loadingService: LoadingService
+  ) {}
 
   //VIATICOS
 
@@ -52,10 +57,7 @@ export class ViaticoStateService {
 
   // APROBAR VIATICOS
 
-  aprobarViaticos(
-    ids: number[],
-    solicitudId: number
-  ): Observable<void> {
+  aprobarViaticos(ids: number[], solicitudId: number): Observable<void> {
     const request: ActualizarEstadoViaticoRequest = {
       accion: AccionViatico.Aprobado,
       viaticos: ids.map((id) => ({ id })),
@@ -97,7 +99,7 @@ export class ViaticoStateService {
         const viaticos = currentMap.get(solicitudId);
         if (!viaticos) return;
 
-        const index = viaticos.findIndex(v => v.id === viaticoId);
+        const index = viaticos.findIndex((v) => v.id === viaticoId);
         if (index === -1) return;
 
         // eslint-disable-next-line security/detect-object-injection
@@ -157,23 +159,23 @@ export class ViaticoStateService {
 
   reporte = computed(() => this.reporteSignal() ?? []);
 
-  fetchReporteViaticos(filtros: { cicloId?: number; fechaInicio?: string; fechaFin?: string }, forceRefresh = false): void {
-    const key = JSON.stringify(filtros);
-
+  fetchReporteViaticos(
+    filtros: { cicloId?: number; fechaInicio?: string; fechaFin?: string },
+    forceRefresh = false
+  ): void {
     if (!forceRefresh && this.reporteSignal()) {
       return;
     }
 
-    this.loadingService.setLoading(`fetchReporte-${key}`, true);
+    this._reporteLoading.set(true); 
 
-    this.viaticoService.getReporteViaticos(filtros).pipe(
-      tap((reporte) => this.reporteSignal.set(reporte)),
-      finalize(() => this.loadingService.setLoading(`fetchResumen-${key}`, false))
-    ).subscribe();
+    this.viaticoService
+      .getReporteViaticos(filtros)
+      .pipe(
+        tap((reporte) => this.reporteSignal.set(reporte)),
+        finalize(() => this._reporteLoading.set(false)) 
+      )
+      .subscribe();
   }
 
-  getReporteLoading(filtros: { cicloId?: number; fechaInicio?: string; fechaFin?: string }) {
-    const key = JSON.stringify(filtros);
-    return this.loadingService.getLoading(`fetchResumen-${key}`);
-  }
 }

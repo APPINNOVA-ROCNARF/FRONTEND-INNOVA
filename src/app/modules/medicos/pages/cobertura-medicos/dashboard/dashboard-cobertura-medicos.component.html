@@ -45,7 +45,7 @@
             nz-button 
             nzType="primary" 
             [disabled]="filtrosForm.invalid" 
-            class="w-full"
+            [nzLoading]="isLoading"
           >
             Buscar
           </button>
@@ -63,6 +63,7 @@
   [nzBordered]="true"
   [nzSize]="'small'"
   [nzPageSize]=15
+  [nzLoading]="isLoading"
 >
   <thead>
     <tr>

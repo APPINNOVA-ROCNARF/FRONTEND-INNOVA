@@ -20,4 +20,6 @@
 
     <app-tabla-guias-producto
     [guias]="guias()"
+    [loading]="loadingGuias()"
+    (eliminar)="eliminarGuia($event)"
     ></app-tabla-guias-producto>

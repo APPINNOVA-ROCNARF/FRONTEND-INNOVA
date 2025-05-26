@@ -63,19 +63,29 @@ export class PresupuestoViaticosComponent implements OnInit {
     }
   });
 
-  private yaCargadoEffect = effect(() => {
-    if (this.presupuestoState.CuposCargados$()) {
-      this.presupuestoState.setEstadoCarga('completado');
-    }
-  });
-
   constructor(
     public presupuestoState: CupoMensualStateService,
     private message: NzMessageService,
     private cicloState: CiclotateService,
     private archivoService: ArchivoPresupuestoService,
     private modal: NzModalService
-  ) { }
+  ) { 
+    effect(() => {
+      if (
+        this.presupuestoState.datos$().length &&
+        this.presupuestoState.estadoCarga$() === 'inicio'
+      ) {
+        this.presupuestoState.setEstadoCarga('archivoCargado');
+      }
+    });
+
+    effect(() => {
+      if (this.presupuestoState.resultado$()) {
+        this.presupuestoState.setEstadoCarga('completado');
+      }
+    });
+
+  }
 
   ngOnInit(): void {
 
@@ -97,18 +107,6 @@ export class PresupuestoViaticosComponent implements OnInit {
         }));
       })
     );
-
-    effect(() => {
-      if (this.presupuestoState.datos$().length && this.presupuestoState.estadoCarga$() === 'inicio') {
-        this.presupuestoState.setEstadoCarga('archivoCargado');
-      }
-    });
-
-    effect(() => {
-      if (this.presupuestoState.resultado$()) {
-        this.presupuestoState.setEstadoCarga('completado');
-      }
-    });
   }
 
   get subtituloResultado(): string | undefined {

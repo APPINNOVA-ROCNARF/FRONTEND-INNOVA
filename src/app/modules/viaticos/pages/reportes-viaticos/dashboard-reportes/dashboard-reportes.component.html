@@ -23,13 +23,13 @@
       <nz-range-picker formControlName="rangoFechas" style="width: 300px"></nz-range-picker>
     </div>
     <!-- Botón de Filtrar -->
-    <button nz-button nzType="primary" [disabled]="filtroForm.invalid" (click)="fetchReporte()"
+    <button nz-button nzType="primary" [nzLoading]="reporteLoading$()" [disabled]="filtroForm.invalid" (click)="fetchReporte()"
       [disabled]="!(formularioValido$ | async)">
       Filtrar
     </button>
 
     <!-- Botón de Exportar -->
-    <button nz-button nzType="default" (click)="exportarExcel()" [disabled]="!(exportarHabilitado$ | async)">
+    <button nz-button nzType="default" (click)="exportarExcel()" [nzLoading]="exportandoExcel()" [disabled]="!(exportarHabilitado$ | async)">
       <i nz-icon nzType="download"></i> Exportar Excel
     </button>
   </div>
@@ -37,4 +37,4 @@
 
 <nz-divider></nz-divider>
 
-<app-tabla-reportes [reporte]="(reporte | async) ?? []"></app-tabla-reportes>
+<app-tabla-reportes [reporte]="(reporte | async) ?? []" [loading]="reporteLoading$()"></app-tabla-reportes>

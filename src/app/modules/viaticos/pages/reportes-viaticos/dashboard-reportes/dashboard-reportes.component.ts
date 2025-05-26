@@ -1,4 +1,4 @@
-import { Component, OnInit, Signal } from '@angular/core';
+import { Component, OnInit, signal, Signal } from '@angular/core';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -6,12 +6,17 @@ import { map, Observable } from 'rxjs';
 import { CicloSelectDTO } from '../../../../../shared/services/ciclos-service/Interfaces/CicloSelectDTO';
 import { CiclotateService } from '../../../../../shared/services/ciclos-service/ciclo-state.service';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzGridModule } from 'ng-zorro-antd/grid';
-import { TablaReportesComponent } from "../../../components/dashboard-reportes/tabla-reportes/tabla-reportes.component";
+import { TablaReportesComponent } from '../../../components/dashboard-reportes/tabla-reportes/tabla-reportes.component';
 import { ViaticoStateService } from '../../../services/viatico/viatico-state.service';
 import { ViaticoReporte } from '../../../interfaces/viatico-api-response';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -19,13 +24,28 @@ import dayjs from 'dayjs';
 import { ViaticoService } from '../../../services/viatico/viatico.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-dashboard-reportes',
   standalone: true,
-  imports: [NzCheckboxModule, NzTypographyModule, NzDividerModule, NzSelectModule, CommonModule, FormsModule, NzFormModule, NzDatePickerModule, ReactiveFormsModule, NzButtonModule, NzGridModule, TablaReportesComponent, NzIconModule],
+  imports: [
+    NzCheckboxModule,
+    NzTypographyModule,
+    NzDividerModule,
+    NzSelectModule,
+    CommonModule,
+    FormsModule,
+    NzFormModule,
+    NzDatePickerModule,
+    ReactiveFormsModule,
+    NzButtonModule,
+    NzGridModule,
+    TablaReportesComponent,
+    NzIconModule,
+  ],
   templateUrl: './dashboard-reportes.component.html',
-  styleUrl: './dashboard-reportes.component.less'
+  styleUrl: './dashboard-reportes.component.less',
 })
 export class DashboardReportesComponent implements OnInit {
   filtroForm!: FormGroup;
@@ -42,18 +62,21 @@ export class DashboardReportesComponent implements OnInit {
   exportarHabilitado$!: Observable<boolean>;
   formularioValido$!: Observable<boolean>;
 
+  exportandoExcel = signal(false);
+
   constructor(
     private cicloState: CiclotateService,
     private stateViatico: ViaticoStateService,
     private viatico: ViaticoService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private message: NzMessageService
   ) {
     this.reporte = toObservable(this.stateViatico.reporte).pipe(
-      map(data => data ?? [])
+      map((data) => data ?? [])
     );
 
     this.exportarHabilitado$ = toObservable(this.stateViatico.reporte).pipe(
-      map(reporte => !!reporte && reporte.length > 0)
+      map((reporte) => !!reporte && reporte.length > 0)
     );
   }
 
@@ -87,7 +110,7 @@ export class DashboardReportesComponent implements OnInit {
     });
 
     this.formularioValido$ = this.filtroForm.valueChanges.pipe(
-      map(val => {
+      map((val) => {
         if (val.usarRangoFechas) {
           return !!val.rangoFechas && val.rangoFechas.length === 2;
         } else {
@@ -95,11 +118,17 @@ export class DashboardReportesComponent implements OnInit {
         }
       })
     );
+
+    this.reporteLoading$ = this.stateViatico.reporteLoading;
   }
 
   fetchReporte() {
     const usarRango = this.filtroForm.value.usarRangoFechas;
-    const filtros: { cicloId?: number; fechaInicio?: string; fechaFin?: string } = {};
+    const filtros: {
+      cicloId?: number;
+      fechaInicio?: string;
+      fechaFin?: string;
+    } = {};
 
     if (usarRango) {
       const rango = this.filtroForm.value.rangoFechas;
@@ -114,13 +143,16 @@ export class DashboardReportesComponent implements OnInit {
       if (!cicloId) return;
       filtros.cicloId = cicloId;
     }
-    this.reporteLoading$ = this.stateViatico.getReporteLoading(filtros);
     this.stateViatico.fetchReporteViaticos(filtros, true);
   }
 
   exportarExcel(): void {
     const usarRango = this.filtroForm.value.usarRangoFechas;
-    const filtros: { cicloId?: number; fechaInicio?: string; fechaFin?: string } = {};
+    const filtros: {
+      cicloId?: number;
+      fechaInicio?: string;
+      fechaFin?: string;
+    } = {};
 
     if (usarRango) {
       const rango = this.filtroForm.value.rangoFechas;
@@ -136,16 +168,24 @@ export class DashboardReportesComponent implements OnInit {
       filtros.cicloId = cicloId;
     }
 
-    this.viatico.exportarExcel(filtros).subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'resumen_viaticos.xlsx';
-      a.click();
-      window.URL.revokeObjectURL(url);
+    this.exportandoExcel.set(true);
+
+    this.viatico.exportarExcel(filtros).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'resumen_viaticos.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.message.success('Archivo descargado correctamente');
+      },
+      error: () => {
+        this.message.error('Error al generar el archivo');
+      },
+      complete: () => {
+        this.exportandoExcel.set(false); 
+      },
     });
   }
-
-
-
 }

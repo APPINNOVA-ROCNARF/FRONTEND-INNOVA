@@ -12,5 +12,5 @@ import { CommonModule } from '@angular/common';
 })
 export class TablaReportesComponent {
   @Input() reporte: ViaticoReporte[] = [];
-
+  @Input() loading = false;
 }
