@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Accion } from '../interfaces/roles/rol-api-response';
+import { Accion } from '../interfaces/rol-api-response';
 
 @Pipe({
   name: 'permiso',

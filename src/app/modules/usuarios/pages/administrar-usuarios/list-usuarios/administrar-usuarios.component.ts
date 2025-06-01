@@ -1,92 +1,33 @@
-import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { TableColumn } from '../../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
+import { Component, OnInit, Signal } from '@angular/core';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { TablaBaseComponent } from '../../../../../shared/components/tabla-base/tabla-base.component';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import {NzDividerModule } from 'ng-zorro-antd/divider';
+import { UsuarioStateService } from '../../../services/usuarios/usuario-state.service';
+import { UsuarioDTO } from '../../../interfaces/usuario-api-response';
+import { TablaUsuariosComponent } from "../../../components/usuarios/tabla-usuarios/tabla-usuarios.component";
 
 @Component({
   selector: 'app-administrar-usuarios',
   standalone: true,
-  imports: [NzCardModule, NzTagModule, NzTypographyModule, NzButtonModule, TablaBaseComponent, NzIconModule],
+  imports: [NzCardModule, NzTagModule, NzTypographyModule, NzButtonModule, NzDividerModule, NzIconModule, TablaUsuariosComponent],
   templateUrl: './administrar-usuarios.component.html',
   styleUrl: './administrar-usuarios.component.less',
 })
-export class AdministrarUsuariosComponent {
-  @ViewChild('stateTemplate') stateTemplate!: TemplateRef<any>;
+export class AdministrarUsuariosComponent implements OnInit{
 
-  usuarios = [
-    {
-      id: 1,
-      name: 'Leonardo',
-      lastname: 'Bazurto',
-      rol: 'Administrador',
-      email: 'lbazurto@imprimium.ec',
-      state: true,
-    },
-    {
-      id: 2,
-      name: 'Leonardo',
-      lastname: 'Bazurto',
-      rol: 'Administrador',
-      email: 'lbazurto@imprimium.ec',
-      state: true,
-    },
-    {
-      id: 3,
-      name: 'Leonardo',
-      lastname: 'Bazurto',
-      rol: 'Administrador',
-      email: 'lbazurto@imprimium.ec',
-      state: true,
-    },
-  ];
+  usuarios!: Signal<UsuarioDTO[]>
+  usuariosLoading!: Signal<boolean>
 
-  columns: TableColumn[] = [];
-  loading = false;
-  canEdit = true;
-  canDelete = true;
+  constructor(
+    private usuarioState: UsuarioStateService
+  ) {}
 
-  constructor() {}
-
-  ngOnInit() {
-    // Configurar las columnas
-    this.columns = [
-      { title: 'Nombre', dataIndex: 'name' },
-      { title: 'Apellido', dataIndex: 'lastname' },
-      { title: 'Rol', dataIndex: 'rol' },
-      { title: 'Email', dataIndex: 'email' },
-      {
-        title: 'Estado',
-        dataIndex: 'state',
-        renderFn: this.stateTemplate, // Referencia al template para renderizado personalizado
-      },
-    ];
-  }
-
-  ngAfterViewInit() {
-    // Ahora sí podemos usar this.stateTemplate porque la vista ya ha sido inicializada
-    // y el @ViewChild ya está disponible
-
-    // Creamos una nueva copia del array de columnas para no modificar el original directamente
-    this.columns = this.columns.map((col) => {
-      if (col.dataIndex === 'state') {
-        // Asignamos la plantilla al renderFn de la columna de estado
-        return { ...col, renderFn: this.stateTemplate };
-      }
-      return col;
-    });
-  }
-
-  handleEdit(role: any) {
-    console.log('Editar rol:', role);
-    // Lógica para editar el rol
-  }
-
-  handleDelete(id: number) {
-    console.log('Eliminar rol:', id);
-    // Lógica para eliminar el rol
+  ngOnInit(): void {
+    this.usuarios = this.usuarioState.usuarios;
+    this.usuarioState.fetchUsuarios();
+    this.usuariosLoading = this.usuarioState.getUsuariosLoading();
   }
 }

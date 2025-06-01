@@ -1,0 +1,205 @@
+<h2 nz-typography>Cobertura a Clientes</h2>
+
+<nz-divider></nz-divider>
+
+
+<nz-card nzTitle="Filtros" nzSize="small" nzType="inner" [nzExtra]="extraTemplate">
+    <br>
+  <!-- Fila 1: Filtros rápidos -->
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-bottom: 12px;">
+    <form nz-form [formGroup]="filtrosForm" nzLayout="inline" style="display: flex; align-items: center; gap: 12px;">
+      <nz-form-item>
+        <nz-form-control>
+            
+          <nz-range-picker
+            id="rangoFechas"
+            formControlName="rangoFechas"
+            [nzFormat]="'yyyy-MM-dd'">
+          </nz-range-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+
+  <ng-template #extraTemplate>
+          <button
+            nz-button
+            nzType="primary"
+            [disabled]="filtrosForm.invalid"
+            (click)="buscar()"
+            [nzLoading]="isLoading">
+            Buscar
+          </button>
+</ng-template>
+
+    <!-- Switches -->
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <label style="display: flex; align-items: center; gap: 6px;">
+        Visita
+        <nz-switch
+          [(ngModel)]="columnasVisibles.visita"
+          [nzDisabled]="!columnasVisibles.venta"
+          (ngModelChange)="validarVisibilidad('visita')">
+        </nz-switch>
+      </label>
+
+      <label style="display: flex; align-items: center; gap: 6px;">
+        Venta
+        <nz-switch
+          [(ngModel)]="columnasVisibles.venta"
+          [nzDisabled]="!columnasVisibles.visita"
+          (ngModelChange)="validarVisibilidad('venta')">
+        </nz-switch>
+      </label>
+    </div>
+
+    <!-- Dropdown -->
+    <div>
+      <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu" [nzClickHide]="false">
+        Clientes <nz-icon nzType="down" />
+      </button>
+    </div>
+  </div>
+
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu style="padding: 8px 12px; max-height: 300px; overflow-y: auto;">
+      <li nz-menu-item *ngFor="let key of seccionesKeys" (click)="$event.stopPropagation()">
+        <label style="display: flex; align-items: center; gap: 8px; width: 100%;">
+          <input type="checkbox" [(ngModel)]="seccionesVisibles[key]" />
+          {{ seccionesLabels[key] }}
+        </label>
+      </li>
+    </ul>
+  </nz-dropdown-menu>
+
+  <br>
+
+ <!-- Fila de Inputs: Representante, Región y Sección -->
+<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px">
+  <div style="display: flex; flex-direction: column; min-width: 250px;">
+    <label style="margin-bottom: 4px;"><strong>Representante</strong></label>
+    <input
+      nz-input
+      placeholder="Filtrar por representante"
+      [(ngModel)]="filtroRepresentante"
+      (ngModelChange)="filtrarData()"
+    />
+  </div>
+
+  <div style="display: flex; flex-direction: column; min-width: 250px;">
+    <label style="margin-bottom: 4px;"><strong>Región</strong></label>
+    <input
+      nz-input
+      placeholder="Ej. Sierra"
+      [(ngModel)]="filtroRegion"
+      (ngModelChange)="filtrarData()"
+      name="filtroRegion"
+    />
+  </div>
+
+  <div style="display: flex; flex-direction: column; min-width: 250px;">
+    <label style="margin-bottom: 4px;"><strong>Sección</strong></label>
+    <input
+      nz-input
+      placeholder="Ej. 101"
+      [(ngModel)]="filtroSeccion"
+      (ngModelChange)="filtrarData()"
+      name="filtroSeccion"
+    />
+  </div>
+</div>
+
+
+    <br>
+
+  <!-- Fila 3: Tags -->
+  <nz-space *ngIf="filtrosActivos.length" size="small" wrap style="margin-top: 8px;">
+    <nz-tag *ngFor="let filtro of filtrosActivos" nzColor="blue">
+      {{ filtro }}
+    </nz-tag>
+  </nz-space>
+</nz-card>
+
+
+
+
+<nz-divider></nz-divider>
+
+<nz-table #tabla [nzData]="data" nzSize="small" [nzBordered]="true" [nzPageSize]=15 [nzLoading]="isLoading">
+    <thead>
+    <tr>
+      <th rowspan="3">Sección</th>
+      <th rowspan="3" [width]="200">Representante</th>
+      <th rowspan="3">Región</th>
+      <ng-container *ngFor="let key of seccionesKeys">
+        <ng-container *ngIf="seccionesVisibles[key]">
+          <th [attr.colspan]="getColspan()">
+            {{ seccionesLabels[key] }}
+          </th>
+        </ng-container>
+      </ng-container>
+    </tr>
+     <tr>
+      <ng-container *ngFor="let key of seccionesKeys">
+        <ng-container *ngIf="seccionesVisibles[key]">
+          <ng-container *ngIf="columnasVisibles.visita">
+            <th colspan="2">Visita</th>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.venta">
+            <th colspan="2">Venta</th>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.total">
+            <th rowspan="2">Total</th>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </tr>
+    <tr>
+      <ng-container *ngFor="let key of seccionesKeys">
+        <ng-container *ngIf="seccionesVisibles[key]">
+          <ng-container *ngIf="columnasVisibles.visita">
+            <th>Cantidad</th>
+<th
+  *ngIf="columnasVisibles.visita"
+  [nzShowSort]="true"
+  [nzSortFn]="sortFns['porcentaje_Visita_' + key]">
+  %
+</th>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.venta">
+            <th>Cantidad</th>
+     <th
+  *ngIf="columnasVisibles.venta"
+  [nzShowSort]="true"
+  [nzSortFn]="sortFns['porcentaje_Venta_' + key]">
+  %
+</th>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </tr>
+    </thead>
+
+  <tbody>
+    <tr *ngFor="let row of tabla.data">
+      <td>{{ row.seccion }}</td>
+      <td>{{ row.representante }}</td>
+      <td>{{ row.region }}</td>
+
+      <ng-container *ngFor="let key of seccionesKeys">
+        <ng-container *ngIf="seccionesVisibles[key]">
+          <ng-container *ngIf="columnasVisibles.visita">
+            <td>{{ row['visita_' + key] }}</td>
+            <td>{{ row['porcentaje_Visita_' + key] }}%</td>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.venta">
+            <td>{{ row['venta_' + key] }}</td>
+            <td>{{ row['porcentaje_Venta_' + key] }}%</td>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.total">
+            <td>{{ row['total_' + key] }}</td>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </tr>
+  </tbody>
+</nz-table>

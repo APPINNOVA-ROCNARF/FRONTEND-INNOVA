@@ -1,19 +1,22 @@
-<div class="role-management-container">
-  <nz-card>
-    <div class="header-actions">
-      <h2 nz-typography>Gestión de Usuarios</h2>
-      <button nz-button nzType="primary" nzSize="large">
-        <i nz-icon nzType="plus"></i>Nuevo usuario
+    <div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <div>
+        <h2 nz-typography style="margin: 0">Gestión de Usuarios</h2>
+        <p style="margin: 4px 0 0 0; color: #888;">
+          Administre los usuarios registrados en el sistema.
+        </p>
+      </div>
+      <button
+        nz-button
+        nzType="primary"
+        nzSize="large"
+        style="margin-top: 8px;"
+      >
+        <i nz-icon nzType="plus"></i>Nuevo Usuario
       </button>
-    </div>
-
-    <app-tabla-base
-    ></app-tabla-base>
-
-    <ng-template #stateTemplate let-item>
-      <nz-tag [nzColor]="item.state ? 'green' : 'warning'">
-        {{ item.state ? "Activo" : "Inactivo" }}
-      </nz-tag>
-    </ng-template></nz-card
-  >
 </div>
+    <nz-divider></nz-divider>
+
+<app-tabla-usuarios
+      [datos]="usuarios()"
+      [loading]="usuariosLoading()"
+></app-tabla-usuarios>

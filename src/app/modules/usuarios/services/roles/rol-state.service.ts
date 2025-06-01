@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize, tap } from 'rxjs';
 import { RolService } from './rol.service';
-import { RolSimple, RolDetalle, Modulo, NuevoRol } from '../../interfaces/roles/rol-api-response';
+import { RolSimple, RolDetalle, Modulo, NuevoRol } from '../../interfaces/rol-api-response';
 import { LoadingService } from '../../../../core/services/loading-service/loading.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 

@@ -16,8 +16,6 @@ export class ParrillaPromocionalStateService {
 
   parrilla = computed(() => this.parrillaSignal());
 
-  guiaLoading = computed(() => this.parrillaLoadingSignal());
-
   fetchParrilla(forceRefresh = false): void {
     const loadingKey = 'fetchParrilla';
 

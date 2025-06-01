@@ -1,6 +1,3 @@
-<div class="role-management-container">
-
-  <!-- Card de encabezado (título, descripción y botón) -->
 
     <div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
       <div>
@@ -22,8 +19,7 @@
 
     <nz-divider></nz-divider>
 
-  <!-- Card de la tabla -->
-<nz-card>
+
   <nz-skeleton
     [nzLoading]="loading$()"
     [nzActive]="true"
@@ -42,9 +38,7 @@
       (delete)="handleDelete($event)"
     ></app-tabla-base>
   </nz-skeleton>
-</nz-card>
 
-</div>
 
 <ng-template #stateTemplate let-item>
   <nz-tag [nzColor]="item.estado ? 'green' : 'warning'">

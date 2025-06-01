@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RolSimple, RolDetalle, Modulo, NuevoRol } from '../../interfaces/roles/rol-api-response';
+import { RolSimple, RolDetalle, Modulo, NuevoRol } from '../../interfaces/rol-api-response';
 import { API_BASE_URL } from '../../../../app.config';
 
 @Injectable({ providedIn: 'root' })

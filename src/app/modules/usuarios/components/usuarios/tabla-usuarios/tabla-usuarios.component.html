@@ -1,0 +1,33 @@
+<nz-table
+  #tabla
+  [nzData]="datos"
+  [nzBordered]="true"
+  [nzLoading]="loading"
+  [nzPageSize]="15"
+>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Email</th>
+      <th>Rol</th>
+      <th>Estado</th>
+      <th>Fecha de Registro</th>
+      <th>Modificado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let usuario of tabla.data">
+      <td>{{ usuario.nombre }}</td>
+      <td>{{ usuario.email }}</td>
+      <td>{{ usuario.rol }}</td>
+      <td>
+        <nz-tag [nzColor]="usuario.estado ? 'green' : 'red'">
+          {{ usuario.estado ? 'Activo' : 'Inactivo' }}
+        </nz-tag>
+      </td>
+      <td>{{ usuario.creadoEn | date: 'short' }}</td>
+      <td>{{ usuario.modificadoEn | date: 'short' }}</td>
+    </tr>
+  </tbody>
+</nz-table>

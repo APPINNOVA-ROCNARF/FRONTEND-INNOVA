@@ -15,7 +15,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { TablaBaseComponent } from '../../../../../shared/components/tabla-base/tabla-base.component';
 import { TableColumn } from '../../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
 import { RolStateService } from '../../../services/roles/rol-state.service';
-import { RolSimple } from '../../../interfaces/roles/rol-api-response';
+import { RolSimple } from '../../../interfaces/rol-api-response';
 import { combineLatest, Observable } from 'rxjs';
 import { UiService } from '../../../../../core/services/ui-service/ui.service';
 import { NzTagModule } from 'ng-zorro-antd/tag';

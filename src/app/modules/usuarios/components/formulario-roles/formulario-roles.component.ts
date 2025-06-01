@@ -24,7 +24,7 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { Modulo } from '../../interfaces/roles/rol-api-response';
+import { Modulo } from '../../interfaces/rol-api-response';
 import { RolStateService } from '../../services/roles/rol-state.service';
 import {
   BehaviorSubject,

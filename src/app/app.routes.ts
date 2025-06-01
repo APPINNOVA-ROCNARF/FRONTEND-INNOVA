@@ -47,6 +47,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'clientes',
+        loadChildren: () =>
+          import('./modules/clientes/clientes.routes').then(
+            (m) => m.CLIENTES_ROUTES
+          ),
+      },
+      {
         path: 'administracion',
         loadChildren: () =>
           import('./modules/administracion/administracion.routes').then(
