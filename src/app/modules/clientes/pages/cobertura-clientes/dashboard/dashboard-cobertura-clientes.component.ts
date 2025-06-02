@@ -23,13 +23,35 @@ import { Observable } from 'rxjs';
 import { CicloSelectDTO } from '../../../../../shared/services/ciclos-service/Interfaces/CicloSelectDTO';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { CiclotateService } from '../../../../../shared/services/ciclos-service/ciclo-state.service';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-dashboard-cobertura-clientes',
   standalone: true,
-  imports: [NzSelectModule, NzCardModule, NzIconModule, NzTagModule, NzDropDownModule, NzMenuModule, NzInputModule, NzSpaceModule, NzSwitchModule, NzCheckboxModule, NzTypographyModule, NzDividerModule, NzDatePickerModule, NzFormModule, ReactiveFormsModule, NzTableModule, CommonModule, NzButtonModule, FormsModule],
+  imports: [
+    DragDropModule,
+    NzSelectModule,
+    NzCardModule,
+    NzIconModule,
+    NzTagModule,
+    NzDropDownModule,
+    NzMenuModule,
+    NzInputModule,
+    NzSpaceModule,
+    NzSwitchModule,
+    NzCheckboxModule,
+    NzTypographyModule,
+    NzDividerModule,
+    NzDatePickerModule,
+    NzFormModule,
+    ReactiveFormsModule,
+    NzTableModule,
+    CommonModule,
+    NzButtonModule,
+    FormsModule,
+  ],
   templateUrl: './dashboard-cobertura-clientes.component.html',
-  styleUrl: './dashboard-cobertura-clientes.component.less'
+  styleUrl: './dashboard-cobertura-clientes.component.less',
 })
 export class DashboardCoberturaClientesComponent implements OnInit {
   dataOriginal: ResumenCoberturaClientes[] = [];
@@ -37,7 +59,6 @@ export class DashboardCoberturaClientesComponent implements OnInit {
   filtrosForm!: FormGroup;
   isLoading = false;
   usarRangoFechas = false;
-
 
   // CICLOS
 
@@ -53,16 +74,19 @@ export class DashboardCoberturaClientesComponent implements OnInit {
     CLACT: 'Clientes Activos',
     CLINC: 'Clientes Inactivos',
     CONTA: 'Clientes Contado',
-    CLIZ: 'Clientes Z'
+    CLIZ: 'Clientes Z',
   };
 
   columnasVisibles = {
     visita: true,
     venta: true,
-    total: true
+    total: true,
   };
 
-  sortFns: Record<string, (a: ResumenCoberturaClientes, b: ResumenCoberturaClientes) => number> = {};
+  sortFns: Record<
+    string,
+    (a: ResumenCoberturaClientes, b: ResumenCoberturaClientes) => number
+  > = {};
 
   // FILTRO REPRESENTANTE
   filtroRepresentante = '';
@@ -74,7 +98,7 @@ export class DashboardCoberturaClientesComponent implements OnInit {
     private consolidadoService: ConsolidadoCoberturaClientesService,
     private cicloState: CiclotateService,
     private message: NzMessageService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.filtrosForm = this.fb.group({
@@ -83,10 +107,12 @@ export class DashboardCoberturaClientesComponent implements OnInit {
 
     for (const key of this.seccionesKeys) {
       this.sortFns[`porcentaje_Venta_${key}`] = (a, b) =>
-        Number(a[`porcentaje_Venta_${key}`] ?? 0) - Number(b[`porcentaje_Venta_${key}`] ?? 0);
+        Number(a[`porcentaje_Venta_${key}`] ?? 0) -
+        Number(b[`porcentaje_Venta_${key}`] ?? 0);
 
       this.sortFns[`porcentaje_Visita_${key}`] = (a, b) =>
-        Number(a[`porcentaje_Visita_${key}`] ?? 0) - Number(b[`porcentaje_Visita_${key}`] ?? 0);
+        Number(a[`porcentaje_Visita_${key}`] ?? 0) -
+        Number(b[`porcentaje_Visita_${key}`] ?? 0);
     }
   }
 
@@ -94,18 +120,26 @@ export class DashboardCoberturaClientesComponent implements OnInit {
     CLACT: true,
     CLINC: true,
     CONTA: true,
-    CLIZ: true
+    CLIZ: true,
   };
 
-toggleModoFechas(): void {
-  if (this.usarRangoFechas) {
-    this.filtrosForm.get('ciclo')?.disable();
-    this.filtrosForm.get('rangoFechas')?.enable();
-  } else {
-    this.filtrosForm.get('rangoFechas')?.disable();
-    this.filtrosForm.get('ciclo')?.enable();
+  dropSeccion(event: CdkDragDrop<string[]>) {
+    moveItemInArray(
+      this.seccionesKeys,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
-}
+
+  toggleModoFechas(): void {
+    if (this.usarRangoFechas) {
+      this.filtrosForm.get('ciclo')?.disable();
+      this.filtrosForm.get('rangoFechas')?.enable();
+    } else {
+      this.filtrosForm.get('rangoFechas')?.disable();
+      this.filtrosForm.get('ciclo')?.enable();
+    }
+  }
   getColspan(): number {
     let span = 0;
     if (this.columnasVisibles.visita) span += 2;
@@ -130,15 +164,16 @@ toggleModoFechas(): void {
     if (columnas.length) filtros.push(`Columnas: ${columnas.join(', ')}`);
 
     // Secciones visibles
-    const seccionesActivas = this.seccionesKeys.filter(k => this.seccionesVisibles[k]);
+    const seccionesActivas = this.seccionesKeys.filter(
+      (k) => this.seccionesVisibles[k]
+    );
     if (seccionesActivas.length) {
-      const etiquetas = seccionesActivas.map(k => this.seccionesLabels[k]);
+      const etiquetas = seccionesActivas.map((k) => this.seccionesLabels[k]);
       filtros.push(`Secciones: ${etiquetas.join(', ')}`);
     }
 
     return filtros;
   }
-
 
   buscar(): void {
     if (this.filtrosForm.invalid) return;
@@ -149,24 +184,19 @@ toggleModoFechas(): void {
 
     this.isLoading = true;
 
-    this.consolidadoService
-      .getConsolidado(
-        fechaInicial,
-        fechaFinal
-      )
-      .subscribe({
-        next: (result) => {
-          this.dataOriginal = result;
-          this.filtrarData(); // Aplica el filtro si hay uno
-        },
-        error: (error) => {
-          this.message.error("Error al obtener cobertura de clientes");
-          console.log(error)
-        },
-        complete: () => {
-          this.isLoading = false;
-        },
-      });
+    this.consolidadoService.getConsolidado(fechaInicial, fechaFinal).subscribe({
+      next: (result) => {
+        this.dataOriginal = result;
+        this.filtrarData(); // Aplica el filtro si hay uno
+      },
+      error: (error) => {
+        this.message.error('Error al obtener cobertura de clientes');
+        console.log(error);
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
+    });
   }
 
   filtrarData(): void {
@@ -174,10 +204,11 @@ toggleModoFechas(): void {
     const reg = this.filtroRegion.trim().toLowerCase();
     const sec = this.filtroSeccion.trim().toLowerCase();
 
-    this.data = this.dataOriginal.filter(item =>
-      (!rep || item.representante.toLowerCase().includes(rep)) &&
-      (!reg || item.region.toLowerCase().includes(reg)) &&
-      (!sec || item.seccion.toLowerCase().includes(sec))
+    this.data = this.dataOriginal.filter(
+      (item) =>
+        (!rep || item.representante.toLowerCase().includes(rep)) &&
+        (!reg || item.region.toLowerCase().includes(reg)) &&
+        (!sec || item.seccion.toLowerCase().includes(sec))
     );
   }
 }

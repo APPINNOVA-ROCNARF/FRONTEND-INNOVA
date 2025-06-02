@@ -61,12 +61,32 @@
   </div>
 
   <nz-dropdown-menu #menu="nzDropdownMenu">
-    <ul nz-menu style="padding: 8px 12px; max-height: 300px; overflow-y: auto;">
-      <li nz-menu-item *ngFor="let key of seccionesKeys" (click)="$event.stopPropagation()">
-        <label style="display: flex; align-items: center; gap: 8px; width: 100%;">
-          <input type="checkbox" [(ngModel)]="seccionesVisibles[key]" />
-          {{ seccionesLabels[key] }}
-        </label>
+    <ul
+      nz-menu
+      cdkDropList
+      [cdkDropListData]="seccionesKeys"
+      (cdkDropListDropped)="dropSeccion($event)"
+      style="padding: 8px 12px; max-height: 300px; overflow-y: auto;"
+    >
+      <li
+        nz-menu-item
+        *ngFor="let key of seccionesKeys"
+        cdkDrag
+        (click)="$event.stopPropagation()"
+        style="padding: 4px 0;"
+      >
+        <div
+          style="display: flex; align-items: center; gap: 8px; width: 100%; cursor: grab;"
+        >
+          <span cdkDragHandle style="flex-shrink: 0;">☰</span>
+          <label style="display: flex; align-items: center; gap: 8px; flex: 1;">
+            <input
+              type="checkbox"
+              [(ngModel)]="seccionesVisibles[key]"
+            />
+            {{ seccionesLabels[key] }}
+          </label>
+        </div>
       </li>
     </ul>
   </nz-dropdown-menu>
