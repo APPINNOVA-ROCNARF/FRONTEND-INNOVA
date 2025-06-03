@@ -90,6 +90,7 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
   columnasVisibles = {
     visita: true,
     venta: true,
+    cobranza: true,
     total: true,
   };
 

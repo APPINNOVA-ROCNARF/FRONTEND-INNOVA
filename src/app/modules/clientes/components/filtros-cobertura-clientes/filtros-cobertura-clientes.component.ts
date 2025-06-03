@@ -18,9 +18,23 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 @Component({
   selector: 'app-filtros-cobertura-clientes',
   standalone: true,
-  imports: [NzTypographyModule, NzButtonModule, NzSelectModule, NzCollapseModule, NzSwitchModule, NzInputModule, NzCheckboxModule, CommonModule, ReactiveFormsModule, FormsModule, NzDropDownModule, NzIconModule, DragDropModule],
+  imports: [
+    NzTypographyModule,
+    NzButtonModule,
+    NzSelectModule,
+    NzCollapseModule,
+    NzSwitchModule,
+    NzInputModule,
+    NzCheckboxModule,
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    NzDropDownModule,
+    NzIconModule,
+    DragDropModule,
+  ],
   templateUrl: './filtros-cobertura-clientes.component.html',
-  styleUrl: './filtros-cobertura-clientes.component.less'
+  styleUrl: './filtros-cobertura-clientes.component.less',
 })
 export class FiltrosCoberturaClientesComponent implements OnInit {
   hover = '';
@@ -45,28 +59,26 @@ export class FiltrosCoberturaClientesComponent implements OnInit {
   @Input() representantesSeleccionados: string[] = [];
   @Output() representantesSeleccionadosChange = new EventEmitter<string[]>();
 
-
   // Secciones
   @Input() secciones$!: Observable<SeccionesSelect[]>;
 
   seccionesOptions: { label: string; value: number }[] = [];
 
   ngOnInit(): void {
-    this.representantes$.subscribe(lista => {
-      this.representanteOptions = lista.map(r => ({
+    this.representantes$.subscribe((lista) => {
+      this.representanteOptions = lista.map((r) => ({
         label: r.nombre,
-        value: r.nombre
+        value: r.nombre,
       }));
     });
 
-    this.secciones$.subscribe(lista => {
-      this.seccionesOptions = lista.map(r => ({
+    this.secciones$.subscribe((lista) => {
+      this.seccionesOptions = lista.map((r) => ({
         label: r.codigo,
-        value: r.id
-      }))
-    })
+        value: r.id,
+      }));
+    });
   }
-
 
   validarVisibilidad(campo: 'visita' | 'venta') {
     if (!this.columnasVisibles['visita'] && !this.columnasVisibles['venta']) {
@@ -75,9 +87,11 @@ export class FiltrosCoberturaClientesComponent implements OnInit {
     }
   }
 
-emitirRepresentantesSeleccionados() {
-  this.representantesSeleccionadosChange.emit(this.representantesSeleccionados);
-}
+  emitirRepresentantesSeleccionados() {
+    this.representantesSeleccionadosChange.emit(
+      this.representantesSeleccionados
+    );
+  }
 
   dropSeccion(event: unknown) {
     this.drop.emit(event);
