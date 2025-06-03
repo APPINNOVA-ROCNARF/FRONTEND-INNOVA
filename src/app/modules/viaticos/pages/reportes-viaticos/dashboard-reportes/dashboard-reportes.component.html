@@ -24,12 +24,12 @@
     </div>
     <!-- Botón de Filtrar -->
     <button nz-button nzType="primary" [nzLoading]="reporteLoading$()" [disabled]="filtroForm.invalid" (click)="fetchReporte()"
-      [disabled]="!(formularioValido$ | async)">
+      [disabled]="(formularioValido$ | async) === false">
       Filtrar
     </button>
 
     <!-- Botón de Exportar -->
-    <button nz-button nzType="default" (click)="exportarExcel()" [nzLoading]="exportandoExcel()" [disabled]="!(exportarHabilitado$ | async)">
+    <button nz-button nzType="default" (click)="exportarExcel()" [nzLoading]="exportandoExcel()" [disabled]="(exportarHabilitado$ | async) === false">
       <i nz-icon nzType="download"></i> Exportar Excel
     </button>
   </div>

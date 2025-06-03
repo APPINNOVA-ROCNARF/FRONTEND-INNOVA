@@ -1,1 +1,79 @@
-<p>tabla-cobertura-clientes works!</p>
+<nz-table #tabla [nzData]="data" nzSize="small" [nzBordered]="true" [nzPageSize]=25 [nzLoading]="isLoading">
+    <thead>
+    <tr>
+      <th rowspan="3">Sección</th>
+      <th rowspan="3" [width]="200">Representante</th>
+      <th rowspan="3">Región</th>
+      <ng-container *ngFor="let key of seccionesKeys">
+        <ng-container *ngIf="seccionesVisibles[key]">
+          <th [attr.colspan]="getColspan()">
+            {{ seccionesLabels[key] }}
+          </th>
+        </ng-container>
+      </ng-container>
+    </tr>
+     <tr>
+      <ng-container *ngFor="let key of seccionesKeys">
+        <ng-container *ngIf="seccionesVisibles[key]">
+          <ng-container *ngIf="columnasVisibles.visita">
+            <th colspan="2">Visita</th>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.venta">
+            <th colspan="2">Venta</th>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.total">
+            <th rowspan="2">Total</th>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </tr>
+    <tr>
+      <ng-container *ngFor="let key of seccionesKeys">
+        <ng-container *ngIf="seccionesVisibles[key]">
+          <ng-container *ngIf="columnasVisibles.visita">
+            <th>Cantidad</th>
+<th
+  *ngIf="columnasVisibles.visita"
+  [nzShowSort]="true"
+  [nzSortFn]="sortFns['porcentaje_Visita_' + key]">
+  %
+</th>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.venta">
+            <th>Cantidad</th>
+     <th
+  *ngIf="columnasVisibles.venta"
+  [nzShowSort]="true"
+  [nzSortFn]="sortFns['porcentaje_Venta_' + key]">
+  %
+</th>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </tr>
+    </thead>
+
+  <tbody>
+    <tr *ngFor="let row of tabla.data">
+      <td>{{ row.seccion }}</td>
+      <td>{{ row.representante }}</td>
+      <td>{{ row.region }}</td>
+
+      <ng-container *ngFor="let key of seccionesKeys">
+        <ng-container *ngIf="seccionesVisibles[key]">
+          <ng-container *ngIf="columnasVisibles.visita">
+            <td>{{ row['visita_' + key] }}</td>
+            <td>{{ row['porcentaje_Visita_' + key] }}%</td>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.venta">
+            <td>{{ row['venta_' + key] }}</td>
+            <td>{{ row['porcentaje_Venta_' + key] }}%</td>
+          </ng-container>
+          <ng-container *ngIf="columnasVisibles.total">
+            <td>{{ row['total_' + key] }}</td>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </tr>
+  </tbody>
+</nz-table>

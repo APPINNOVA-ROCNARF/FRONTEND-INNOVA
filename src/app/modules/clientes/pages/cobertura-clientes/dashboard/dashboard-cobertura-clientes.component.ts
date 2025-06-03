@@ -1,4 +1,4 @@
-import { Component, OnInit, Signal } from '@angular/core';
+import { Component, OnInit, Signal, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -7,58 +7,57 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { ConsolidadoCoberturaClientesService } from '../../../services/consolidado-clientes.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ResumenCoberturaClientes } from '../../../interfaces/consolidado-clientes-api-response';
-import { NzTableModule } from 'ng-zorro-antd/table';
 import { CommonModule } from '@angular/common';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
-import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
-import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { NzCardModule } from 'ng-zorro-antd/card';
-import { Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { CicloSelectDTO } from '../../../../../shared/services/ciclos-service/Interfaces/CicloSelectDTO';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import { CiclotateService } from '../../../../../shared/services/ciclos-service/ciclo-state.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { TablaCoberturaClientesComponent } from "../../../components/tabla-cobertura-clientes/tabla-cobertura-clientes.component";
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { FiltrosCoberturaClientesComponent } from "../../../components/filtros-cobertura-clientes/filtros-cobertura-clientes.component";
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { AsesoresStateService } from '../../../../../shared/services/asesores-service/asesores-state.service';
+import { UsuarioAppSelect } from '../../../../../shared/services/asesores-service/Interfaces/asesores-api-response';
+import { SeccionesSelect } from '../../../../../shared/services/secciones-service/Interfaces/secciones-api-response';
+import { SeccionesStateService } from '../../../../../shared/services/secciones-service/secciones-state.service';
 
 @Component({
   selector: 'app-dashboard-cobertura-clientes',
   standalone: true,
   imports: [
     DragDropModule,
-    NzSelectModule,
-    NzCardModule,
     NzIconModule,
     NzTagModule,
-    NzDropDownModule,
-    NzMenuModule,
-    NzInputModule,
     NzSpaceModule,
-    NzSwitchModule,
-    NzCheckboxModule,
     NzTypographyModule,
     NzDividerModule,
-    NzDatePickerModule,
     NzFormModule,
     ReactiveFormsModule,
-    NzTableModule,
     CommonModule,
     NzButtonModule,
     FormsModule,
+    NzDrawerModule,
+    NzRadioModule,
+    NzDatePickerModule,
+    NzSelectModule,
+    TablaCoberturaClientesComponent,
+    FiltrosCoberturaClientesComponent
   ],
   templateUrl: './dashboard-cobertura-clientes.component.html',
   styleUrl: './dashboard-cobertura-clientes.component.less',
 })
-export class DashboardCoberturaClientesComponent implements OnInit {
+export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
   dataOriginal: ResumenCoberturaClientes[] = [];
   data: ResumenCoberturaClientes[] = [];
   filtrosForm!: FormGroup;
   isLoading = false;
-  usarRangoFechas = false;
+  visible = false;
+  modoFiltroFechas: 'ciclo' | 'rango' = 'ciclo';
 
   // CICLOS
 
@@ -67,6 +66,17 @@ export class DashboardCoberturaClientesComponent implements OnInit {
   ciclos$!: Observable<CicloSelectDTO[]>;
   ciclosLoading$!: Signal<boolean>;
   cicloOpciones$!: Observable<{ label: string; value: number }[]>;
+  allCiclos: CicloSelectDTO[] = [];
+
+  // ASESORES
+
+  asesores$!: Observable<UsuarioAppSelect[]>;
+  asesoresLoading$!: Signal<boolean>;
+
+  // SECCIONES
+
+  secciones$!: Observable<SeccionesSelect[]>;
+  seccionesLoading$!: Signal<boolean>;
 
   seccionesKeys = ['CLACT', 'CLINC', 'CONTA', 'CLIZ'];
 
@@ -89,21 +99,56 @@ export class DashboardCoberturaClientesComponent implements OnInit {
   > = {};
 
   // FILTRO REPRESENTANTE
+  representantesSeleccionados: string[] = [];
   filtroRepresentante = '';
   filtroRegion = '';
   filtroSeccion = '';
+
+  private ciclosSubscription: Subscription | undefined;
+
 
   constructor(
     private fb: FormBuilder,
     private consolidadoService: ConsolidadoCoberturaClientesService,
     private cicloState: CiclotateService,
+    private asesoresState: AsesoresStateService,
+    private seccionesState: SeccionesStateService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.filtrosForm = this.fb.group({
-      rangoFechas: [null, Validators.required],
+    this.asesores$ = this.asesoresState.asesores$;
+    this.asesoresLoading$ = this.asesoresState.getAsesoresLoading();
+    this.asesoresState.fetchAsesores();
+
+    this.secciones$ = this.seccionesState.secciones$;
+    this.seccionesLoading$ = this.seccionesState.getSeccionesLoading();
+    this.seccionesState.fetchSecciones();
+
+    this.ciclos$ = this.cicloState.ciclos$;
+    this.ciclosLoading$ = this.cicloState.getCiclosLoading();
+    this.cicloState.fetchCiclos();
+
+    this.ciclosSubscription = this.ciclos$.subscribe(ciclos => {
+      this.allCiclos = ciclos;
     });
+
+    this.cicloOpciones$ = this.ciclos$.pipe(
+      map((ciclos) =>
+        ciclos.map((c) => ({
+          label: c.nombre,
+          value: c.id,
+        }))
+      )
+    );
+
+
+    this.filtrosForm = this.fb.group({
+      rangoFechas: [{ value: null, disabled: true }, Validators.required],
+      ciclo: [{ value: null, disabled: false }],
+    });
+
+    this.toggleModoFechas();
 
     for (const key of this.seccionesKeys) {
       this.sortFns[`porcentaje_Venta_${key}`] = (a, b) =>
@@ -115,6 +160,17 @@ export class DashboardCoberturaClientesComponent implements OnInit {
         Number(b[`porcentaje_Visita_${key}`] ?? 0);
     }
   }
+
+  ngOnDestroy(): void {
+    if (this.ciclosSubscription) {
+      this.ciclosSubscription.unsubscribe();
+    }
+  }
+
+onRepresentantesSeleccionadosChange(nombres: string[]) {
+  this.representantesSeleccionados = nombres;
+  this.filtrarData();
+}
 
   seccionesVisibles: Record<string, boolean> = {
     CLACT: true,
@@ -131,28 +187,34 @@ export class DashboardCoberturaClientesComponent implements OnInit {
     );
   }
 
-  toggleModoFechas(): void {
-    if (this.usarRangoFechas) {
-      this.filtrosForm.get('ciclo')?.disable();
-      this.filtrosForm.get('rangoFechas')?.enable();
-    } else {
-      this.filtrosForm.get('rangoFechas')?.disable();
-      this.filtrosForm.get('ciclo')?.enable();
-    }
-  }
-  getColspan(): number {
-    let span = 0;
-    if (this.columnasVisibles.visita) span += 2;
-    if (this.columnasVisibles.venta) span += 2;
-    span += 1;
-    return span;
+  open(): void {
+    this.visible = true;
   }
 
-  validarVisibilidad(campo: 'visita' | 'venta'): void {
-    if (!this.columnasVisibles.visita && !this.columnasVisibles.venta) {
-      this.columnasVisibles[campo] = true;
-    }
+  close(): void {
+    this.visible = false;
   }
+
+  toggleModoFechas(): void {
+    if (this.modoFiltroFechas === 'rango') {
+      this.filtrosForm.get('ciclo')?.disable();
+      this.filtrosForm.get('ciclo')?.clearValidators();
+      this.filtrosForm.get('ciclo')?.setValue(null);
+
+      this.filtrosForm.get('rangoFechas')?.enable();
+      this.filtrosForm.get('rangoFechas')?.setValidators(Validators.required);
+    } else { // modoFiltroFechas === 'ciclo'
+      this.filtrosForm.get('rangoFechas')?.disable();
+      this.filtrosForm.get('rangoFechas')?.clearValidators();
+      this.filtrosForm.get('rangoFechas')?.setValue(null);
+
+      this.filtrosForm.get('ciclo')?.enable();
+      this.filtrosForm.get('ciclo')?.setValidators(Validators.required);
+    }
+    this.filtrosForm.get('ciclo')?.updateValueAndValidity();
+    this.filtrosForm.get('rangoFechas')?.updateValueAndValidity();
+  }
+
 
   get filtrosActivos(): string[] {
     const filtros: string[] = [];
@@ -176,22 +238,47 @@ export class DashboardCoberturaClientesComponent implements OnInit {
   }
 
   buscar(): void {
-    if (this.filtrosForm.invalid) return;
+    if (this.filtrosForm.invalid) {
+      this.message.warning('Por favor, complete todos los campos requeridos.');
+      this.filtrosForm.markAllAsTouched();
+      return;
+    }
 
-    const { rangoFechas } = this.filtrosForm.value;
-    const fechaInicial: Date = rangoFechas[0];
-    const fechaFinal: Date = rangoFechas[1];
+    let fechaInicial: Date;
+    let fechaFinal: Date;
+
+    if (this.modoFiltroFechas === 'ciclo') {
+      const cicloId = this.filtrosForm.value.ciclo;
+      const selectedCiclo = this.allCiclos.find(c => c.id === cicloId);
+
+      if (selectedCiclo && selectedCiclo.fechaInicio && selectedCiclo.fechaFin) {
+        fechaInicial = new Date(selectedCiclo.fechaInicio);
+        fechaFinal = new Date(selectedCiclo.fechaFin);
+      } else {
+        this.message.error('No se pudieron obtener las fechas para el ciclo seleccionado.');
+        return;
+      }
+    } else { // modoFiltroFechas === 'rango'
+      const { rangoFechas } = this.filtrosForm.value;
+      if (!rangoFechas || rangoFechas.length !== 2) {
+        this.message.error('Por favor, seleccione un rango de fechas válido.');
+        return;
+      }
+      fechaInicial = rangoFechas[0];
+      fechaFinal = rangoFechas[1];
+    }
 
     this.isLoading = true;
 
     this.consolidadoService.getConsolidado(fechaInicial, fechaFinal).subscribe({
       next: (result) => {
         this.dataOriginal = result;
-        this.filtrarData(); // Aplica el filtro si hay uno
+        this.filtrarData();
       },
       error: (error) => {
         this.message.error('Error al obtener cobertura de clientes');
-        console.log(error);
+        console.error('Error al obtener cobertura de clientes:', error);
+        this.isLoading = false;
       },
       complete: () => {
         this.isLoading = false;
@@ -199,16 +286,19 @@ export class DashboardCoberturaClientesComponent implements OnInit {
     });
   }
 
-  filtrarData(): void {
-    const rep = this.filtroRepresentante.trim().toLowerCase();
-    const reg = this.filtroRegion.trim().toLowerCase();
-    const sec = this.filtroSeccion.trim().toLowerCase();
+filtrarData(): void {
+  const rep = this.filtroRepresentante.trim().toLowerCase();
+  const reg = this.filtroRegion.trim().toLowerCase();
+  const sec = this.filtroSeccion.trim().toLowerCase();
 
-    this.data = this.dataOriginal.filter(
-      (item) =>
-        (!rep || item.representante.toLowerCase().includes(rep)) &&
-        (!reg || item.region.toLowerCase().includes(reg)) &&
-        (!sec || item.seccion.toLowerCase().includes(sec))
-    );
-  }
+  this.data = this.dataOriginal.filter(item =>
+    (!rep || item.representante.toLowerCase().includes(rep)) &&
+    (!reg || item.region.toLowerCase().includes(reg)) &&
+    (!sec || item.seccion.toLowerCase().includes(sec)) &&
+    (
+      this.representantesSeleccionados.length === 0 || 
+      this.representantesSeleccionados.includes(item.representante)
+    )
+  );
+}
 }

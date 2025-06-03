@@ -1,0 +1,63 @@
+<!-- Dropdown -->
+<nz-collapse>
+  <nz-collapse-panel [nzExtra]="extrabutton" [nzHeader]="'Parámetros'" [nzShowArrow]="true" [nzActive]="true">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      Visita
+      <nz-switch [(ngModel)]="columnasVisibles['visita']" [nzDisabled]="!columnasVisibles['venta']"
+        (ngModelChange)="validarVisibilidad('visita')">
+      </nz-switch>
+
+      Venta
+      <nz-switch [(ngModel)]="columnasVisibles['venta']" [nzDisabled]="!columnasVisibles['visita']"
+        (ngModelChange)="validarVisibilidad('venta')">
+      </nz-switch>
+      Cobranza
+      <nz-switch [(ngModel)]="columnasVisibles['venta']" [nzDisabled]="!columnasVisibles['visita']"
+        (ngModelChange)="validarVisibilidad('venta')">
+      </nz-switch>
+    </div>
+  </nz-collapse-panel>
+
+  <nz-collapse-panel [nzExtra]="extrabutton" [nzHeader]="'Clientes'" [nzShowArrow]="true" [nzActive]="true">
+    <ul cdkDropList [cdkDropListData]="seccionesKeys" (cdkDropListDropped)="dropSeccion($event)"
+      class="secciones-lista">
+      <li *ngFor="let key of seccionesKeys" cdkDrag class="seccion-item" (mouseover)="hover = key"
+        (mouseout)="hover = ''" [class.hovered]="hover === key">
+        <span cdkDragHandle class="drag-icon">☰</span>
+        <label nz-checkbox [(ngModel)]="seccionesVisibles[key]">
+          {{ seccionesLabels[key] }}
+        </label>
+      </li>
+    </ul>
+  </nz-collapse-panel>
+
+  <ng-template #extrabutton>
+    <button nzSize="small" nz-button nzType="link" (click)="$event.stopPropagation()">Reestablecer</button>
+  </ng-template>
+
+  <nz-collapse-panel [nzHeader]="'Campos'" [nzShowArrow]="true" [nzActive]="true">
+    <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px; width: 100%;">
+      <div style="display: flex; flex-direction: column; width: 100%;">
+        <p nz-typography>Representante</p>
+        <nz-select [nzOptions]="representanteOptions" nzShowSearch [(ngModel)]="representantesSeleccionados"
+          (ngModelChange)="emitirRepresentantesSeleccionados()" nzAllowClear [nzMaxTagCount]="3" nzMode="multiple"
+          nzPlaceHolder="Seleccionar representante" style="width: 100%;">
+        </nz-select>
+      </div>
+
+      <div style="display: flex; flex-direction: column; width: 100%;">
+        <p nz-typography>Región</p>
+        <input nz-input placeholder="Ej. Sierra" [(ngModel)]="filtroRegion" (ngModelChange)="filtrarData()"
+          name="filtroRegion" style="width: 100%;" />
+      </div>
+
+      <div style="display: flex; flex-direction: column; width: 100%;">
+        <p nz-typography>Secciones</p>
+        <nz-select [nzOptions]="seccionesOptions" nzShowSearch nzAllowClear [nzMaxTagCount]="3" nzMode="multiple"
+          nzPlaceHolder="Seleccionar secciones" style="width: 100%;">
+        </nz-select>
+      </div>
+    </div>
+
+  </nz-collapse-panel>
+</nz-collapse>

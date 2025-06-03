@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { UnsavedChangesGuard } from '../../core/guards/unsaved-changes.guard';
 
 export const ADMINISTRACION_ROUTES: Routes = [
   {
@@ -19,11 +20,12 @@ export const ADMINISTRACION_ROUTES: Routes = [
           import('./pages/parrilla-promocional/carga-parrilla-promocional/carga-parrilla-promocional.component').then(
             (c) => c.CargaParrillaPromocionalComponent
           ),
+        canDeactivate: [UnsavedChangesGuard],
         title: 'Parrilla Promocional',
       }
     ],
   },
-    {
+  {
     path: 'guia-productos',
     loadComponent: () =>
       import(
@@ -39,22 +41,22 @@ export const ADMINISTRACION_ROUTES: Routes = [
         title: 'Guía de Productos',
       },
       {
-      path: 'nueva-guia',
-      loadComponent: () =>
-        import('./components/guias-producto/formulario-guias-producto/formulario-guias-producto.component').then(
-          (c) => c.FormularioGuiasProductoComponent
-        ),
-      title: 'Nueva Guía de Producto',
-    },
+        path: 'nueva-guia',
+        loadComponent: () =>
+          import('./components/guias-producto/formulario-guias-producto/formulario-guias-producto.component').then(
+            (c) => c.FormularioGuiasProductoComponent
+          ),
+        title: 'Nueva Guía de Producto',
+      },
 
-    {
-      path: ':id',
-      loadComponent: () =>
-        import('./components/guias-producto/formulario-guias-producto/formulario-guias-producto.component').then(
-          (c) => c.FormularioGuiasProductoComponent
-        ),
-      title: 'Editar Guía de Producto',
-    }
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./components/guias-producto/formulario-guias-producto/formulario-guias-producto.component').then(
+            (c) => c.FormularioGuiasProductoComponent
+          ),
+        title: 'Editar Guía de Producto',
+      }
     ],
   },
 ];

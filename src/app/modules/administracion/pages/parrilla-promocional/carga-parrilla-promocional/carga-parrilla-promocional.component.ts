@@ -25,13 +25,14 @@ import {
   ArchivoTemporalGuardadoDTO,
   ParrillaPromocionalDTO,
 } from '../../../interfaces/parrilla-api.response';
-import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { ArchivoService } from '../../../../../core/services/archivo-service/archivo.service';
 import { Subscription } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { CanExitWithUnsavedChanges } from '../../../../../core/guards/unsaved-changes';
 
 @Component({
   selector: 'app-carga-parrilla-promocional',
@@ -55,7 +56,7 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
   templateUrl: './carga-parrilla-promocional.component.html',
   styleUrl: './carga-parrilla-promocional.component.less',
 })
-export class CargaParrillaPromocionalComponent implements OnInit {
+export class CargaParrillaPromocionalComponent implements OnInit, CanExitWithUnsavedChanges {
   form!: FormGroup;
 
   archivoTemp: ArchivoTemporalGuardadoDTO | null = null;
@@ -73,8 +74,9 @@ export class CargaParrillaPromocionalComponent implements OnInit {
     private parrillaState: ParrillaPromocionalStateService,
     private parrillaService: ParrillaPromocionalService,
     private archivoService: ArchivoService,
-    private message: NzMessageService
-  ) {}
+    private message: NzMessageService,
+    private modal: NzModalService
+  ) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -102,6 +104,24 @@ export class CargaParrillaPromocionalComponent implements OnInit {
       return;
     }
 
+    const hayArchivoExistente = this.parrilla?.urlArchivo;
+    const hayNuevoArchivo = this.archivoTemp !== null;
+
+    if (hayArchivoExistente && hayNuevoArchivo) {
+      this.modal.confirm({
+        nzTitle: '¿Deseas reemplazar el archivo existente?',
+        nzContent: `Ya hay un archivo guardado: "${this.parrilla?.nombreArchivo}". Si continúas, será reemplazado.`,
+        nzOkText: 'Sí, continuar',
+        nzCancelText: 'Cancelar',
+        nzOnOk: () => this.ejecutarGuardado(),
+      });
+      return;
+    }
+
+    this.ejecutarGuardado();
+  }
+
+  private ejecutarGuardado(): void {
     const payload = {
       ...this.form.value,
       archivo: this.archivoTemp,
@@ -178,6 +198,11 @@ export class CargaParrillaPromocionalComponent implements OnInit {
     }
     return true;
   };
+
+
+  hasUnsavedChanges(): boolean {
+    return this.form.dirty || this.archivoTemp !== null;
+  }
 
   handleChange({ file, fileList }: NzUploadChangeParam): void {
     const status = file.status;
