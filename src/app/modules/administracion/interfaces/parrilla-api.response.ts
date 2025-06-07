@@ -17,5 +17,5 @@ export interface ArchivoTemporalGuardadoDTO {
 export interface CrearParrillaPromocionalDTO{
   nombre: string,
   descripcion: string,
-  archivo: ArchivoTemporalGuardadoDTO
+  archivo?: ArchivoTemporalGuardadoDTO
 }

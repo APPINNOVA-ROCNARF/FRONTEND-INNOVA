@@ -17,9 +17,14 @@
     </div>
 
     <nz-divider></nz-divider>
+    <app-filtros-guias-productos>
+      
+    </app-filtros-guias-productos>
+    <nz-divider></nz-divider>
 
     <app-tabla-guias-producto
     [guias]="guias()"
     [loading]="loadingGuias()"
     (eliminar)="eliminarGuia($event)"
+    [sortFns]="sortFns"
     ></app-tabla-guias-producto>

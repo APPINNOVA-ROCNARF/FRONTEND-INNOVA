@@ -12,7 +12,6 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { TablaBaseComponent } from '../../../../../shared/components/tabla-base/tabla-base.component';
 import { TableColumn } from '../../../../../shared/components/tabla-base/Interfaces/TablaColumna.interface';
 import { RolStateService } from '../../../services/roles/rol-state.service';
 import { RolSimple } from '../../../interfaces/rol-api-response';
@@ -32,7 +31,6 @@ import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
     NzButtonModule,
     NzTypographyModule,
     NzIconModule,
-    TablaBaseComponent,
     NzTagModule,
     NzDividerModule,
     NzSkeletonModule

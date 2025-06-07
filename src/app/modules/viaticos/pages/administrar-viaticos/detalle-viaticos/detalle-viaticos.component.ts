@@ -69,8 +69,8 @@ export class DetalleViaticosComponent implements OnInit {
 
   // MODAL HISTORIAL
   modalHistorialVisible = false;
-  historialViaticoData: HistorialViatico[] = [];
-  loadingHistorialViaticoFlag = false;
+  historialViaticoData!: Signal<HistorialViatico[]>;
+  loadingHistorialViatico!: Signal<boolean>;
 
   constructor(
     private route: ActivatedRoute,
@@ -306,11 +306,9 @@ export class DetalleViaticosComponent implements OnInit {
   abrirModalHistorial(viaticoId: number): void {
     this.viaticoState.fetchHistorial(viaticoId, true);
 
-    setTimeout(() => {
-      this.historialViaticoData = this.viaticoState.historial(viaticoId)();
-      this.loadingHistorialViaticoFlag = this.viaticoState.getHistorialLoading(viaticoId)();
+      this.historialViaticoData = this.viaticoState.historial(viaticoId);
+      this.loadingHistorialViatico = this.viaticoState.getHistorialLoading(viaticoId);
       this.modalHistorialVisible = true;
-    }, 100); 
   }
 
 

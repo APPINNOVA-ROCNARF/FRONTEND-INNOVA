@@ -29,10 +29,19 @@ export class TablaGuiasProductoComponent {
   @Input() guias: GuiaProducto[] = [];
   @Input() loading = false;
   @Output() eliminar = new EventEmitter<number>();
+  pageSize = 25;
+  pageIndex = 1;
+
+  @Input() sortFns: Record<string, (a: GuiaProducto, b: GuiaProducto) => number> = {};
+  
 
   constructor(public router: Router, public route: ActivatedRoute) {}
 
   eliminarGuia(GuiaId: number): void {
     this.eliminar.emit(GuiaId);
   }
+
+onPageIndexChange(index: number): void {
+  this.pageIndex = index;
+}
 }

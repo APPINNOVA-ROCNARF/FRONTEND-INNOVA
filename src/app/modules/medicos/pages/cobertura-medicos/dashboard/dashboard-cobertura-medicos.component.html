@@ -1,122 +1,98 @@
-<h2 nz-typography>Cobertura a Médicos</h2>
+<h2 nz-typography>Cobertura de Médicos</h2>
 
+<nz-divider></nz-divider>
 
-<form nz-form [formGroup]="filtrosForm" (ngSubmit)="buscar()" nzLayout="horizontal">
-    <!-- Rango de Fechas -->
-      <nz-form-item>
-        <nz-form-control>
-          <nz-range-picker
-            id="rangoFechas"
-            class="w-full"
-            formControlName="rangoFechas"
-            [nzFormat]="'yyyy-MM-dd'"
-          ></nz-range-picker>
-        </nz-form-control>
-      </nz-form-item>
-    
-    <!-- Sección -->
-      <nz-form-item>
-        <nz-form-control>
-          <input
-            id="seccion"
-            nz-input
-            formControlName="seccion"
-            placeholder="Filtrar por sección" 
-          />
-        </nz-form-control>
-      </nz-form-item>
-    
-    <!-- Representante -->
-      <nz-form-item>
-        <nz-form-control>
-          <input
-            id="representante"
-            nz-input
-            formControlName="representante"
-            placeholder="Filtrar por representante" 
-          />
-        </nz-form-control>
-      </nz-form-item>
-        
-    <!-- Botón Buscar -->
-      <nz-form-item>
-        <nz-form-control>
-          <button 
-            nz-button 
-            nzType="primary" 
-            [disabled]="filtrosForm.invalid" 
-            [nzLoading]="isLoading"
-          >
-            Buscar
-          </button>
-        </nz-form-control>
-      </nz-form-item>
-
-</form>
-
-
-
-
-<nz-table
-  #tabla
-  [nzData]="data"
-  [nzBordered]="true"
-  [nzSize]="'small'"
-  [nzPageSize]=25
-  [nzLoading]="isLoading"
+<div
+  style="
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 12px;
+  "
 >
-  <thead>
-    <tr>
-      <th rowspan="2">Sección</th>
-      <th rowspan="2">Representante</th>
-      <th rowspan="2">Fuerza</th>
-      <th colspan="4">Total</th>
-      <th colspan="4">Revisitas</th>
-      <th colspan="4">Clase A</th>
-      <th colspan="4">Clase B</th>
-      <th colspan="4">Clase C</th>
-      <th colspan="4">PC</th>
-    </tr>
-    <tr>
-      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
-      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
-      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
-      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
-      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
-      <th>Med</th><th>Efect</th><th>Pot</th><th>Pts</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let row of tabla.data">
-      <td>{{ row.seccion }}</td>
-      <td>{{ row.representante }}</td>
-      <td>{{ row.fuerzaVenta }}</td>
-      <td>{{ row.totalMed }}</td>
-      <td>{{ row.totalEfect }}</td>
-      <td>{{ row.potencial }}</td>
-      <td>{{ row.puntos }}</td>
-      <td>{{ row.rvMed }}</td>
-      <td>{{ row.rvEfect }}</td>
-      <td>{{ row.rvPot }}</td>
-      <td>{{ row.rvPuntos }}</td>
-      <td>{{ row.aMed }}</td>
-      <td>{{ row.aEfect }}</td>
-      <td>{{ row.aPot }}</td>
-      <td>{{ row.aPuntos }}</td>
-      <td>{{ row.bMed }}</td>
-      <td>{{ row.bEfect }}</td>
-      <td>{{ row.bPot }}</td>
-      <td>{{ row.bPuntos }}</td>
-      <td>{{ row.cMed }}</td>
-      <td>{{ row.cEfect }}</td>
-      <td>{{ row.cPot }}</td>
-      <td>{{ row.cPuntos }}</td>
-      <td>{{ row.pcMed }}</td>
-      <td>{{ row.pcEfect }}</td>
-      <td>{{ row.pcPot }}</td>
-      <td>{{ row.pcPuntos }}</td>
-    </tr>
-  </tbody>
-</nz-table>
+  <nz-radio-group
+    [(ngModel)]="modoFiltroFechas"
+    (ngModelChange)="toggleModoFechas()"
+    nzButtonStyle="solid"
+  >
+    <button nz-radio-button [nzValue]="'ciclo'">Filtrar por ciclo</button>
+    <button nz-radio-button [nzValue]="'rango'">
+      <nz-icon nzType="calendar" /> Filtrar por rango de fechas
+    </button>
+  </nz-radio-group>
 
+  <nz-divider nzType="vertical"></nz-divider>
 
+  <form [formGroup]="filtrosForm" nz-form nzLayout="inline">
+    <nz-form-item *ngIf="modoFiltroFechas === 'ciclo'">
+      <nz-form-control>
+        <nz-select
+          formControlName="ciclo"
+          [nzLoading]="ciclosLoading$()"
+          [nzOptions]="(cicloOpciones$ | async)!"
+          nzPlaceHolder="Seleccione un ciclo"
+          style="width: 280px"
+        ></nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="modoFiltroFechas === 'rango'">
+      <nz-form-control>
+        <nz-range-picker
+          formControlName="rangoFechas"
+          [nzFormat]="'yyyy-MM-dd'"
+          style="width: 280px"
+        ></nz-range-picker>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+  <button
+    nz-button
+    nzType="primary"
+    [disabled]="filtrosForm.invalid"
+    (click)="buscar()"
+    [nzLoading]="isLoading"
+  >
+    <nz-icon nzType="search" />
+    Buscar
+  </button>
+  <nz-divider nzType="vertical"></nz-divider>
+  <button nz-button (click)="open()" nzType="default">
+    <nz-icon nzType="filter" />Filtros
+  </button>
+</div>
+
+<nz-divider></nz-divider>
+
+<nz-drawer
+  [nzClosable]="true"
+  [nzVisible]="visible"
+  [nzPlacement]="'right'"
+  nzTitle="Filtros"
+  [nzBodyStyle]="{ 'background-color': '#fafafa', padding: '0px' }"
+  (nzOnClose)="close()"
+>
+  <ng-container *nzDrawerContent>
+    <app-filtros-cobertura-medicos
+      [representantes$]="asesores$"
+      [representantesSeleccionados]="representantesSeleccionados"
+      (representantesSeleccionadosChange)="
+        onRepresentantesSeleccionadosChange($event)
+      "
+      [regionesSeleccionadas]="regionesSeleccionadas"
+      (regionesChange)="onRegionesSeleccionadasChange($event)"
+      [seccionesSeleccionadas]="seccionesSeleccionadas"
+      (seccionesSeleccionadasChange)="onSeccionesSeleccionadasChange($event)"
+            [secciones$]="secciones$"
+    >
+    </app-filtros-cobertura-medicos>
+  </ng-container>
+</nz-drawer>
+
+<app-tabla-cobertura-medicos
+  [data]="data"
+  [isLoading]="isLoading"
+  [sortFns]="sortFns"
+></app-tabla-cobertura-medicos>

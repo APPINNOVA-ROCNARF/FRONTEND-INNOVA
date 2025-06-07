@@ -23,6 +23,7 @@ import { ParrillaPromocionalService } from '../../../services/parrilla-promocion
 import { CommonModule } from '@angular/common';
 import {
   ArchivoTemporalGuardadoDTO,
+  CrearParrillaPromocionalDTO,
   ParrillaPromocionalDTO,
 } from '../../../interfaces/parrilla-api.response';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
@@ -51,12 +52,14 @@ import { CanExitWithUnsavedChanges } from '../../../../../core/guards/unsaved-ch
     NzModalModule,
     PdfViewerModule,
     NzToolTipModule,
-    NzPopconfirmModule
+    NzPopconfirmModule,
   ],
   templateUrl: './carga-parrilla-promocional.component.html',
   styleUrl: './carga-parrilla-promocional.component.less',
 })
-export class CargaParrillaPromocionalComponent implements OnInit, CanExitWithUnsavedChanges {
+export class CargaParrillaPromocionalComponent
+  implements OnInit, CanExitWithUnsavedChanges
+{
   form!: FormGroup;
 
   archivoTemp: ArchivoTemporalGuardadoDTO | null = null;
@@ -76,7 +79,7 @@ export class CargaParrillaPromocionalComponent implements OnInit, CanExitWithUns
     private archivoService: ArchivoService,
     private message: NzMessageService,
     private modal: NzModalService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -122,10 +125,13 @@ export class CargaParrillaPromocionalComponent implements OnInit, CanExitWithUns
   }
 
   private ejecutarGuardado(): void {
+    const raw: { nombre: string; descripcion: string } = this.form.value;
+
     const payload = {
-      ...this.form.value,
+      nombre: raw.nombre?.trim() ?? '',
+      descripcion: raw.descripcion?.trim() ?? '',
       archivo: this.archivoTemp,
-    };
+    } as CrearParrillaPromocionalDTO;
 
     this.guardadoEstado.set(true);
 
@@ -169,8 +175,8 @@ export class CargaParrillaPromocionalComponent implements OnInit, CanExitWithUns
       },
       error: () => {
         this.message.error('Error al eliminar archivo');
-      }
-    })
+      },
+    });
   }
 
   customUploadReq = (item: NzUploadXHRArgs): Subscription => {
@@ -198,7 +204,6 @@ export class CargaParrillaPromocionalComponent implements OnInit, CanExitWithUns
     }
     return true;
   };
-
 
   hasUnsavedChanges(): boolean {
     return this.form.dirty || this.archivoTemp !== null;

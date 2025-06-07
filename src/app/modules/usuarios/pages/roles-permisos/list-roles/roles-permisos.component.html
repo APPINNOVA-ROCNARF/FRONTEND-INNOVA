@@ -25,18 +25,7 @@
     [nzActive]="true"
     [nzParagraph]="{ rows: 4 }"
   >
-    <app-tabla-base
-      [data]="(roles$ | async) ?? []"
-      [columns]="columns"
-      [pageSize]="10"
-      [loading]="loading$()"
-      [stateTemplate]="stateTemplate"
-      [showActions]="true"
-      [showEditButton]="canEdit"
-      [showDeleteButton]="canDelete"
-      (edit)="router.navigate(['editar', $event.id], { relativeTo: route })"
-      (delete)="handleDelete($event)"
-    ></app-tabla-base>
+
   </nz-skeleton>
 
 

@@ -1,44 +1,156 @@
-<!-- Dropdown -->
 <nz-collapse nzBordered="false">
+  <nz-collapse-panel
+    [nzHeader]="nzHeaderCampos"
+    [nzShowArrow]="true"
+    [nzActive]="true"
+  >
+    <ng-template #nzHeaderCampos>
+      <span class="titulo-collapse">Campos</span>
+    </ng-template>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+        width: 100%;
+      "
+    >
+      <div style="display: flex; flex-direction: column; width: 100%">
+        <p nz-typography><strong>Secciones</strong></p>
+        <nz-select
+          [nzOptions]="seccionesOptions"
+          nzShowSearch
+          [(ngModel)]="seccionesSeleccionadas"
+          (ngModelChange)="emitirSeccionesSeleccionadas()"
+          nzAllowClear
+          [nzMaxTagCount]="3"
+          nzMode="multiple"
+          nzPlaceHolder="Seleccionar secciones"
+          style="width: 100%"
+        >
+        </nz-select>
+      </div>
+
+      <div style="display: flex; flex-direction: column; width: 100%">
+        <p nz-typography><strong>Representante</strong></p>
+        <nz-select
+          [nzOptions]="representanteOptions"
+          nzShowSearch
+          [(ngModel)]="representantesSeleccionados"
+          (ngModelChange)="emitirRepresentantesSeleccionados()"
+          nzAllowClear
+          [nzMaxTagCount]="3"
+          nzMode="multiple"
+          nzPlaceHolder="Seleccionar representante"
+          style="width: 100%"
+        >
+        </nz-select>
+      </div>
+
+      <div style="display: flex; flex-direction: column; width: 100%">
+        <p nz-typography><strong>Regiones</strong></p>
+        <nz-select
+          [(ngModel)]="regionesSeleccionadas"
+          (ngModelChange)="emitirRegionesSeleccionadas()"
+          nzAllowClear
+          nzPlaceHolder="Seleccionar regiones"
+          nzMode="multiple"
+          style="width: 100%"
+        >
+          <nz-option
+            *ngFor="let region of regiones"
+            [nzValue]="region"
+            [nzLabel]="region"
+          ></nz-option>
+        </nz-select>
+      </div>
+      
+    </div>
+  </nz-collapse-panel>
+
   <nz-collapse-panel
     [nzExtra]="extrabutton"
     [nzHeader]="nzHeader"
     [nzShowArrow]="true"
     [nzActive]="true"
   >
-  <ng-template #nzHeader>
-    <span class="titulo-collapse">Métricas</span>
-  </ng-template>
-  <div style="display: flex; flex-direction: column; gap: 12px; background: #fafafa; padding: 12px; border-radius: 8px">
+    <ng-template #nzHeader>
+      <span class="titulo-collapse">Métricas</span>
+    </ng-template>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: #fafafa;
+        padding: 12px;
+        border-radius: 8px;
+      "
+    >
+      <div
+        style="
+          background: #f0f2f5;
+          border-radius: 6px;
+          padding: 10px 12px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <span>Visita</span>
+        <nz-switch
+          [(ngModel)]="columnasVisibles['visita']"
+          [nzDisabled]="
+            !columnasVisibles['venta'] && !columnasVisibles['cobranza']
+          "
+          (ngModelChange)="validarVisibilidad('visita')"
+        >
+        </nz-switch>
+      </div>
 
-  
-    <div style="background: #f0f2f5; border-radius: 6px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
-      <span>Visita</span>
-      <nz-switch
-        [(ngModel)]="columnasVisibles['visita']"
-        [nzDisabled]="!columnasVisibles['venta']"
-        (ngModelChange)="validarVisibilidad('visita')">
-      </nz-switch>
+      <div
+        style="
+          background: #f0f2f5;
+          border-radius: 6px;
+          padding: 10px 12px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <span>Venta</span>
+        <nz-switch
+          [(ngModel)]="columnasVisibles['venta']"
+          [nzDisabled]="
+            !columnasVisibles['visita'] && !columnasVisibles['cobranza']
+          "
+          (ngModelChange)="validarVisibilidad('venta')"
+        >
+        </nz-switch>
+      </div>
+
+      <div
+        style="
+          background: #f0f2f5;
+          border-radius: 6px;
+          padding: 10px 12px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <span>Cobranza</span>
+        <nz-switch
+          [(ngModel)]="columnasVisibles['cobranza']"
+          [nzDisabled]="
+            !columnasVisibles['visita'] && !columnasVisibles['venta']
+          "
+          (ngModelChange)="validarVisibilidad('cobranza')"
+        >
+        </nz-switch>
+      </div>
     </div>
-  
-    <div style="background: #f0f2f5; border-radius: 6px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
-      <span>Venta</span>
-      <nz-switch
-        [(ngModel)]="columnasVisibles['venta']"
-        [nzDisabled]="!columnasVisibles['visita']"
-        (ngModelChange)="validarVisibilidad('venta')">
-      </nz-switch>
-    </div>
-  
-    <div style="background: #f0f2f5; border-radius: 6px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
-      <span>Cobranza</span>
-      <nz-switch
-        [(ngModel)]="columnasVisibles['cobranza']"
-        [nzDisabled]="!columnasVisibles['visita']"
-        (ngModelChange)="validarVisibilidad('visita')">
-      </nz-switch>
-    </div>
-  </div>
   </nz-collapse-panel>
 
   <nz-collapse-panel
@@ -47,9 +159,9 @@
     [nzShowArrow]="true"
     [nzActive]="true"
   >
-  <ng-template #nzHeaderClientes>
-    <span class="titulo-collapse">Columnas</span>
-  </ng-template>
+    <ng-template #nzHeaderClientes>
+      <span class="titulo-collapse">Columnas</span>
+    </ng-template>
     <ul
       cdkDropList
       [cdkDropListData]="seccionesKeys"
@@ -61,8 +173,11 @@
         cdkDrag
         class="seccion-item"
         (mouseover)="hover = key"
+        (focus)="hover = key"
         (mouseout)="hover = ''"
+        (blur)="hover = ''"
         [class.hovered]="hover === key"
+        tabindex="0"
       >
         <span cdkDragHandle class="drag-icon">☰</span>
         <label nz-checkbox [(ngModel)]="seccionesVisibles[key]">
@@ -83,68 +198,4 @@
     </button>
   </ng-template>
 
-  <nz-collapse-panel
-    [nzHeader]="nzHeaderCampos"
-    [nzShowArrow]="true"
-    [nzActive]="true"
-  >
-  <ng-template #nzHeaderCampos>
-    <span class="titulo-collapse">Campos</span>
-  </ng-template>
-    <div
-      style="
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        margin-bottom: 16px;
-        width: 100%;
-      "
-    >
-    <div style="display: flex; flex-direction: column; width: 100%">
-      <p nz-typography><strong>Secciones</strong></p>
-      <nz-select
-        nzSize="large"
-        [nzOptions]="seccionesOptions"
-        nzShowSearch
-        nzAllowClear
-        [nzMaxTagCount]="3"
-        nzMode="multiple"
-        nzPlaceHolder="Seleccionar secciones"
-        style="width: 100%"
-      >
-      </nz-select>
-    </div>
-
-      <div style="display: flex; flex-direction: column; width: 100%">
-        <p nz-typography><strong>Representante</strong></p>
-        <nz-select
-          nzSize="large"
-          [nzOptions]="representanteOptions"
-          nzShowSearch
-          [(ngModel)]="representantesSeleccionados"
-          (ngModelChange)="emitirRepresentantesSeleccionados()"
-          nzAllowClear
-          [nzMaxTagCount]="3"
-          nzMode="multiple"
-          nzPlaceHolder="Seleccionar representante"
-          style="width: 100%"
-        >
-        </nz-select>
-      </div>
-
-      <div style="display: flex; flex-direction: column; width: 100%">
-        <p nz-typography><strong>Región</strong></p>
-        <input
-        nzSize="large"
-          nz-input
-          placeholder="Ej. Sierra"
-          [(ngModel)]="filtroRegion"
-          (ngModelChange)="filtrarData()"
-          name="filtroRegion"
-          style="width: 100%"
-        />
-      </div>
-
-    </div>
-  </nz-collapse-panel>
 </nz-collapse>

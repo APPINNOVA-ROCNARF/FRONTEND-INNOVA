@@ -35,9 +35,7 @@
     <span style="margin-right: 8px; color: rgba(0, 0, 0, 0.65)"
       >Permitir solicitudes fuera de ciclo</span
     >
-    <nz-switch
-
-    ></nz-switch>
+    <nz-switch></nz-switch>
   </div>
 </div>
 
@@ -47,6 +45,14 @@
 <nz-divider></nz-divider>
 
 <app-tabla-solicitud-viaticos
-  [data]="solicitudViatico()"
+  [data]="solicitudesFiltradas()"
   [loading]="loading$()"
+  [representantes$]="asesores$"
+  [representantesSeleccionados]="representantesSeleccionados()"
+  (representantesSeleccionadosChange)="
+    onRepresentantesSeleccionadosChange($event)
+  "
+  [estadosSeleccionados]="estadosSeleccionados()"
+  (estadoChange)="onEstadosSeleccionadosChange($event)"
+  [sortFns]="sortFns"
 />

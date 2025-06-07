@@ -2,6 +2,7 @@ export interface ResumenCoberturaClientes {
   seccion: string;
   representante: string;
   region: string;
+  fuerza: string;
 
   total_CLACT: number;
   total_CLINC: number;
@@ -27,5 +28,16 @@ export interface ResumenCoberturaClientes {
   porcentaje_Venta_CLINC: number;
   porcentaje_Venta_CONTA: number;
   porcentaje_Venta_CLIZ: number;
-    [key: string]: string | number;
+
+  cobro_CLACT: number;
+  cobro_CLINC: number;
+  cobro_CONTA: number;
+  cobro_CLIZ: number;
+
+  porcentaje_Cobro_CLACT: number;
+  porcentaje_Cobro_CLINC: number;
+  porcentaje_Cobro_CONTA: number;
+  porcentaje_Cobro_CLIZ: number;
+
+  [key: string]: string | number;
 }

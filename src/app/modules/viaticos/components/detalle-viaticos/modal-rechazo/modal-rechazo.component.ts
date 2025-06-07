@@ -47,6 +47,7 @@ export class  ModalRechazoComponent {
     'Monto',
     'Número de Factura',
     'Categoría',
+    'Foto de Factura'
   ];
 
   cerrar(): void {

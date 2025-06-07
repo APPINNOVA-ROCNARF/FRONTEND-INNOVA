@@ -35,8 +35,6 @@ export class CamposRechazadoModalComponent {
 
     constructor(@Inject(NZ_MODAL_DATA) public data: Viatico) {
         this.viatico = data;
-        console.log('🚀 Viatico recibido:', this.viatico);
-
     }
 
 }

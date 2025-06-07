@@ -32,7 +32,10 @@
 <nz-divider></nz-divider>
 <nz-row [nzGutter]="16" nzJustify="start">
   <nz-col [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="12" [nzXl]="12">
-    <nz-card nzTitle="Información de la guía de producto">
+    <nz-card
+      nzTitle="Información de la guía de producto"
+      [nzExtra]="switchEstado"
+    >
       <form [formGroup]="form" nz-form [nzLayout]="'vertical'">
         <nz-row [nzGutter]="16">
           <nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12">
@@ -120,6 +123,15 @@
             </nz-upload>
           </nz-form-control>
         </nz-form-item>
+
+        <ng-template #switchEstado>
+          <nz-switch
+            formControlName="activo"
+            [nzCheckedChildren]="'Activo'"
+            [nzUnCheckedChildren]="'Inactivo'"
+          >
+          </nz-switch>
+        </ng-template>
       </form>
     </nz-card>
   </nz-col>
@@ -149,7 +161,7 @@
                 nz-button
                 nzType="link"
                 nzSize="small"
-                (click)="previewArchivo(archivo.ruta,archivo.extension)"
+                (click)="previewArchivo(archivo.ruta, archivo.extension)"
                 nz-tooltip
                 nzTooltipTitle="Ver"
               >
@@ -198,6 +210,7 @@
   (nzOnCancel)="modalVisible = false"
   [nzFooter]="null"
   [nzWidth]="800"
+  nzDraggable
 >
   <div *nzModalContent>
     <pdf-viewer

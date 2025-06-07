@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { NzTableModule } from 'ng-zorro-antd/table';
-import { CampoRechazado, Facturas, Vehiculo, Viatico } from '../../../interfaces/viatico-api-response';
+import { CampoRechazado, Vehiculo, Viatico } from '../../../interfaces/viatico-api-response';
 import { NzImageService } from 'ng-zorro-antd/image';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -77,13 +77,16 @@ export class TablaViaticoComponent {
   setOfCheckedId = new Set<number>();
   mostrarBarraAcciones = false;
 
-  setEditFacturaId: number | null = null;
-  editFacturaForms = new Map<number, FormGroup>();
+  setEditId: number | null = null;
+  editForms = new Map<number, FormGroup>();
 
 
   camposDevueltos: CampoRechazado[] = [];
   viaticoSeleccionado: Viatico | null = null;
   modalCamposVisible = false;
+
+isPreviewActive = false;
+
 
   constructor(
     private imageService: NzImageService,
@@ -93,6 +96,7 @@ export class TablaViaticoComponent {
   ) { }
 
   previewImagen(rutaRelativa: string): void {
+    this.isPreviewActive = !this.isPreviewActive; 
     const urlCompleta = this.archivoService.getUrlAbsoluta(rutaRelativa);
     this.imageService.preview([{ src: urlCompleta, alt: 'Factura' }]);
   }
@@ -110,11 +114,6 @@ export class TablaViaticoComponent {
     return item.id;
   }
 
-    totalFacturas(facturas: Facturas[]): number {
-    return facturas
-      .map(f => f.monto)
-      .reduce((sum, current) => sum + current, 0);
-  }
   // Filtros
   categoriasFiltro = [
     { text: 'Movilización', value: 'Movilización' },
@@ -155,25 +154,19 @@ export class TablaViaticoComponent {
     this.historial.emit(viaticoId);
   }
 
-  editarViatico(facturaId: number): void {
-  this.setEditFacturaId = facturaId;
+  editarViatico(v: Viatico): void {
+    this.setEditId = v.id;
 
-    this.datos.forEach(viatico => {
-      viatico.facturas.forEach(factura => {
-        if (!this.editFacturaForms.has(factura.id)) {
-          this.editFacturaForms.set(factura.id, this.fb.group({
-            nombreProveedor: [factura.proveedorNombre],
-            numeroFactura: [factura.numeroFactura]
-          }));
-        }
-      });
-    });
+    this.editForms.set(v.id, this.fb.group({
+      nombreProveedor: [v.nombreProveedor],
+      numeroFactura: [v.numeroFactura]
+    }));
   }
 
 
 
-  guardarEdicion(facturaId: number): void {
-  const form = this.editFacturaForms.get(facturaId);
+  guardarEdicion(v: Viatico): void {
+    const form = this.editForms.get(v.id);
     if (!form || !form.dirty) {
       this.cancelarEdicion();
       return;
@@ -182,7 +175,7 @@ export class TablaViaticoComponent {
     const { nombreProveedor, numeroFactura } = form.value;
 
     this.editar.emit({
-      id: facturaId,
+      id: v.id,
       nombreProveedor,
       numeroFactura
     });
@@ -191,8 +184,11 @@ export class TablaViaticoComponent {
   }
 
 
-  cancelarEdicion() {
-    this.setEditFacturaId = null;
+  cancelarEdicion(): void {
+    if (this.setEditId !== null) {
+      this.editForms.delete(this.setEditId);
+    }
+    this.setEditId = null;
   }
 
 

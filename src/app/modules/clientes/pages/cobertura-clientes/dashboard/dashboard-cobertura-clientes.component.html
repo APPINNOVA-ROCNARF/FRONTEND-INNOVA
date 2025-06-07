@@ -1,7 +1,6 @@
 <h2 nz-typography>Cobertura de Clientes</h2>
 
 <nz-divider></nz-divider>
-<!-- Fila 1: Filtros rápidos -->
 <div
   style="
     display: flex;
@@ -18,9 +17,11 @@
   >
     <button nz-radio-button [nzValue]="'ciclo'">Filtrar por ciclo</button>
     <button nz-radio-button [nzValue]="'rango'">
-      <nz-icon nzType="calendar"/> Filtrar por rango de fechas
+      <nz-icon nzType="calendar" /> Filtrar por rango de fechas
     </button>
   </nz-radio-group>
+
+  <nz-divider nzType="vertical"></nz-divider>
 
   <form [formGroup]="filtrosForm" nz-form nzLayout="inline">
     <nz-form-item *ngIf="modoFiltroFechas === 'ciclo'">
@@ -30,7 +31,7 @@
           [nzLoading]="ciclosLoading$()"
           [nzOptions]="(cicloOpciones$ | async)!"
           nzPlaceHolder="Seleccione un ciclo"
-          style="width: 300px"
+          style="width: 280px"
         ></nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -61,17 +62,33 @@
     <nz-icon nzType="filter" />Filtros
   </button>
 </div>
+
+<nz-divider></nz-divider>
 <!-- Fila 3: Tags -->
-<nz-space
-  *ngIf="filtrosActivos.length"
-  size="small"
-  wrap
-  style="margin-top: 8px"
+<div
+  *ngIf="filtrosColumnas.length || filtrosSecciones.length"
+  style="
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  "
 >
-  <nz-tag *ngFor="let filtro of filtrosActivos" nzColor="blue">
-    {{ filtro }}
-  </nz-tag>
-</nz-space>
+  <span style="color: #999">Columnas:</span>
+  <ng-container *ngFor="let columna of filtrosColumnas">
+    <nz-tag nzColor="default">
+      {{ columna }}
+    </nz-tag>
+  </ng-container>
+
+  <span style="color: #999">Secciones:</span>
+  <ng-container *ngFor="let seccion of filtrosSecciones">
+    <nz-tag nzColor="default">
+      {{ seccion }}
+    </nz-tag>
+  </ng-container>
+</div>
 
 <nz-divider></nz-divider>
 
@@ -90,15 +107,16 @@
       (representantesSeleccionadosChange)="
         onRepresentantesSeleccionadosChange($event)
       "
+      [regionesSeleccionadas]="regionesSeleccionadas"
+      (regionesChange)="onRegionesSeleccionadasChange($event)"
+      [seccionesSeleccionadas]="seccionesSeleccionadas"
+      (seccionesSeleccionadasChange)="onSeccionesSeleccionadasChange($event)"
       [secciones$]="secciones$"
       [columnasVisibles]="columnasVisibles"
       [seccionesVisibles]="seccionesVisibles"
       [seccionesKeys]="seccionesKeys"
       [seccionesLabels]="seccionesLabels"
-      [filtroRegion]="filtroRegion"
-      [filtroSeccion]="filtroSeccion"
       (drop)="dropSeccion($event)"
-      (filtroChange)="filtrarData()"
     ></app-filtros-cobertura-clientes>
   </ng-container>
 </nz-drawer>

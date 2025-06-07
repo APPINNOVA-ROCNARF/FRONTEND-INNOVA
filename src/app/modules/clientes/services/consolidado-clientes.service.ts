@@ -8,7 +8,7 @@ import { ResumenCoberturaClientes } from '../interfaces/consolidado-clientes-api
   providedIn: 'root',
 })
 export class ConsolidadoCoberturaClientesService {
-  private baseUrl = 'http://localhost:5000/api/clientes/cobertura-clientes';
+  private baseUrl = 'http://200.105.252.218/rocnarf/api/clientes/cobertura-clientes';
 
   constructor(private http: HttpClient) {}
 

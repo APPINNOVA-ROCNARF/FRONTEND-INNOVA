@@ -1,26 +1,39 @@
+<div class="info-tabla" *ngIf="guias.length > 0">
+  Mostrando {{ (pageIndex - 1) * pageSize + 1 }} –
+  {{
+    (pageIndex * pageSize) > guias.length
+      ? guias.length
+      : (pageIndex * pageSize)
+  }} de {{ guias.length }} resultados
+</div>
+
 <nz-table
+  #tabla
   [nzData]="guias"
   [nzLoading]="loading"
   [nzBordered]="true"
   [nzSize]="'middle'"
-  [nzShowPagination]="false"
+  [nzPageSize]="pageSize"
+  [nzPageIndex]="pageIndex"
+  [nzShowPagination]="true"
+  (nzPageIndexChange)="onPageIndexChange($event)"
 >
   <thead>
     <tr>
-      <th>Marca</th>
-      <th>Nombre</th>
-      <th>Fuerza</th>
-      <th>Estado</th>
+      <th [nzShowSort]="true" [nzSortFn]="sortFns['marca']">Marca</th>
+      <th [nzShowSort]="true" [nzSortFn]="sortFns['nombre']">Nombre</th>
+      <th [nzShowSort]="true" [nzSortFn]="sortFns['fuerza']">Fuerza</th>
+      <th [width]="150">Estado</th>
       <th [width]="100">Acciones</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let guia of guias">
+    <tr *ngFor="let guia of tabla.data">
       <td>{{ guia.marca }}</td>
       <td>{{ guia.nombre }}</td>
       <td>{{ guia.fuerza }}</td>
       <td>
-        <nz-tag [nzColor]="guia.activo ? 'green' : 'red'">
+        <nz-tag [nzColor]="guia.activo ? 'green' : 'orange'">
           {{ guia.activo ? "Activo" : "Inactivo" }}
         </nz-tag>
       </td>
@@ -33,8 +46,8 @@
           nzSize="small"
           (click)="router.navigate([guia.id], { relativeTo: route })"
         >
-        <nz-icon nzType="edit"></nz-icon>
-      </button>
+          <nz-icon nzType="edit"></nz-icon>
+        </button>
         <nz-divider nzType="vertical"></nz-divider>
         <button
           nz-tooltip
@@ -47,9 +60,9 @@
           (nzOnConfirm)="eliminarGuia(guia.id)"
           nzSize="small"
         >
-        <i></i>
-        <nz-icon nzType="delete"></nz-icon>
-      </button>
+          <i></i>
+          <nz-icon nzType="delete"></nz-icon>
+        </button>
       </td>
     </tr>
   </tbody>

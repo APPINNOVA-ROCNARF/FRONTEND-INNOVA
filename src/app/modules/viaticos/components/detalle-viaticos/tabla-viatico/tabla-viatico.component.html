@@ -1,103 +1,143 @@
-<nz-table [nzOuterBordered]="true" #dynamicTable [nzData]="datos" [nzLoading]="loadingDatos" nzSize="middle"
-  nzShowPagination="false" (nzCurrentPageDataChange)="onCurrentPageDataChange(datos)">
-  <thead>
-    <tr>
-      <th></th>
-      <th nzWidth="60px" [(nzChecked)]="checked" [nzIndeterminate]="indeterminate"
-        (nzCheckedChange)="onAllChecked($event)"></th>
-      <th>Fecha</th>
-      <th [nzFilters]="categoriasFiltro" [nzFilterFn]="filtroCategoria">
-        Concepto
-      </th>
-      <th>Proveedor</th>
-      <th>N° Factura</th>
-      <th>Monto</th>
-      <th [nzFilters]="estadosFiltro" [nzFilterFn]="filtroEstado">Estado</th>
-      <th nzWidth="100px">Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <ng-container *ngFor="let v of dynamicTable.data; trackBy: trackById">
-      <tr [ngClass]="{ 'fila-deshabilitada': v.estadoViatico === 'Borrador' }">
-        <td *ngIf="v.facturas.length > 1" [(nzExpand)]="v.expand"></td>
-        <td *ngIf="v.facturas.length <= 1"></td>
-        <td nzShowCheckbox [nzDisabled]="v.estadoViatico === 'Aprobado' || v.estadoViatico === 'Borrador'"
-          [nzChecked]="setOfCheckedId.has(v.id)" (nzCheckedChange)="onItemChecked(v.id, $event)"></td>
-        <td>
-          <ng-container *ngIf="v.facturas.length === 1; else espacioVacio">
-            {{ v.facturas[0].fechaFactura | date:'medium' }}
-          </ng-container>
-        </td>
+<div style="overflow-x: auto; min-width: 100%">
+  <nz-table
+    [nzOuterBordered]="true"
+    #dynamicTable
+    [nzData]="datos"
+    [nzLoading]="loadingDatos"
+    nzSize="middle"
+    [nzScroll]="{ x: 'max-content' }"
+    nzShowPagination="false"
+    (nzCurrentPageDataChange)="onCurrentPageDataChange(datos)"
+  >
+    <thead>
+      <tr>
+        <th
+          nzWidth="60px"
+          [(nzChecked)]="checked"
+          [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="onAllChecked($event)"
+        ></th>
+        <th>Fecha</th>
+        <th [nzFilters]="categoriasFiltro" [nzFilterFn]="filtroCategoria">
+          Concepto
+        </th>
+        <th>Proveedor</th>
+        <th>N° Factura</th>
+        <th>Monto</th>
+        <th [nzFilters]="estadosFiltro" [nzFilterFn]="filtroEstado">Estado</th>
+        <th nzWidth="100px">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let v of dynamicTable.data"
+        [ngClass]="{ 'fila-deshabilitada': v.estadoViatico === 'Borrador' }"
+      >
+        <td
+          nzShowCheckbox
+          [nzDisabled]="
+            v.estadoViatico === 'Aprobado' || v.estadoViatico === 'Borrador'
+          "
+          [nzChecked]="setOfCheckedId.has(v.id)"
+          (nzCheckedChange)="onItemChecked(v.id, $event)"
+        ></td>
+        <td>{{ v.fechaFactura | date : "medium" }}</td>
         <td>
           <nz-tag [nzColor]="v.nombreCategoria | categoriaColor">
-            {{ v.nombreCategoria }}<ng-container *ngIf="v.nombreSubcategoria"> / {{ v.nombreSubcategoria
-              }}</ng-container>
+            {{ v.nombreCategoria }}
           </nz-tag>
         </td>
         <td>
-          <ng-container
-            *ngIf="v.facturas.length === 1 && !v.expand && setEditFacturaId === v.facturas[0].id; else displayProveedor">
-            <form [formGroup]="editFacturaForms.get(v.facturas[0].id)!">
+          <ng-container *ngIf="setEditId === v.id; else mostrarProveedor">
+            <form [formGroup]="editForms.get(v.id)!">
               <input nz-input type="text" formControlName="nombreProveedor" />
             </form>
           </ng-container>
-
-          <!-- Template de display: o mostramos el proveedor o dejamos vacío -->
-          <ng-template #displayProveedor>
-            <ng-container *ngIf="v.facturas.length === 1; else espacioVacio">
-              {{v.facturas[0].proveedorNombre}}
-            </ng-container>
+          <ng-template #mostrarProveedor>
+            {{ v.nombreProveedor }}
           </ng-template>
-
         </td>
         <td>
-          <ng-container
-            *ngIf="v.facturas.length === 1 && !v.expand && setEditFacturaId === v.facturas[0].id; else displayFactura">
-            <form [formGroup]="editFacturaForms.get(v.facturas[0].id)!">
+          <ng-container *ngIf="setEditId === v.id; else mostrarFactura">
+            <form [formGroup]="editForms.get(v.id)!">
               <input nz-input type="text" formControlName="numeroFactura" />
             </form>
           </ng-container>
-
-          <!-- Modo vista: solo mostramos si hay una factura -->
-          <ng-template #displayFactura>
-            <ng-container *ngIf="v.facturas.length === 1; else espacioVacio">
-              {{ v.facturas[0].numeroFactura }}
-            </ng-container>
+          <ng-template #mostrarFactura>
+            {{ v.numeroFactura }}
           </ng-template>
         </td>
-
+        <td>{{ v.monto | currency : "USD" : "symbol" }}</td>
         <td>
-          {{ totalFacturas(v.facturas) | currency:'USD':'symbol' }}
-        </td>
-        <td>
-          <nz-tag *ngIf="v.estadoViatico | estadoViatico as tag" [nzColor]="tag.color">
+          <nz-tag
+            *ngIf="v.estadoViatico | estadoViatico as tag"
+            [nzColor]="tag.color"
+          >
             {{ tag.texto }}
           </nz-tag>
-
         </td>
         <td style="text-align: right">
           <div style="display: flex; gap: 4px; justify-content: flex-end">
-            <ng-container
-              *ngIf="v.facturas.length === 1 && !v.expand && setEditFacturaId === v.facturas[0].id; else accionesNormales">
-              <button nz-button nzType="link" nzSize="small" (click)="guardarEdicion(v.facturas[0].id)">Guardar</button>
-              <button nz-button nzType="link" nzSize="small" (click)="cancelarEdicion()">Cancelar</button>
+            <ng-container *ngIf="setEditId === v.id; else accionesNormales">
+              <button
+                nz-button
+                nzType="link"
+                nzSize="small"
+                (click)="guardarEdicion(v)"
+              >
+                Guardar
+              </button>
+              <button
+                nz-button
+                nzType="link"
+                nzSize="small"
+                (click)="cancelarEdicion()"
+              >
+                Cancelar
+              </button>
             </ng-container>
             <ng-template #accionesNormales>
-              <button *ngIf="v.facturas.length === 1" nz-button nzType="link" nzSize="default"
-                (click)="previewImagen(v.facturas[0].rutaImagen)" nz-tooltip nzTooltipTitle="Ver factura">
-                <i nz-icon nzType="file-search"></i>
+              <button
+                nz-button
+                nzType="link"
+                nzSize="default"
+                (click)="previewImagen(v.rutaImagen)"
+                nz-tooltip
+                nzTooltipTitle="{{ isPreviewActive ? 'Factura vista' : 'Ver factura' }}"
+              >
+    <i nz-icon nzType="{{ isPreviewActive ? 'file-done' : 'file-search' }}"></i>
               </button>
-              <button *ngIf="v.nombreCategoria === 'Movilización'" nz-button nzType="link" nzSize="default"
-                (click)="verVehiculo(v.vehiculo)" nz-tooltip nzTooltipTitle="Ver vehículo">
+              <button
+                *ngIf="v.nombreCategoria === 'Movilización'"
+                nz-button
+                nzType="link"
+                nzSize="default"
+                (click)="verVehiculo(v.vehiculo)"
+                nz-tooltip
+                nzTooltipTitle="Ver vehículo"
+              >
                 <i nz-icon nzType="car"></i>
               </button>
-              <button *ngIf="v.estadoViatico === 'Devuelto'" nz-button nzType="link" nzSize="default"
-                (click)="verCamposRechazados(v)" nz-tooltip nzTooltipTitle="Ver campos devueltos">
+              <button
+                *ngIf="v.estadoViatico === 'Devuelto'"
+                nz-button
+                nzType="link"
+                nzSize="default"
+                (click)="verCamposRechazados(v)"
+                nz-tooltip
+                nzTooltipTitle="Ver campos devueltos"
+              >
                 <i nz-icon nzType="info-circle"></i>
               </button>
               <ng-container *ngIf="!(setOfCheckedId.size > 0)">
                 <a nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
-                  <button nz-button nzType="link" nzSize="default" nz-tooltip nzTooltipTitle="Opciones">
+                  <button
+                    nz-button
+                    nzType="link"
+                    nzSize="default"
+                    nz-tooltip
+                    nzTooltipTitle="Opciones"
+                  >
                     <i nz-icon nzType="ellipsis"></i>
                   </button>
                 </a>
@@ -106,24 +146,56 @@
 
             <nz-dropdown-menu #menu="nzDropdownMenu">
               <ul nz-menu>
-                <li *ngIf="v.facturas.length === 1" nz-menu-item role="button" tabindex="0"
-                  (click)="editarViatico(v.facturas[0].id)" (keydown.enter)="editarViatico(v.facturas[0].id)">
+                <li
+                  nz-menu-item
+                  role="button"
+                  tabindex="0"
+                  (click)="editarViatico(v)"
+                  (keydown.enter)="aprobarViatico(v.id)"
+                >
                   <i nz-icon nzType="edit" nzTheme="fill"></i> Editar
                 </li>
-                <li nz-menu-item role="button" tabindex="0" [nzDisabled]="v.estadoViatico === 'Aprobado'"
-                  (click)="aprobarViatico(v.id)" (keydown.enter)="aprobarViatico(v.id)">
+                <li
+                  nz-menu-item
+                  role="button"
+                  tabindex="0"
+                  [nzDisabled]="v.estadoViatico === 'Aprobado'"
+                  (click)="aprobarViatico(v.id)"
+                  (keydown.enter)="aprobarViatico(v.id)"
+                >
                   <i nz-icon nzType="check-circle"></i> Aprobar
                 </li>
-                <li nz-menu-item role="button" tabindex="0" [nzDisabled]="v.estadoViatico === 'Devuelto' || v.estadoViatico === 'Rechazado'"
-                  (click)="devolverViatico(v.id)" (keydown.enter)="devolverViatico(v.id)">
+                <li
+                  nz-menu-item
+                  role="button"
+                  tabindex="0"
+                  [nzDisabled]="
+                    v.estadoViatico === 'Devuelto' ||
+                    v.estadoViatico === 'Rechazado'
+                  "
+                  (click)="devolverViatico(v.id)"
+                  (keydown.enter)="devolverViatico(v.id)"
+                >
                   <i nz-icon nzType="redo"></i> Devolver
                 </li>
-                <li nz-menu-item role="button" tabindex="0" nzDanger [nzDisabled]="v.estadoViatico === 'Rechazado'"
-                  (click)="rechazarViatico(v.id)" (keydown.enter)="rechazarViatico(v.id)">
+                <li
+                  nz-menu-item
+                  role="button"
+                  tabindex="0"
+                  nzDanger
+                  [nzDisabled]="v.estadoViatico === 'Rechazado'"
+                  (click)="rechazarViatico(v.id)"
+                  (keydown.enter)="rechazarViatico(v.id)"
+                >
                   <i nz-icon nzType="close-circle"></i> Rechazar
                 </li>
-                <li nz-menu-item role="button" tabindex="0"
-                  (click)="historialViatico(v.id)" (keydown.enter)="historialViatico(v.id)">
+                <li
+                  nz-menu-item
+                  role="button"
+                  tabindex="0"
+                  (click)="historialViatico(v.id)"
+                  (keydown.enter)="historialViatico(v.id)"
+                >
                   <i nz-icon nzType="history"></i> Historial
                 </li>
               </ul>
@@ -131,77 +203,25 @@
           </div>
         </td>
       </tr>
-      <tr *ngIf="v.expand">
-        <td [attr.colspan]="9">
-          <nz-table [nzData]="v.facturas" nzSize="small" [nzScroll]="{ x: '100%' }" nzShowPagination="false">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Proveedor</th>
-                <th>N° Factura</th>
-                <th>Monto</th>
-                <th nzWidth="100px">Acciones</th>
-              </tr>
-            </thead>
-  <tbody>
-    <tr *ngFor="let f of v.facturas">
-      <td>{{ f.fechaFactura | date:'medium' }}</td>
-      <td>
-        <ng-container *ngIf="setEditFacturaId === f.id; else verProveedor">
-          <form [formGroup]="editFacturaForms.get(f.id)!">
-            <input nz-input type="text" formControlName="nombreProveedor" />
-          </form>
-        </ng-container>
-        <ng-template #verProveedor>{{ f.proveedorNombre }}</ng-template>
-      </td>
-      <td>
-        <ng-container *ngIf="setEditFacturaId === f.id; else verNumero">
-          <form [formGroup]="editFacturaForms.get(f.id)!">
-            <input nz-input type="text" formControlName="numeroFactura" />
-          </form>
-        </ng-container>
-        <ng-template #verNumero>{{ f.numeroFactura }}</ng-template>
-      </td>
-      <td>{{ f.monto | currency:'USD':'symbol' }}</td>
-      <td>
-        <div style="display: flex; gap: 4px; justify-content: flex-end">
-          <ng-container *ngIf="setEditFacturaId === f.id; else accionesNormales">
-            <button nz-button nzType="link" nzSize="small" (click)="guardarEdicion(f.id)">Guardar</button>
-            <button nz-button nzType="link" nzSize="small" (click)="cancelarEdicion()">Cancelar</button>
-          </ng-container>
-          <ng-template #accionesNormales>
-            <button nz-button nzType="link" nzSize="default" (click)="previewImagen(f.rutaImagen)" nz-tooltip
-              nzTooltipTitle="Ver factura">
-              <i nz-icon nzType="file-search"></i>
-            </button>
-            <button nz-button nzType="link" nzSize="default" (click)="editarViatico(f.id)" nz-tooltip
-              nzTooltipTitle="Editar">
-              <i nz-icon nzType="edit"></i>
-            </button>
-          </ng-template>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
-</td>
-</tr>
-</ng-container>
-</tbody>
-</nz-table>
+    </tbody>
+  </nz-table>
+</div>
 
-<ng-template #espacioVacio>
-  -
-</ng-template>
-
-
-<div *ngIf="mostrarBarraAcciones" class="floating-action-bar" [@slideUpFadeDown]>
+<div
+  *ngIf="mostrarBarraAcciones"
+  class="floating-action-bar"
+  [@slideUpFadeDown]
+>
   <div class="floating-action-content">
     <div class="floating-selected-info">
-      <nz-badge nzStandalone [nzCount]="setOfCheckedId.size" [nzStyle]="{
+      <nz-badge
+        nzStandalone
+        [nzCount]="setOfCheckedId.size"
+        [nzStyle]="{
           backgroundColor: '#e9f2f3',
           color: '#007f8c'
-        }"></nz-badge>
+        }"
+      ></nz-badge>
       <span class="floating-selected-text">Viáticos seleccionados</span>
     </div>
 
@@ -209,7 +229,12 @@
       <button nz-button nzType="primary" (click)="aprobarSeleccionados()">
         <i nz-icon nzType="check-circle" nzTheme="outline"></i> Aprobar
       </button>
-      <button nz-button nzType="text" nzShape="circle" (click)="limpiarSeleccion()">
+      <button
+        nz-button
+        nzType="text"
+        nzShape="circle"
+        (click)="limpiarSeleccion()"
+      >
         <i nz-icon nzType="close"></i>
       </button>
     </div>

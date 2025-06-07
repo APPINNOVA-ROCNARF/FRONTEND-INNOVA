@@ -1,0 +1,84 @@
+<div style="overflow-x: auto; min-width: 100%">
+  <nz-table
+    #tabla
+    [nzData]="data"
+    [nzBordered]="true"
+    [nzSize]="'small'"
+    [nzPageSize]="25"
+    [nzLoading]="isLoading"
+    [nzScroll]="{ x: 'max-content' }"
+  >
+    <thead>
+      <tr>
+        <th rowspan="2" [nzShowSort]="true" [nzSortFn]="sortFns['seccion']">Sección</th>
+        <th rowspan="2" [nzShowSort]="true" [nzSortFn]="sortFns['representante']">Representante</th>
+        <th rowspan="2" [nzShowSort]="true" [nzSortFn]="sortFns['region']">Región</th>
+        <th rowspan="2" [nzShowSort]="true" [nzSortFn]="sortFns['fuerzaVenta']">Fuerza</th>
+        <th colspan="4">Total</th>
+        <th colspan="4">Revisitas</th>
+        <th colspan="4">Clase A</th>
+        <th colspan="4">Clase B</th>
+        <th colspan="4">Clase C</th>
+        <th colspan="4">Por Categorizar</th>
+      </tr>
+      <tr>
+        <th>Med</th>
+        <th>Efect</th>
+        <th>Pot</th>
+        <th [nzShowSort]="true" [nzSortFn]="sortFns['totalPuntos']">Pts</th>
+        <th>Med</th>
+        <th>Efect</th>
+        <th>Pot</th>
+        <th [nzShowSort]="true" [nzSortFn]="sortFns['rvPuntos']">Pts</th>
+        <th>Med</th>
+        <th>Efect</th>
+        <th>Pot</th>
+        <th [nzShowSort]="true" [nzSortFn]="sortFns['aPuntos']">Pts</th>
+        <th>Med</th>
+        <th>Efect</th>
+        <th>Pot</th>
+        <th [nzShowSort]="true" [nzSortFn]="sortFns['bPuntos']">Pts</th>
+        <th>Med</th>
+        <th>Efect</th>
+        <th>Pot</th>
+        <th [nzShowSort]="true" [nzSortFn]="sortFns['cPuntos']">Pts</th>
+        <th>Med</th>
+        <th>Efect</th>
+        <th>Pot</th>
+        <th [nzShowSort]="true" [nzSortFn]="sortFns['pcPuntos']">Pts</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of tabla.data">
+        <td>{{ row.seccion }}</td>
+        <td>{{ row.representante }}</td>
+        <td>{{ row.region }}</td>
+        <td>{{ row.fuerzaVenta }}</td>
+        <td>{{ row.totalMed }}</td>
+        <td>{{ row.totalEfect }}</td>
+        <td>{{ row.potencial }}</td>
+        <td>{{ row.totalPuntos }}</td>
+        <td>{{ row.rvMed }}</td>
+        <td>{{ row.rvEfect }}</td>
+        <td>{{ row.rvPot }}</td>
+        <td>{{ row.rvPuntos }}</td>
+        <td>{{ row.aMed }}</td>
+        <td>{{ row.aEfect }}</td>
+        <td>{{ row.aPot }}</td>
+        <td>{{ row.aPuntos }}</td>
+        <td>{{ row.bMed }}</td>
+        <td>{{ row.bEfect }}</td>
+        <td>{{ row.bPot }}</td>
+        <td>{{ row.bPuntos }}</td>
+        <td>{{ row.cMed }}</td>
+        <td>{{ row.cEfect }}</td>
+        <td>{{ row.cPot }}</td>
+        <td>{{ row.cPuntos }}</td>
+        <td>{{ row.pcMed }}</td>
+        <td>{{ row.pcEfect }}</td>
+        <td>{{ row.pcPot }}</td>
+        <td>{{ row.pcPuntos }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>

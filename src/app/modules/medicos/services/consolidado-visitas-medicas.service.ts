@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ConsolidadoMedico } from '../pages/cobertura-medicos/dashboard/dashboard-cobertura-medicos.component';
+import { ConsolidadoMedico } from '../Interfaces/consolidado-medicos-api-response';
 
 @Injectable({
   providedIn: 'root',

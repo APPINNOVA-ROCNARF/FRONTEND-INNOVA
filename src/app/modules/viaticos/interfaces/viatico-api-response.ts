@@ -1,19 +1,20 @@
-export interface SolicitudViatico{
-    Id: number,
-    UsuarioNombre: string,
-    FechaRegistro: string,
-    FechaModificacion: string,
-    Estado: string,
-    Monto: number
+export interface SolicitudViatico {
+  id: number;
+  usuarioNombre: string;
+  fechaRegistro: string;
+  fechaModificacion: string;
+  estado: string;
+  monto: number;
+  [key: string]: string | number;
 }
 
-export interface DetalleSolicitudViatico{
-    usuarioNombre: string,
-    fechaRegistro: string,
-    fechaModificacion: string,
-    estado: string,
-    cicloNombre: string,
-    cicloId: number
+export interface DetalleSolicitudViatico {
+  usuarioNombre: string;
+  fechaRegistro: string;
+  fechaModificacion: string;
+  estado: string;
+  cicloNombre: string;
+  cicloId: number;
 }
 
 export interface EstadisticaSolicitudViatico {
@@ -43,29 +44,20 @@ export interface EstadisticaViatico {
   diferencia: number;
   porcentaje_ejecucion: number;
 }
-  
+
 export interface Viatico {
   id: number;
-  nombreCategoria: string,
-  nombreSubcategoria: string,
+  fechaFactura: string;
+  nombreCategoria: string;
+  nombreProveedor: string;
+  numeroFactura: string;
   comentario: string;
-  facturas : Facturas[];
+  monto: number;
   estadoViatico: EstadoViatico;
+  rutaImagen: string;
   camposRechazados: CampoRechazado[];
   vehiculo: Vehiculo;
-  expand: boolean;
 }
-
-export interface Facturas {
-  id: number;
-  numeroFactura: string;
-  fechaFactura: string;
-  proveedorNombre: string;
-  rucProveedor: string;
-  monto: number;
-  rutaImagen: string;
-}
-
 export type EstadoViatico =
   | 'Borrador'
   | 'EnRevision'
@@ -73,22 +65,21 @@ export type EstadoViatico =
   | 'Rechazado'
   | 'Devuelto';
 
-
-export interface CampoRechazado{
-  campo: string,
-  comentario: string,
+export interface CampoRechazado {
+  campo: string;
+  comentario: string;
 }
 
-export interface Vehiculo{
-  placa: string,
-  modelo: string,
-  color: string,
-  fabricante: string
+export interface Vehiculo {
+  placa: string;
+  modelo: string;
+  color: string;
+  fabricante: string;
 }
 
-export interface EditarViaticoDTO{
-  nombreProveedor?: string,
-  numeroFactura?: string
+export interface EditarViaticoDTO {
+  nombreProveedor?: string;
+  numeroFactura?: string;
 }
 
 export interface HistorialViatico {

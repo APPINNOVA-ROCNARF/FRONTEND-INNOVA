@@ -42,6 +42,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
 
 @Component({
   selector: 'app-formulario-guias-producto',
@@ -66,7 +67,8 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
     NzToolTipModule,
     NzModalModule,
     PdfViewerModule,
-    NzPopconfirmModule
+    NzPopconfirmModule,
+    NzSwitchModule
   ],
   templateUrl: './formulario-guias-producto.component.html',
   styleUrl: './formulario-guias-producto.component.less',
@@ -126,6 +128,7 @@ export class FormularioGuiasProductoComponent implements OnInit {
       nombre: ['', Validators.required],
       fuerzaId: [null, Validators.required],
       urlVideo: [''],
+      activo: [true],
     });
 
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -193,6 +196,7 @@ export class FormularioGuiasProductoComponent implements OnInit {
         nombre: guia.nombre,
         fuerzaId: guia.fuerzaId,
         urlVideo: guia.urlVideo,
+        activo: guia.activo
       });
       this.archivos = guia.archivos;
     }

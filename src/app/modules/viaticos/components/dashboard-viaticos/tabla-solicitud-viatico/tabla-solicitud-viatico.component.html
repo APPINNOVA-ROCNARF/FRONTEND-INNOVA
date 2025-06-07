@@ -6,29 +6,81 @@
   </ng-container>
 </ng-template>
 
-
 <div class="contenedor-filtro">
-  <nz-input-group nzSize="large" [nzSuffix]="suffixIconSearch">
-    <input
-      nz-input
-      nzBorderless
-      placeholder="Filtrar por asesor"
-      [(ngModel)]="filtro"
-      (ngModelChange)="aplicarFiltro()"
-    />
-  </nz-input-group>
-  <ng-template #suffixIconSearch>
-    <nz-icon nzType="search" />
-  </ng-template>
+  <nz-select
+    [nzOptions]="representanteOptions"
+    nzShowSearch
+    [(ngModel)]="representantesSeleccionados"
+    (ngModelChange)="emitirRepresentantesSeleccionados()"
+    nzAllowClear
+    [nzMaxTagCount]="1"
+    nzMode="multiple"
+    nzPlaceHolder="Seleccionar representante"
+    style="width: 100%"
+  >
+  </nz-select>
+  <nz-divider nzType="vertical"></nz-divider>
+  <nz-select
+    [(ngModel)]="estadosSeleccionados"
+    (ngModelChange)="emitirEstadosSeleccionados()"
+    nzAllowClear
+    nzPlaceHolder="Seleccionar estados"
+    nzMode="multiple"
+        [nzMaxTagCount]="1"
+    style="width: 100%"
+  >
+    <nz-option
+      *ngFor="let estado of estados"
+      [nzValue]="estado"
+      [nzLabel]="estado"
+    ></nz-option>
+  </nz-select>
 </div>
-<nz-card class="tabla-card">
-  <app-tabla-base
-    [data]="datosFiltrados"
-    [columns]="columns"
-    [loading]="loading"
-    [showEditButton]="true"
-    [showDeleteButton]="false"
-    [showPagination]="false"
-    (edit)="editarViatico($event)"
-  />
-</nz-card>
+<nz-table
+  #tabla
+  [nzData]="data"
+  [nzOuterBordered]="true"
+  [nzLoading]="loading"
+  [nzSize]="'middle'"
+  [nzPageSize]="10"
+  [nzShowPagination]="false"
+>
+  <thead>
+    <tr>
+      <th [nzShowSort]="true"
+       [nzSortFn]="sortFns['usuarioNombre']">
+        Representante
+      </th>
+      <th [nzShowSort]="true" [nzSortFn]="sortFns['fechaRegistro']">
+        Fecha de Registro
+      </th>
+      <th [nzShowSort]="true" [nzSortFn]="sortFns['fechaModificacion']">
+        Fecha de Modificación
+      </th>
+      <th>Estado</th>
+      <th [nzShowSort]="true" [nzSortFn]="sortFns['monto']">Monto</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of tabla.data">
+      <td>{{ item.usuarioNombre }}</td>
+      <td>{{ item.fechaRegistro | date : "short" }}</td>
+      <td>{{ item.fechaModificacion | date : "short" }}</td>
+      <td>
+        <ng-container
+          *ngTemplateOutlet="
+            estadoTemplate;
+            context: { $implicit: item.estado }
+          "
+        ></ng-container>
+      </td>
+      <td>$ {{ item.monto | number : "1.2-2" }}</td>
+      <td>
+        <button nz-button nzType="link" (click)="editarViatico(item)">
+          Ver
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>

@@ -42,9 +42,6 @@ export class FiltrosCoberturaClientesComponent implements OnInit {
   @Input() seccionesVisibles!: Record<string, boolean>;
   @Input() seccionesKeys!: string[];
   @Input() seccionesLabels!: Record<string, string>;
-  @Input() filtroRepresentante!: string;
-  @Input() filtroRegion!: string;
-  @Input() filtroSeccion!: string;
 
   @Output() columnasVisiblesChange = new EventEmitter();
   @Output() seccionesVisiblesChange = new EventEmitter();
@@ -54,15 +51,20 @@ export class FiltrosCoberturaClientesComponent implements OnInit {
 
   // Asesores
   @Input() representantes$!: Observable<UsuarioAppSelect[]>;
-
   representanteOptions: { label: string; value: string }[] = [];
   @Input() representantesSeleccionados: string[] = [];
   @Output() representantesSeleccionadosChange = new EventEmitter<string[]>();
 
   // Secciones
   @Input() secciones$!: Observable<SeccionesSelect[]>;
+  seccionesOptions: { label: string; value: string }[] = [];
+  @Input() seccionesSeleccionadas: string[] = [];
+  @Output() seccionesSeleccionadasChange = new EventEmitter<string[]>();
 
-  seccionesOptions: { label: string; value: number }[] = [];
+  // Regiones
+  @Input() regionesSeleccionadas: string[] = [];
+  regiones = ['COSTA', 'SIERRA', 'AUSTRO'];
+  @Output() regionesChange = new EventEmitter<string[]>();
 
   ngOnInit(): void {
     this.representantes$.subscribe((lista) => {
@@ -75,22 +77,37 @@ export class FiltrosCoberturaClientesComponent implements OnInit {
     this.secciones$.subscribe((lista) => {
       this.seccionesOptions = lista.map((r) => ({
         label: r.codigo,
-        value: r.id,
+        value: r.codigo,
       }));
     });
   }
 
-  validarVisibilidad(campo: 'visita' | 'venta') {
-    if (!this.columnasVisibles['visita'] && !this.columnasVisibles['venta']) {
-      this.columnasVisibles[campo] = true;
-      this.columnasVisiblesChange.emit(this.columnasVisibles);
-    }
+validarVisibilidad(campo: 'visita' | 'venta' | 'cobranza') {
+  const visibles = this.columnasVisibles;
+  const otrosCampos = Object.entries(visibles)
+    .filter(([key]) => key !== campo)
+    .map(([_, v]) => v);
+
+  // Si todos los demás están desactivados, vuelve a activar este
+  if (!otrosCampos.some(v => v)) {
+    this.columnasVisibles[campo] = true;
   }
+
+  this.columnasVisiblesChange.emit(this.columnasVisibles);
+}
 
   emitirRepresentantesSeleccionados() {
     this.representantesSeleccionadosChange.emit(
       this.representantesSeleccionados
     );
+  }
+
+  emitirRegionesSeleccionadas(): void {
+    this.regionesChange.emit(this.regionesSeleccionadas);
+  }
+
+  emitirSeccionesSeleccionadas(): void {
+    this.seccionesSeleccionadasChange.emit(this.seccionesSeleccionadas);
   }
 
   dropSeccion(event: unknown) {

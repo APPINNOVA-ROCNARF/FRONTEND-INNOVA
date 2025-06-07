@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { finalize, map, Observable, tap } from 'rxjs';
+import { catchError, finalize, map, Observable, of, tap } from 'rxjs';
 import { EditarViaticoDTO, HistorialViatico, Viatico, ViaticoReporte } from '../../interfaces/viatico-api-response';
 import { ViaticoService } from './viatico.service';
 import { LoadingService } from '../../../../core/services/loading-service/loading.service';
@@ -98,24 +98,24 @@ export class ViaticoStateService {
         const currentMap = this.viaticosMapSignal();
         const viaticos = currentMap.get(solicitudId);
         if (!viaticos) return;
-
-        const index = viaticos.findIndex((v) => v.id === viaticoId);
+  
+        const index = viaticos.findIndex(v => v.id === viaticoId);
         if (index === -1) return;
-
+  
         // eslint-disable-next-line security/detect-object-injection
         const updatedViatico = { ...viaticos[index] };
-
+  
         if (data.numeroFactura !== undefined) {
-          updatedViatico.facturas[0].numeroFactura = data.numeroFactura;
+          updatedViatico.numeroFactura = data.numeroFactura;
         }
         if (data.nombreProveedor !== undefined) {
-          updatedViatico.facturas[0].proveedorNombre = data.nombreProveedor;
+          updatedViatico.nombreProveedor = data.nombreProveedor;
         }
-
+  
         const updatedViaticos = [...viaticos];
         // eslint-disable-next-line security/detect-object-injection
         updatedViaticos[index] = updatedViatico;
-
+  
         const updatedMap = new Map(currentMap);
         updatedMap.set(solicitudId, updatedViaticos);
         this.viaticosMapSignal.set(updatedMap);
@@ -128,28 +128,32 @@ export class ViaticoStateService {
   historial = (viaticoId: number) =>
     computed(() => this.historialMapSignal().get(viaticoId) ?? []);
 
-  fetchHistorial(viaticoId: number, forceRefresh = false): void {
-    const loadingKey = 'fetchHistorial-${viaticoId}';
-    const currentMap = this.historialMapSignal();
+fetchHistorial(viaticoId: number, forceRefresh = false): void {
+  const loadingKey = `fetchHistorial-${viaticoId}`;
+  const currentMap = this.historialMapSignal();
 
-    if (!forceRefresh && currentMap.has(viaticoId)) {
-      return;
-    }
-
-    this.loadingService.setLoading(loadingKey, true);
-
-    this.viaticoService
-      .getHistorialViaticos(viaticoId)
-      .pipe(
-        tap((historial: HistorialViatico[]) => {
-          const updatedMap = new Map(this.historialMapSignal());
-          updatedMap.set(viaticoId, historial);
-          this.historialMapSignal.set(updatedMap);
-        }),
-        finalize(() => this.loadingService.setLoading(loadingKey, false))
-      )
-      .subscribe();
+  if (!forceRefresh && currentMap.has(viaticoId)) {
+    return;
   }
+
+  this.loadingService.setLoading(loadingKey, true);
+
+  this.viaticoService
+    .getHistorialViaticos(viaticoId)
+    .pipe(
+      tap((historial: HistorialViatico[]) => {
+        const updatedMap = new Map(this.historialMapSignal());
+        updatedMap.set(viaticoId, historial);
+        this.historialMapSignal.set(updatedMap);
+      }),
+      catchError((error) => {
+        console.error('Error obteniendo historial:', error);
+        return of([]); 
+      }),
+      finalize(() => this.loadingService.setLoading(loadingKey, false))
+    )
+    .subscribe();
+}
 
   getHistorialLoading(viaticoId: number) {
     return this.loadingService.getLoading(`fetchHistorial-${viaticoId}`);

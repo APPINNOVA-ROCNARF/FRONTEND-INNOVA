@@ -1,5 +1,5 @@
 
-<nz-list [nzDataSource]="datos" [nzLoading]="loading" nzItemLayout="horizontal" *ngIf="datos?.length; else noData">
+<nz-list [nzDataSource]="datos" [nzLoading]="loading" nzItemLayout="horizontal" >
     <nz-list-item *ngFor="let e of datos">
         <div nz-list-item-extra style="flex: none; white-space: nowrap;">
             {{ e.fecha | date:'short' }}
@@ -41,8 +41,3 @@
         </div>
     </nz-list-item>
 </nz-list>
-<ng-template #noData>
-    <p style="text-align: center; color: rgba(0,0,0,0.45);">
-        No hay eventos para mostrar.
-    </p>
-</ng-template>

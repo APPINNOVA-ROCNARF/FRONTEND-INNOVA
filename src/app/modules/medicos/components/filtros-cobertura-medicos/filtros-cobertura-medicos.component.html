@@ -1,0 +1,70 @@
+<nz-collapse nzBordered="false">
+  <nz-collapse-panel
+    [nzHeader]="nzHeaderCampos"
+    [nzShowArrow]="true"
+    [nzActive]="true"
+  >
+    <ng-template #nzHeaderCampos>
+      <span class="titulo-collapse">Campos</span>
+    </ng-template>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+        width: 100%;
+      "
+    >
+      <div style="display: flex; flex-direction: column; width: 100%">
+        <p nz-typography><strong>Secciones</strong></p>
+        <nz-select
+          [nzOptions]="seccionesOptions"
+          nzShowSearch
+          [(ngModel)]="seccionesSeleccionadas"
+          (ngModelChange)="emitirSeccionesSeleccionadas()"
+          nzAllowClear
+          [nzMaxTagCount]="3"
+          nzMode="multiple"
+          nzPlaceHolder="Seleccionar secciones"
+          style="width: 100%"
+        >
+        </nz-select>
+      </div>
+
+      <div style="display: flex; flex-direction: column; width: 100%">
+        <p nz-typography><strong>Representante</strong></p>
+        <nz-select
+          [nzOptions]="representanteOptions"
+          nzShowSearch
+          [(ngModel)]="representantesSeleccionados"
+          (ngModelChange)="emitirRepresentantesSeleccionados()"
+          nzAllowClear
+          [nzMaxTagCount]="3"
+          nzMode="multiple"
+          nzPlaceHolder="Seleccionar representante"
+          style="width: 100%"
+        >
+        </nz-select>
+      </div>
+
+      <div style="display: flex; flex-direction: column; width: 100%">
+        <p nz-typography><strong>Regiones</strong></p>
+        <nz-select
+          [(ngModel)]="regionesSeleccionadas"
+          (ngModelChange)="emitirRegionesSeleccionadas()"
+          nzAllowClear
+          nzPlaceHolder="Seleccionar regiones"
+          nzMode="multiple"
+          style="width: 100%"
+        >
+          <nz-option
+            *ngFor="let region of regiones"
+            [nzValue]="region"
+            [nzLabel]="region"
+          ></nz-option>
+        </nz-select>
+      </div>
+      
+    </div>
+  </nz-collapse-panel>
