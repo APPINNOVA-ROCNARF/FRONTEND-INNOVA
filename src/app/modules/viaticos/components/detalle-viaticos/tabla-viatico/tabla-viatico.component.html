@@ -101,11 +101,25 @@
                 nz-button
                 nzType="link"
                 nzSize="default"
-                (click)="previewImagen(v.rutaImagen)"
+                (click)="previewImagen(v.rutaImagen, v.facturaId)"
                 nz-tooltip
-                nzTooltipTitle="{{ isPreviewActive ? 'Factura vista' : 'Ver factura' }}"
+                [nzTooltipTitle]="
+                  facturasVistasMap.get(v.facturaId)
+                    ? 'Factura vista'
+                    : 'Ver factura'
+                "
               >
-    <i nz-icon nzType="{{ isPreviewActive ? 'file-done' : 'file-search' }}"></i>
+                <i
+                  nz-icon
+                  [nzType]="
+                    facturasVistasMap.get(v.facturaId)
+                      ? 'file-done'
+                      : 'file-search'
+                  "
+                  [style.color]="
+                    facturasVistasMap.get(v.facturaId) ? '#999999' : '#1DABB3'
+                  "
+                ></i>
               </button>
               <button
                 *ngIf="v.nombreCategoria === 'Movilización'"
@@ -130,13 +144,16 @@
                 <i nz-icon nzType="info-circle"></i>
               </button>
               <ng-container *ngIf="!(setOfCheckedId.size > 0)">
-                <a nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
+                <a nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click"
+                [nzDisabled]="!facturasVistasMap.get(v.facturaId)"
+                >
                   <button
                     nz-button
                     nzType="link"
                     nzSize="default"
                     nz-tooltip
                     nzTooltipTitle="Opciones"
+                    [disabled]="!facturasVistasMap.get(v.facturaId)"
                   >
                     <i nz-icon nzType="ellipsis"></i>
                   </button>

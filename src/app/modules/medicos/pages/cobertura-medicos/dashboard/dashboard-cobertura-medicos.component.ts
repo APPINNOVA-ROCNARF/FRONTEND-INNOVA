@@ -29,6 +29,11 @@ import { UsuarioAppSelect } from '../../../../../shared/services/asesores-servic
 import { SeccionesSelect } from '../../../../../shared/services/secciones-service/Interfaces/secciones-api-response';
 import { AsesoresStateService } from '../../../../../shared/services/asesores-service/asesores-state.service';
 import { SeccionesStateService } from '../../../../../shared/services/secciones-service/secciones-state.service';
+import ExcelJS from 'exceljs';
+import * as FileSaver from 'file-saver';
+import { FuerzaSelectDTO } from '../../../../../shared/services/fuerzas-service/Interfaces/FuerzaSelectDTO';
+import { FuerzaStateService } from '../../../../../shared/services/fuerzas-service/fuerza-state.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-dashboard-cobertura-medicos',
@@ -83,9 +88,31 @@ export class DashboardCoberturaMedicosComponent implements OnInit, OnDestroy {
   secciones$!: Observable<SeccionesSelect[]>;
   seccionesLoading$!: Signal<boolean>;
 
+  // FUERZAS
+  fuerzas$!: Observable<FuerzaSelectDTO[]>;
+  fuerzasLoading$!: Signal<boolean>;
+
   //Puntos
 
   seccionesKeys = ['total', 'rv', 'a', 'b', 'c', 'pc'];
+
+  seccionesLabels: Record<string, string> = {
+    total: 'Total',
+    rv: 'Revisitas',
+    a: 'Clase A',
+    b: 'Clase B',
+    c: 'Clase C',
+    pc: 'Por Categorizar',
+  };
+
+  seccionesVisibles: Record<string, boolean> = {
+    total: true,
+    rv: true,
+    a: true,
+    b: true,
+    c: true,
+    pc: true,
+  };
 
   sortFns: Record<
     string,
@@ -101,12 +128,19 @@ export class DashboardCoberturaMedicosComponent implements OnInit, OnDestroy {
   // FILTRO SECCIONES
   seccionesSeleccionadas: string[] = [];
 
+  // FILTRO FUERZAS
+  fuerzasSeleccionadas: string[] = [];
+
+  // EXPORTAR
+  isExporting = false;
+
   constructor(
     private fb: FormBuilder,
     private consolidadoService: ConsolidadoVisitasMedicasService,
     private cicloState: CiclotateService,
     private asesoresState: AsesoresStateService,
     private seccionesState: SeccionesStateService,
+    private fuerzaState: FuerzaStateService,
     private message: NzMessageService
   ) {}
 
@@ -118,6 +152,10 @@ export class DashboardCoberturaMedicosComponent implements OnInit, OnDestroy {
     this.secciones$ = this.seccionesState.secciones$;
     this.seccionesLoading$ = this.seccionesState.getSeccionesLoading();
     this.seccionesState.fetchSecciones();
+
+    this.fuerzas$ = this.fuerzaState.fuerzas$;
+    this.fuerzasLoading$ = this.fuerzaState.getFuerzasLoading();
+    this.fuerzaState.fetchFuerzas();
 
     this.ciclos$ = this.cicloState.ciclos$;
     this.ciclosLoading$ = this.cicloState.getCiclosLoading();
@@ -192,6 +230,15 @@ export class DashboardCoberturaMedicosComponent implements OnInit, OnDestroy {
     this.filtrosForm.get('rangoFechas')?.updateValueAndValidity();
   }
 
+  // Drag
+  dropSeccion(event: CdkDragDrop<string[]>) {
+    moveItemInArray(
+      this.seccionesKeys,
+      event.previousIndex,
+      event.currentIndex
+    );
+  }
+
   // DRAWER
 
   open(): void {
@@ -217,6 +264,11 @@ export class DashboardCoberturaMedicosComponent implements OnInit, OnDestroy {
     this.filtrarData();
   }
 
+  onFuerzasSeleccionadasChange(fuerzas: string[]): void {
+    this.fuerzasSeleccionadas = fuerzas;
+    this.filtrarData();
+  }
+
   filtrarData(): void {
     this.data = this.dataOriginal.filter(
       (item) =>
@@ -225,7 +277,9 @@ export class DashboardCoberturaMedicosComponent implements OnInit, OnDestroy {
         (this.regionesSeleccionadas.length === 0 ||
           this.regionesSeleccionadas.includes(item.region)) &&
         (this.seccionesSeleccionadas.length === 0 ||
-          this.seccionesSeleccionadas.includes(item.seccion))
+          this.seccionesSeleccionadas.includes(item.seccion)) &&
+        (this.fuerzasSeleccionadas.length === 0 ||
+          this.fuerzasSeleccionadas.includes(item.fuerzaVenta))
     );
   }
 
@@ -283,5 +337,136 @@ export class DashboardCoberturaMedicosComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
     });
+  }
+
+  exportarExcel(): void {
+    if (this.isExporting) return;
+
+    if (this.data.length === 0) {
+      this.message.warning('No hay datos para exportar.');
+      return;
+    }
+
+    this.isExporting = true;
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Cobertura Médica');
+
+    // Encabezados agrupados
+    worksheet.mergeCells('A1:A2');
+    worksheet.getCell('A1').value = 'Sección';
+    worksheet.mergeCells('B1:B2');
+    worksheet.getCell('B1').value = 'Representante';
+    worksheet.mergeCells('C1:C2');
+    worksheet.getCell('C1').value = 'Región';
+    worksheet.mergeCells('D1:D2');
+    worksheet.getCell('D1').value = 'Fuerza';
+
+    const grupos = [
+      'Total',
+      'Revisitas',
+      'Clase A',
+      'Clase B',
+      'Clase C',
+      'Por Categorizar',
+    ];
+    let col = 5;
+
+    for (const grupo of grupos) {
+      worksheet.mergeCells(1, col, 1, col + 3);
+      worksheet.getCell(1, col).value = grupo;
+      worksheet.getCell(2, col).value = 'Med';
+      worksheet.getCell(2, col + 1).value = 'Efect';
+      worksheet.getCell(2, col + 2).value = 'Pot';
+      worksheet.getCell(2, col + 3).value = 'Pts';
+      col += 4;
+    }
+
+    // Datos
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < this.data.length; i++) {
+      const d = this.data[i];
+      worksheet.addRow([
+        d.seccion,
+        d.representante,
+        d.region,
+        d.fuerzaVenta,
+        d.totalMed,
+        d.totalEfect,
+        d.potencial,
+        d.totalPuntos,
+        d.rvMed,
+        d.rvEfect,
+        d.rvPot,
+        d.rvPuntos,
+        d.aMed,
+        d.aEfect,
+        d.aPot,
+        d.aPuntos,
+        d.bMed,
+        d.bEfect,
+        d.bPot,
+        d.bPuntos,
+        d.cMed,
+        d.cEfect,
+        d.cPot,
+        d.cPuntos,
+        d.pcMed,
+        d.pcEfect,
+        d.pcPot,
+        d.pcPuntos,
+      ]);
+    }
+
+    // Estilo básico
+    worksheet.columns.forEach((column) => {
+      column.width = 12;
+    });
+    ['A1', 'B1', 'C1', 'D1'].forEach(
+      (cell) =>
+        (worksheet.getCell(cell).alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+        })
+    );
+
+    // Obtener fechas para el nombre del archivo
+    let fechaInicial: Date;
+    let fechaFinal: Date;
+
+    if (this.modoFiltroFechas === 'ciclo') {
+      const cicloId = this.filtrosForm.value.ciclo;
+      const ciclo = this.allCiclos.find((c) => c.id === cicloId);
+      fechaInicial = new Date(ciclo?.fechaInicio ?? new Date());
+      fechaFinal = new Date(ciclo?.fechaFin ?? new Date());
+    } else {
+      const rango = this.filtrosForm.value.rangoFechas;
+      fechaInicial = new Date(rango?.[0] ?? new Date());
+      fechaFinal = new Date(rango?.[1] ?? new Date());
+    }
+
+    const formatDate = (d: Date): string =>
+      `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d
+        .getDate()
+        .toString()
+        .padStart(2, '0')}`;
+
+    const nombreArchivo = `CoberturaMedicos_${formatDate(
+      fechaInicial
+    )}_a_${formatDate(fechaFinal)}.xlsx`;
+
+    workbook.xlsx
+      .writeBuffer()
+      .then((buffer) => {
+        FileSaver.saveAs(new Blob([buffer]), nombreArchivo);
+        this.message.success(`Archivo generado con éxito: ${nombreArchivo}`);
+      })
+      .catch((err) => {
+        console.error('Error al exportar:', err);
+        this.message.error('Error al exportar el archivo.');
+      })
+      .finally(() => {
+        this.isExporting = false;
+      });
   }
 }

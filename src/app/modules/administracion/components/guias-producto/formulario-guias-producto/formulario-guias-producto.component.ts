@@ -68,7 +68,7 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
     NzModalModule,
     PdfViewerModule,
     NzPopconfirmModule,
-    NzSwitchModule
+    NzSwitchModule,
   ],
   templateUrl: './formulario-guias-producto.component.html',
   styleUrl: './formulario-guias-producto.component.less',
@@ -143,14 +143,22 @@ export class FormularioGuiasProductoComponent implements OnInit {
     }
   }
 
-  previewArchivo(rutaRelativa: string, extension: string): void {
+  previewArchivo(rutaRelativa: string, extension: string, entidadId: number): void {
     const ext = extension.toLowerCase();
 
     if (['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)) {
-      const urlCompleta = this.archivoService.getUrlAbsoluta(rutaRelativa);
-      this.imageService.preview([{ src: urlCompleta, alt: 'Archivo' }]);
+      this.archivoService.verGuia(rutaRelativa, entidadId).subscribe({
+        next: (blob: Blob) => {
+          const objectUrl = URL.createObjectURL(blob);
+
+          this.imageService.preview([{ src: objectUrl, alt: 'Guia-Producto' }]);
+        },
+        error: (err) => {
+          console.error('Error al obtener la imagen protegida:', err);
+        },
+      });
     } else if (ext === '.pdf') {
-      this.archivoService.obtenerPdf(rutaRelativa).subscribe((blob) => {
+      this.archivoService.obtenerArchivoGuia(rutaRelativa, entidadId).subscribe((blob) => {
         const objectUrl = URL.createObjectURL(blob);
         this.pdfUrl = objectUrl;
         this.modalVisible = true;
@@ -160,26 +168,25 @@ export class FormularioGuiasProductoComponent implements OnInit {
     }
   }
 
-  descargarArchivo(rutaRelativa: string): void {
-    const url = this.archivoService.getUrlAbsoluta(rutaRelativa, 'descargar');
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = '';
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  descargarArchivo(rutaRelativa: string, entidadId: number, nombreArchivo: string): void {
+    this.archivoService.obtenerArchivoGuia(rutaRelativa, entidadId).subscribe((blob) => {
+      const a = document.createElement('a');
+      const url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = nombreArchivo; 
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
   }
 
   eliminarArchivoGuia(id: number): void {
     this.guiaService.eliminarArchivoGuia(id).subscribe({
       next: () => {
         this.message.success('Archivo eliminado correctamente');
-        this.guiaState.fetchGuiaDetalle(this.guiaId!,true);
+        this.guiaState.fetchGuiaDetalle(this.guiaId!, true);
       },
-      error: () => this.message.error('Error al eliminar el archivo')
-    })
+      error: () => this.message.error('Error al eliminar el archivo'),
+    });
   }
 
   get tituloPagina(): string {
@@ -196,7 +203,7 @@ export class FormularioGuiasProductoComponent implements OnInit {
         nombre: guia.nombre,
         fuerzaId: guia.fuerzaId,
         urlVideo: guia.urlVideo,
-        activo: guia.activo
+        activo: guia.activo,
       });
       this.archivos = guia.archivos;
     }

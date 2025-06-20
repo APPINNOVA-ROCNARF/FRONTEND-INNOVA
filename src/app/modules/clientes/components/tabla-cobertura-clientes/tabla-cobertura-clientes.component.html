@@ -1,10 +1,7 @@
 <div class="info-tabla" *ngIf="data.length > 0">
   Mostrando {{ (pageIndex - 1) * pageSize + 1 }} –
-  {{
-    (pageIndex * pageSize) > data.length
-      ? data.length
-      : (pageIndex * pageSize)
-  }} de {{ data.length }} resultados
+  {{ pageIndex * pageSize > data.length ? data.length : pageIndex * pageSize }}
+  de {{ data.length }} resultados
 </div>
 
 <div style="overflow-x: auto; max-width: 100%">
@@ -14,7 +11,7 @@
     nzSize="small"
     [nzBordered]="true"
     [nzLoading]="isLoading"
-    [nzScroll]="{ x: 'max-content' }"
+    [nzScroll]="{ x: '2800px' }"
     [nzPageSize]="pageSize"
     [nzPageIndex]="pageIndex"
     [nzShowPagination]="true"
@@ -39,16 +36,33 @@
         >
           Representante
         </th>
-        <th rowspan="3" [nzShowSort]="true" [nzSortFn]="sortFns['region']">
+        <th
+          rowspan="3"
+          [nzShowSort]="true"
+          [nzSortFn]="sortFns['region']"
+          [style.width.px]="120"
+        >
           Región
         </th>
-        <th rowSpan="3" [nzShowSort]="true" [nzSortFn]="sortFns['fuerza']">
+        <th
+          rowSpan="3"
+          [nzShowSort]="true"
+          [nzSortFn]="sortFns['fuerza']"
+          [style.width.px]="120"
+        >
           Fuerza
         </th>
         <ng-container *ngFor="let key of seccionesKeys">
           <ng-container *ngIf="seccionesVisibles[key]">
             <th [attr.colspan]="getColspan()">
               {{ seccionesLabels[key] }}
+              <nz-icon
+                nz-tooltip
+                nzTooltipTitle="Por Categorizar"
+                nzType="info-circle"
+                nzTheme="outline"
+                style="margin-left: 6px"
+              ></nz-icon>
             </th>
           </ng-container>
         </ng-container>

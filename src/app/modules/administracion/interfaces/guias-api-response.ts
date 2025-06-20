@@ -40,3 +40,14 @@ export interface GuiaProductoCrearDTO {
   fuerzaId: number;
   archivos: ArchivoTemporalGuardadoDTO[];
 }
+
+export interface GuiaProductoSelectsDTO {
+  nombres: SelectItemDTO[];
+  marcas: SelectItemDTO[];
+  fuerzas: SelectItemDTO[];
+}
+
+export interface SelectItemDTO {
+  id: number;
+  nombre: string;
+}

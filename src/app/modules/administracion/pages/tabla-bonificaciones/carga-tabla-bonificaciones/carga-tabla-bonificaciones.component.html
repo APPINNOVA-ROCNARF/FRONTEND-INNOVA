@@ -8,9 +8,10 @@
   "
 >
   <div>
-    <h2 nz-typography style="margin: 0">Parrilla Promocional</h2>
+    <h2 nz-typography style="margin: 0">Tabla de Bonificaciones</h2>
     <p style="margin: 4px 0 0 0; color: #888">
-      Última actualización: {{ parrilla?.fechaModificado | date : "medium" }}
+      Última actualización:
+      {{ tablaBonificacion?.fechaModificado | date : "medium" }}
     </p>
   </div>
   <button
@@ -88,7 +89,7 @@
 
 <div style="margin-top: 24px">
   <nz-card
-    *ngIf="parrilla && parrilla.urlArchivo"
+    *ngIf="tablaBonificacion && tablaBonificacion.urlArchivo"
     nzType="inner"
     nzTitle="Archivo Subido"
   >
@@ -101,12 +102,14 @@
         gap: 8px;
       "
     >
-      <div style="font-weight: 500">{{ parrilla.nombreArchivo }}</div>
+      <div style="font-weight: 500">{{ tablaBonificacion.nombreArchivo }}</div>
       <div>
         <button
           nz-button
           nzType="link"
-          (click)="mostrarPDF(parrilla.urlArchivo, parrilla.id)"
+          (click)="
+            mostrarPDF(tablaBonificacion.urlArchivo, tablaBonificacion.id)
+          "
           nz-tooltip
           nzTooltipTitle="Ver"
         >
@@ -118,7 +121,9 @@
           nzType="link"
           nz-tooltip
           nzTooltipTitle="Descargar"
-          (click)="descargarArchivo(parrilla.urlArchivo, parrilla.id)"
+          (click)="
+            descargarArchivo(tablaBonificacion.urlArchivo, tablaBonificacion.id)
+          "
         >
           <i nz-icon nzType="download"></i>
         </button>

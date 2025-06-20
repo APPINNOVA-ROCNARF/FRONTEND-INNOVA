@@ -8,29 +8,50 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ArchivoService {
   private baseUrl = environment.rootUrl;
+  private viaticoUrl = 'api/viaticos/factura/ver';
+  private parrillaUrl = 'api/sistema/parrilla-promocional/descargar'
+  private guiaUrl = 'api/sistema/guia-producto/ver'
+  private guiaUrlDownload = 'api/sistema/guia-producto/descargar'
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient) {}
 
-  getUrlAbsoluta(
-    rutaRelativa: string,
-    modo: 'ver' | 'descargar' = 'ver'
-  ): string {
-    if (!rutaRelativa) return '';
-    if (rutaRelativa.startsWith('http')) return rutaRelativa;
+  verFactura(rutaRelativa: string, entidadId: number): Observable<Blob> {
+    if (!rutaRelativa) throw new Error('Ruta relativa inválida.');
 
-    return `${
-      this.baseUrl
-    }api/archivo/descargar?rutaRelativa=${encodeURIComponent(
-      rutaRelativa
-    )}&modo=${modo}`;
+    const url = new URL(`${this.baseUrl}${this.viaticoUrl}`);
+    url.searchParams.set('rutaRelativa', rutaRelativa);
+    url.searchParams.set('entidadId', entidadId.toString());
+
+    return this.http.get(url.toString(), { responseType: 'blob' });
   }
 
-  obtenerPdf(rutaRelativa: string): Observable<Blob> {
-    const url = `${
-      this.baseUrl
-    }api/archivo/descargar?rutaRelativa=${encodeURIComponent(
-      rutaRelativa
-    )}&modo=descargar`;
-    return this.http.get(url, { responseType: 'blob' });
+  verGuia(rutaRelativa: string, entidadId: number): Observable<Blob> {
+    if (!rutaRelativa) throw new Error('Ruta relativa inválida.');
+
+    const url = new URL(`${this.baseUrl}${this.guiaUrl}`);
+    url.searchParams.set('rutaRelativa', rutaRelativa);
+    url.searchParams.set('entidadId', entidadId.toString());
+
+    return this.http.get(url.toString(), { responseType: 'blob' });
+  }
+
+  obtenerArchivo(rutaRelativa: string, entidadId: number): Observable<Blob> {
+    if (!rutaRelativa) throw new Error('Ruta relativa inválida');
+
+    const url = new URL(`${this.baseUrl}${this.parrillaUrl}`);
+    url.searchParams.set('rutaRelativa', rutaRelativa);
+    url.searchParams.set('entidadId', entidadId.toString());
+
+    return this.http.get(url.toString(), { responseType: 'blob' });
+  }
+
+    obtenerArchivoGuia(rutaRelativa: string, entidadId: number): Observable<Blob> {
+    if (!rutaRelativa) throw new Error('Ruta relativa inválida');
+
+    const url = new URL(`${this.baseUrl}${this.guiaUrlDownload}`);
+    url.searchParams.set('rutaRelativa', rutaRelativa);
+    url.searchParams.set('entidadId', entidadId.toString());
+
+    return this.http.get(url.toString(), { responseType: 'blob' });
   }
 }

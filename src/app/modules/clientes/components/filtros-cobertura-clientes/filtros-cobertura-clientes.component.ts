@@ -4,9 +4,7 @@ import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { UsuarioAppSelect } from '../../../../shared/services/asesores-service/Interfaces/asesores-api-response';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -14,6 +12,7 @@ import { Observable } from 'rxjs';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { SeccionesSelect } from '../../../../shared/services/secciones-service/Interfaces/secciones-api-response';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { FuerzaSelectDTO } from '../../../../shared/services/fuerzas-service/Interfaces/FuerzaSelectDTO';
 
 @Component({
   selector: 'app-filtros-cobertura-clientes',
@@ -24,12 +23,10 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
     NzSelectModule,
     NzCollapseModule,
     NzSwitchModule,
-    NzInputModule,
     NzCheckboxModule,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    NzDropDownModule,
     NzIconModule,
     DragDropModule,
   ],
@@ -66,6 +63,12 @@ export class FiltrosCoberturaClientesComponent implements OnInit {
   regiones = ['COSTA', 'SIERRA', 'AUSTRO'];
   @Output() regionesChange = new EventEmitter<string[]>();
 
+  // Fuerzas
+  @Input() fuerzas$!: Observable<FuerzaSelectDTO[]>;
+  fuerzasOptions: { label: string; value: string }[] = [];
+  @Input() fuerzasSeleccionadas : string[] = [];
+  @Output() fuerzasSeleccionadasChange = new EventEmitter<string[]>();
+
   ngOnInit(): void {
     this.representantes$.subscribe((lista) => {
       this.representanteOptions = lista.map((r) => ({
@@ -80,6 +83,14 @@ export class FiltrosCoberturaClientesComponent implements OnInit {
         value: r.codigo,
       }));
     });
+
+    this.fuerzas$.subscribe((lista) => {
+      this.fuerzasOptions = lista.map((r) => ({
+        label: r.nombre,
+        value: r.nombre
+      }))
+    })
+    
   }
 
 validarVisibilidad(campo: 'visita' | 'venta' | 'cobranza') {
@@ -108,6 +119,10 @@ validarVisibilidad(campo: 'visita' | 'venta' | 'cobranza') {
 
   emitirSeccionesSeleccionadas(): void {
     this.seccionesSeleccionadasChange.emit(this.seccionesSeleccionadas);
+  }
+
+  emitirFuerzasSeleccionadas(): void {
+    this.fuerzasSeleccionadasChange.emit(this.fuerzasSeleccionadas);
   }
 
   dropSeccion(event: unknown) {

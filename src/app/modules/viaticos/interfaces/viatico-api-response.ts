@@ -55,6 +55,7 @@ export interface Viatico {
   monto: number;
   estadoViatico: EstadoViatico;
   rutaImagen: string;
+  facturaId: number,
   camposRechazados: CampoRechazado[];
   vehiculo: Vehiculo;
 }

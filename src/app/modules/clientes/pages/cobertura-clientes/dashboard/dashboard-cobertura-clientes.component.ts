@@ -35,6 +35,10 @@ import { AsesoresStateService } from '../../../../../shared/services/asesores-se
 import { UsuarioAppSelect } from '../../../../../shared/services/asesores-service/Interfaces/asesores-api-response';
 import { SeccionesSelect } from '../../../../../shared/services/secciones-service/Interfaces/secciones-api-response';
 import { SeccionesStateService } from '../../../../../shared/services/secciones-service/secciones-state.service';
+import FileSaver from 'file-saver';
+import ExcelJS from 'exceljs';
+import { FuerzaStateService } from '../../../../../shared/services/fuerzas-service/fuerza-state.service';
+import { FuerzaSelectDTO } from '../../../../../shared/services/fuerzas-service/Interfaces/FuerzaSelectDTO';
 
 @Component({
   selector: 'app-dashboard-cobertura-clientes',
@@ -88,6 +92,10 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
   secciones$!: Observable<SeccionesSelect[]>;
   seccionesLoading$!: Signal<boolean>;
 
+  // FUERZAS
+  fuerzas$!: Observable<FuerzaSelectDTO[]>;
+  fuerzasLoading$!: Signal<boolean>;
+
   seccionesKeys = ['CLACT', 'CLINC', 'CONTA', 'CLIZ'];
 
   seccionesLabels: Record<string, string> = {
@@ -118,7 +126,13 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
   // FILTRO SECCIONES
   seccionesSeleccionadas: string[] = [];
 
+  // FILTRO FUERZAS
+  fuerzasSeleccionadas: string[] = [];
+
   private ciclosSubscription: Subscription | undefined;
+
+  // EXPORTAR
+  isExporting = false;
 
   constructor(
     private fb: FormBuilder,
@@ -126,6 +140,7 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
     private cicloState: CiclotateService,
     private asesoresState: AsesoresStateService,
     private seccionesState: SeccionesStateService,
+    private fuerzaState: FuerzaStateService,
     private message: NzMessageService
   ) {}
 
@@ -137,6 +152,10 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
     this.secciones$ = this.seccionesState.secciones$;
     this.seccionesLoading$ = this.seccionesState.getSeccionesLoading();
     this.seccionesState.fetchSecciones();
+
+    this.fuerzas$ = this.fuerzaState.fuerzas$;
+    this.fuerzasLoading$ = this.fuerzaState.getFuerzasLoading();
+    this.fuerzaState.fetchFuerzas();
 
     this.ciclos$ = this.cicloState.ciclos$;
     this.ciclosLoading$ = this.cicloState.getCiclosLoading();
@@ -212,6 +231,11 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
 
   onSeccionesSeleccionadasChange(secciones: string[]): void {
     this.seccionesSeleccionadas = secciones;
+    this.filtrarData();
+  }
+
+  onFuerzasSeleccionadasChange(fuerzas: string[]): void {
+    this.fuerzasSeleccionadas = fuerzas;
     this.filtrarData();
   }
 
@@ -336,7 +360,176 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
         (this.regionesSeleccionadas.length === 0 ||
           this.regionesSeleccionadas.includes(item.region)) &&
         (this.seccionesSeleccionadas.length === 0 ||
-          this.seccionesSeleccionadas.includes(item.seccion))
+          this.seccionesSeleccionadas.includes(item.seccion)) &&
+        (this.fuerzasSeleccionadas.length === 0 ||
+          this.fuerzasSeleccionadas.includes(item.fuerza))
     );
+  }
+
+  exportarExcel(): void {
+    if (this.isExporting) return;
+
+    if (this.data.length === 0) {
+      this.message.warning('No hay datos para exportar.');
+      return;
+    }
+
+    this.isExporting = true;
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Cobertura Clientes');
+
+    const secciones = this.seccionesKeys;
+    const columnasVisibles = this.columnasVisibles;
+
+    const headersNivel1 = ['Sección', 'Representante', 'Región', 'Fuerza'];
+    const headersNivel2 = ['', '', '', ''];
+    const headersNivel3 = ['', '', '', ''];
+
+    for (const key of secciones) {
+      if (!this.seccionesVisibles[key]) continue;
+
+      const label = this.seccionesLabels[key];
+
+      if (columnasVisibles.visita) {
+        headersNivel1.push(label, '');
+        headersNivel2.push('Visita', '');
+        headersNivel3.push('Cantidad', '%');
+      }
+      if (columnasVisibles.venta) {
+        headersNivel1.push(label, '');
+        headersNivel2.push('Venta', '');
+        headersNivel3.push('Cantidad', '%');
+      }
+      if (columnasVisibles.cobranza) {
+        headersNivel1.push(label, '');
+        headersNivel2.push('Cobro', '');
+        headersNivel3.push('Cantidad', '%');
+      }
+      if (columnasVisibles.total) {
+        headersNivel1.push(label);
+        headersNivel2.push('Total');
+        headersNivel3.push('Total');
+      }
+    }
+
+    worksheet.addRow(headersNivel1);
+    worksheet.addRow(headersNivel2);
+    worksheet.addRow(headersNivel3);
+
+    // Combinar celdas para cabeceras multinivel
+    let col = 5;
+    for (const key of secciones) {
+      if (!this.seccionesVisibles[key]) continue;
+
+      const colspan =
+        (columnasVisibles.visita ? 2 : 0) +
+        (columnasVisibles.venta ? 2 : 0) +
+        (columnasVisibles.cobranza ? 2 : 0) +
+        (columnasVisibles.total ? 1 : 0);
+
+      worksheet.mergeCells(1, col, 1, col + colspan - 1);
+
+      if (columnasVisibles.visita) {
+        worksheet.mergeCells(2, col, 2, col + 1);
+        col += 2;
+      }
+      if (columnasVisibles.venta) {
+        worksheet.mergeCells(2, col, 2, col + 1);
+        col += 2;
+      }
+      if (columnasVisibles.cobranza) {
+        worksheet.mergeCells(2, col, 2, col + 1);
+        col += 2;
+      }
+      if (columnasVisibles.total) {
+        worksheet.mergeCells(2, col, 3, col);
+        col += 1;
+      }
+    }
+
+    // Datos
+    for (const row of this.data) {
+      const fila = [row.seccion, row.representante, row.region, row.fuerza];
+
+      for (const key of secciones) {
+        if (!this.seccionesVisibles[key]) continue;
+
+        const k = String(key); // aseguramos tipo string explícito
+
+        if (columnasVisibles.visita) {
+          fila.push(
+            row[`visita_${k}` as keyof ResumenCoberturaClientes] ?? '',
+            (row[`porcentaje_Visita_${k}` as keyof ResumenCoberturaClientes] ??
+              '') + '%'
+          );
+        }
+
+        if (columnasVisibles.venta) {
+          fila.push(
+            row[`venta_${k}` as keyof ResumenCoberturaClientes] ?? '',
+            (row[`porcentaje_Venta_${k}` as keyof ResumenCoberturaClientes] ??
+              '') + '%'
+          );
+        }
+
+        if (columnasVisibles.cobranza) {
+          fila.push(
+            row[`cobro_${k}` as keyof ResumenCoberturaClientes] ?? '',
+            (row[`porcentaje_Cobro_${k}` as keyof ResumenCoberturaClientes] ??
+              '') + '%'
+          );
+        }
+
+        if (columnasVisibles.total) {
+          fila.push(row[`total_${k}` as keyof ResumenCoberturaClientes] ?? '');
+        }
+      }
+
+      worksheet.addRow(fila);
+    }
+
+    worksheet.columns.forEach((column) => {
+      column.width = 14;
+    });
+
+    // Obtener fechas para el nombre del archivo
+    let fechaInicial: Date;
+    let fechaFinal: Date;
+
+    if (this.modoFiltroFechas === 'ciclo') {
+      const cicloId = this.filtrosForm.value.ciclo;
+      const ciclo = this.allCiclos.find((c) => c.id === cicloId);
+      fechaInicial = new Date(ciclo?.fechaInicio ?? new Date());
+      fechaFinal = new Date(ciclo?.fechaFin ?? new Date());
+    } else {
+      const rango = this.filtrosForm.value.rangoFechas;
+      fechaInicial = new Date(rango?.[0] ?? new Date());
+      fechaFinal = new Date(rango?.[1] ?? new Date());
+    }
+
+    const formatDate = (d: Date): string =>
+      `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d
+        .getDate()
+        .toString()
+        .padStart(2, '0')}`;
+
+    const nombreArchivo = `CoberturaClientes_${formatDate(
+      fechaInicial
+    )}_a_${formatDate(fechaFinal)}.xlsx`;
+
+    workbook.xlsx
+      .writeBuffer()
+      .then((buffer) => {
+        FileSaver.saveAs(new Blob([buffer]), nombreArchivo);
+        this.message.success(`Archivo generado con éxito: ${nombreArchivo}`);
+      })
+      .catch((err) => {
+        console.error('Error al exportar:', err);
+        this.message.error('Error al exportar el archivo.');
+      })
+      .finally(() => {
+        this.isExporting = false;
+      });
   }
 }

@@ -161,7 +161,7 @@
                 nz-button
                 nzType="link"
                 nzSize="small"
-                (click)="previewArchivo(archivo.ruta, archivo.extension)"
+                (click)="previewArchivo(archivo.ruta, archivo.extension,archivo.id)"
                 nz-tooltip
                 nzTooltipTitle="Ver"
               >
@@ -172,8 +172,8 @@
                 nz-button
                 nzType="link"
                 nzSize="small"
-                (click)="descargarArchivo(archivo.ruta)"
                 nz-tooltip
+                (click)="descargarArchivo(archivo.ruta,archivo.id, archivo.nombre)"
                 nzTooltipTitle="Descargar"
               >
                 <nz-icon nzType="download"></nz-icon>

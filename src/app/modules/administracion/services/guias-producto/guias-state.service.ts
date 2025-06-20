@@ -1,5 +1,9 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { GuiaProducto, GuiaProductoDetalle } from '../../interfaces/guias-api-response';
+import {
+  GuiaProducto,
+  GuiaProductoDetalle,
+  SelectItemDTO,
+} from '../../interfaces/guias-api-response';
 import { tap, finalize } from 'rxjs';
 import { GuiaProductoService } from './guias.service';
 import { LoadingService } from '../../../../core/services/loading-service/loading.service';
@@ -11,6 +15,10 @@ export class GuiaProductoStateService {
 
   private guiaDetalleSignal = signal<GuiaProductoDetalle | null>(null);
   private guiaDetalleLoadingSignal = signal(false);
+
+  private guiasNombresSignal = signal<SelectItemDTO[]>([]);
+  private guiasMarcasSignal = signal<SelectItemDTO[]>([]);
+  private guiasSelectLoadingSignal = signal<boolean>(false);
 
   constructor(
     private guiaService: GuiaProductoService,
@@ -74,5 +82,38 @@ export class GuiaProductoStateService {
 
   getGuiaDetalleLoading(id: number) {
     return this.loadingService.getLoading(`fetchGuiaDetalle-${id}`);
+  }
+
+  readonly guiaMarca = computed(() => this.guiasMarcasSignal());
+  readonly guiaNombre = computed(() => this.guiasNombresSignal());
+
+
+  fetchGuiaSelect(forceRefresh = false): void {
+    const loadingKey = 'fetchGuiaSelect';
+
+    if (!forceRefresh && this.guiasSelectLoadingSignal()) {
+      return;
+    }
+
+    this.loadingService.setLoading(loadingKey, true);
+    this.guiasSelectLoadingSignal.set(true);
+
+    this.guiaService
+      .getGuiaSelect()
+      .pipe(
+        tap((res) => {
+          this.guiasNombresSignal.set(res.nombres);
+          this.guiasMarcasSignal.set(res.marcas);
+        }),
+        finalize(() => {
+          this.loadingService.setLoading(loadingKey, false);
+          this.guiasSelectLoadingSignal.set(false);
+        })
+      )
+      .subscribe();
+  }
+
+  getGuiasSelectLoading() {
+    return this.loadingService.getLoading('fetchGuiaSelect');
   }
 }

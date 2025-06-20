@@ -18,8 +18,8 @@
     <nz-form-item style="margin-bottom: 0">
       <nz-form-control>
         <nz-select
-          [(ngModel)]="cicloSeleccionado"
-          (ngModelChange)="onCicloChange()"
+          [ngModel]="cicloSeleccionado()"
+          (ngModelChange)="onCicloChange($event)"
           [nzLoading]="ciclosLoading$()"
           [nzOptions]="(cicloOpciones$ | async)!"
           nzPlaceHolder="Seleccione un periodo"

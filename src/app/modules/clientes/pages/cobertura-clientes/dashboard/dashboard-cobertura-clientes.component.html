@@ -61,6 +61,10 @@
   <button nz-button (click)="open()" nzType="default">
     <nz-icon nzType="filter" />Filtros
   </button>
+    <nz-divider nzType="vertical"></nz-divider>
+  <button [nzLoading]="isExporting" [disabled]="isExporting || data.length === 0" nz-button (click)="exportarExcel()" nzType="default">
+    <nz-icon nzType="download" />Exportar
+  </button>
 </div>
 
 <nz-divider></nz-divider>
@@ -112,6 +116,9 @@
       [seccionesSeleccionadas]="seccionesSeleccionadas"
       (seccionesSeleccionadasChange)="onSeccionesSeleccionadasChange($event)"
       [secciones$]="secciones$"
+      [fuerzas$]="fuerzas$"
+      [fuerzasSeleccionadas]="fuerzasSeleccionadas"
+      (fuerzasSeleccionadasChange)="onFuerzasSeleccionadasChange($event)"
       [columnasVisibles]="columnasVisibles"
       [seccionesVisibles]="seccionesVisibles"
       [seccionesKeys]="seccionesKeys"

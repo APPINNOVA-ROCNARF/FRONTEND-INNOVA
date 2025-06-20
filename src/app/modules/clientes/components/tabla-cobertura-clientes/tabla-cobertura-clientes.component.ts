@@ -2,11 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { ResumenCoberturaClientes } from '../../interfaces/consolidado-clientes-api-response';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
 @Component({
   selector: 'app-tabla-cobertura-clientes',
   standalone: true,
-  imports: [CommonModule, NzTableModule],
+  imports: [CommonModule, NzTableModule, NzIconModule, NzToolTipModule],
   templateUrl: './tabla-cobertura-clientes.component.html',
   styleUrl: './tabla-cobertura-clientes.component.less',
 })

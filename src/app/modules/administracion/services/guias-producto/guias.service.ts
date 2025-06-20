@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../../app.config';
-import { ArchivoTemporalGuardadoDTO, GuiaProducto, GuiaProductoCrearDTO, GuiaProductoDetalle } from '../../interfaces/guias-api-response';
+import { ArchivoTemporalGuardadoDTO, GuiaProducto, GuiaProductoCrearDTO, GuiaProductoDetalle, GuiaProductoSelectsDTO } from '../../interfaces/guias-api-response';
 
 @Injectable({ providedIn: 'root' })
 export class GuiaProductoService {
@@ -59,5 +59,9 @@ export class GuiaProductoService {
 
   eliminarArchivoGuia(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}${this.archivoGuiaUrl}/${id}`);
+  }
+
+  getGuiaSelect(): Observable<GuiaProductoSelectsDTO> {
+    return this.http.get<GuiaProductoSelectsDTO>(`${this.apiUrl}${this.guiaProductoUrl}/select`);
   }
 }

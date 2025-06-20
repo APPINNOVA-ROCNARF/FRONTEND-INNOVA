@@ -65,7 +65,22 @@
           ></nz-option>
         </nz-select>
       </div>
-      
+
+      <div style="display: flex; flex-direction: column; width: 100%">
+        <p nz-typography><strong>Fuerzas</strong></p>
+        <nz-select
+          nzShowSearch
+          nzAllowClear
+          nzMode="multiple"
+          [(ngModel)]="fuerzasSeleccionadas"
+          name="fuerzas"
+          (ngModelChange)="emitirFuerzasSeleccionadas()"
+          nzPlaceHolder="Seleccionar fuerzas"
+          style="width: 100%"
+          [nzOptions]="fuerzasOptions"
+        >
+        </nz-select>
+      </div>
     </div>
   </nz-collapse-panel>
 
@@ -180,9 +195,9 @@
         tabindex="0"
       >
         <span cdkDragHandle class="drag-icon">☰</span>
-        <label nz-checkbox [(ngModel)]="seccionesVisibles[key]">
+        <span nz-checkbox [(ngModel)]="seccionesVisibles[key]">
           {{ seccionesLabels[key] }}
-        </label>
+        </span>
       </li>
     </ul>
   </nz-collapse-panel>
@@ -197,5 +212,4 @@
       Reestablecer
     </button>
   </ng-template>
-
 </nz-collapse>

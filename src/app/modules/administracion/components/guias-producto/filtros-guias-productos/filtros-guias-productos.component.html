@@ -1,8 +1,92 @@
-<nz-card nzSize="small" nzType="inner" nzTitle="Filtros">
-<nz-select
-></nz-select>
-<nz-select
-></nz-select>
-<nz-select
-></nz-select>
-</nz-card>
+<form nz-form nzLayout="vertical">
+  <nz-row [nzGutter]="16" style="white-space: nowrap; min-width: 1000px">
+    <nz-col [nzSpan]="5">
+      <nz-form-item>
+        <nz-form-label><strong>Nombres</strong></nz-form-label>
+        <nz-form-control>
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            [nzMaxTagCount]="2"
+            nzMode="multiple"
+            [(ngModel)]="selectedNombre"
+            name="nombre"
+            (ngModelChange)="onChange('nombre')"
+            nzPlaceHolder="Seleccionar nombres"
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let item of nombres"
+              [nzValue]="item.nombre"
+              [nzLabel]="item.nombre"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-col>
+
+    <nz-col [nzSpan]="5">
+      <nz-form-item>
+        <nz-form-label><strong>Marcas</strong></nz-form-label>
+        <nz-form-control>
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            [nzMaxTagCount]="2"
+            nzMode="multiple"
+            [(ngModel)]="selectedMarca"
+            name="marca"
+            (ngModelChange)="onChange('marca')"
+            nzPlaceHolder="Seleccionar marcas"
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let item of marcas"
+              [nzValue]="item.nombre"
+              [nzLabel]="item.nombre"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-col>
+
+    <nz-col [nzSpan]="5">
+      <nz-form-item>
+        <nz-form-label><strong>Fuerzas</strong></nz-form-label>
+
+        <nz-form-control>
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            [nzMaxTagCount]="2"
+            nzMode="multiple"
+            [(ngModel)]="selectedFuerzas"
+            name="fuerzas"
+            (ngModelChange)="onChange('fuerzas')"
+            nzPlaceHolder="Seleccionar fuerzas"
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let item of fuerzas"
+              [nzValue]="item.nombre"
+              [nzLabel]="item.nombre"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-col>
+
+    <nz-col [nzSpan]="5">
+      <nz-form-item>
+        <nz-form-label><strong>Estados</strong></nz-form-label>
+        <nz-form-control>
+          <nz-radio-group nzButtonStyle="solid" [(ngModel)]="selectedEstado" (ngModelChange)="onEstadoChange()" name="estado">
+            <span nz-radio-button [nzValue]="'todos'">Todos</span>
+            <span nz-radio-button [nzValue]="'activo'">Activo</span>
+            <span nz-radio-button [nzValue]="'inactivo'">Inactivo</span>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-col>
+  </nz-row>
+</form>

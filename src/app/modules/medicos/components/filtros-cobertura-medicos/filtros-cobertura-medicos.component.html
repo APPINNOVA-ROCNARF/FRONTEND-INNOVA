@@ -65,6 +65,62 @@
           ></nz-option>
         </nz-select>
       </div>
-      
+
+      <div style="display: flex; flex-direction: column; width: 100%">
+        <p nz-typography><strong>Fuerzas</strong></p>
+        <nz-select
+          nzShowSearch
+          nzAllowClear
+          nzMode="multiple"
+          [(ngModel)]="fuerzasSeleccionadas"
+          name="fuerzas"
+          (ngModelChange)="emitirFuerzasSeleccionadas()"
+          nzPlaceHolder="Seleccionar fuerzas"
+          style="width: 100%"
+          [nzOptions]="fuerzasOptions"
+        >
+        </nz-select>
+      </div>
     </div>
   </nz-collapse-panel>
+
+  <nz-collapse-panel
+    [nzExtra]="extrabutton"
+    [nzHeader]="nzHeaderClientes"
+    [nzShowArrow]="true"
+    [nzActive]="true"
+  >
+    <ng-template #nzHeaderClientes>
+      <span class="titulo-collapse">Columnas</span>
+    </ng-template>
+    <ul
+      cdkDropList
+      [cdkDropListData]="seccionesKeys"
+      (cdkDropListDropped)="dropSeccion($event)"
+      class="secciones-lista"
+    >
+      <li
+        *ngFor="let key of seccionesKeys"
+        cdkDrag
+        class="seccion-item"
+        tabindex="0"
+      >
+        <span cdkDragHandle class="drag-icon">☰</span>
+        <span nz-checkbox [(ngModel)]="seccionesVisibles[key]">
+          {{ seccionesLabels[key] }}
+        </span>
+      </li>
+    </ul>
+  </nz-collapse-panel>
+
+  <ng-template #extrabutton>
+    <button
+      nzSize="small"
+      nz-button
+      nzType="link"
+      (click)="$event.stopPropagation()"
+    >
+      Reestablecer
+    </button>
+  </ng-template>
+</nz-collapse>

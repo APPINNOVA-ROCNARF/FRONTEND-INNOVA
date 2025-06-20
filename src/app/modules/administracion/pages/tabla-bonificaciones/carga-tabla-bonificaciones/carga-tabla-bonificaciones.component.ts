@@ -1,4 +1,4 @@
-import { Component, effect, OnInit, signal } from '@angular/core';
+import { Component, signal, OnInit, effect } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -9,8 +9,9 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import {
   NzUploadChangeParam,
@@ -18,25 +19,23 @@ import {
   NzUploadModule,
   NzUploadXHRArgs,
 } from 'ng-zorro-antd/upload';
-import { ParrillaPromocionalStateService } from '../../../services/parrilla-promocional/parrilla-state.service';
-import { ParrillaPromocionalService } from '../../../services/parrilla-promocional/parrilla.service';
-import { CommonModule } from '@angular/common';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 import {
   ArchivoTemporalGuardadoDTO,
-  CrearParrillaPromocionalDTO,
-  ParrillaPromocionalDTO,
-} from '../../../interfaces/parrilla-api.response';
-import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
+  CrearTablaBonificacionesDTO,
+  TablaBonificacionesDTO,
+} from '../../../interfaces/tabla-bonificaciones-api.response';
+import { TablaBonificacionesStateService } from '../../../services/tabla-bonificaciones/tabla-bonificaciones-state.service';
+import { TablaBonificacionesService } from '../../../services/tabla-bonificaciones/tabla-bonificaciones.service';
 import { ArchivoService } from '../../../../../core/services/archivo-service/archivo.service';
-import { Subscription } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
-import { CanExitWithUnsavedChanges } from '../../../../../core/guards/unsaved-changes';
+import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 @Component({
-  selector: 'app-carga-parrilla-promocional',
+  selector: 'app-carga-tabla-bonificaciones',
   standalone: true,
   imports: [
     NzFormModule,
@@ -54,18 +53,16 @@ import { CanExitWithUnsavedChanges } from '../../../../../core/guards/unsaved-ch
     NzToolTipModule,
     NzPopconfirmModule,
   ],
-  templateUrl: './carga-parrilla-promocional.component.html',
-  styleUrl: './carga-parrilla-promocional.component.less',
+  templateUrl: './carga-tabla-bonificaciones.component.html',
+  styleUrl: './carga-tabla-bonificaciones.component.less',
 })
-export class CargaParrillaPromocionalComponent
-  implements OnInit, CanExitWithUnsavedChanges
-{
+export class CargaTablaBonificacionesComponent implements OnInit {
   form!: FormGroup;
 
   archivoTemp: ArchivoTemporalGuardadoDTO | null = null;
   uploadList: NzUploadFile[] = [];
 
-  parrilla: ParrillaPromocionalDTO | null = null;
+  tablaBonificacion: TablaBonificacionesDTO | null = null;
 
   modalVisible = false;
   pdfUrl = '';
@@ -74,8 +71,8 @@ export class CargaParrillaPromocionalComponent
 
   constructor(
     private fb: FormBuilder,
-    private parrillaState: ParrillaPromocionalStateService,
-    private parrillaService: ParrillaPromocionalService,
+    private bonificacionesState: TablaBonificacionesStateService,
+    private bonificacionesService: TablaBonificacionesService,
     private archivoService: ArchivoService,
     private message: NzMessageService,
     private modal: NzModalService
@@ -87,17 +84,17 @@ export class CargaParrillaPromocionalComponent
       descripcion: [null, Validators.required],
     });
 
-    this.parrillaState.fetchParrilla();
+    this.bonificacionesState.fetchTablaBonificaciones();
   }
 
-  readonly parrillaEffect = effect(() => {
-    const parrilla = this.parrillaState.parrilla();
-    if (parrilla) {
+  readonly tablaEffect = effect(() => {
+    const tabla = this.bonificacionesState.tablaBonificaciones();
+    if (tabla) {
       this.form.patchValue({
-        nombre: parrilla.nombre,
-        descripcion: parrilla.descripcion,
+        nombre: tabla.nombre,
+        descripcion: tabla.descripcion,
       });
-      this.parrilla = parrilla;
+      this.tablaBonificacion = tabla;
     }
   });
 
@@ -107,13 +104,13 @@ export class CargaParrillaPromocionalComponent
       return;
     }
 
-    const hayArchivoExistente = this.parrilla?.urlArchivo;
+    const hayArchivoExistente = this.tablaBonificacion?.urlArchivo;
     const hayNuevoArchivo = this.archivoTemp !== null;
 
     if (hayArchivoExistente && hayNuevoArchivo) {
       this.modal.confirm({
         nzTitle: '¿Deseas reemplazar el archivo existente?',
-        nzContent: `Ya hay un archivo guardado: "${this.parrilla?.nombreArchivo}". Si continúas, será reemplazado.`,
+        nzContent: `Ya hay un archivo guardado: "${this.tablaBonificacion?.nombreArchivo}". Si continúas, será reemplazado.`,
         nzOkText: 'Sí, continuar',
         nzCancelText: 'Cancelar',
         nzOnOk: () => this.ejecutarGuardado(),
@@ -131,16 +128,18 @@ export class CargaParrillaPromocionalComponent
       nombre: raw.nombre?.trim() ?? '',
       descripcion: raw.descripcion?.trim() ?? '',
       archivo: this.archivoTemp,
-    } as CrearParrillaPromocionalDTO;
+    } as CrearTablaBonificacionesDTO;
 
     this.guardadoEstado.set(true);
 
-    this.parrillaService.crearParrilla(payload).subscribe({
+    this.bonificacionesService.crearTablaBonificaciones(payload).subscribe({
       next: () => {
-        this.message.success('Parrilla Promocional actualizada correctamente');
+        this.message.success(
+          'Tabla de bonificaciones actualizada correctamente'
+        );
         this.uploadList = [];
         this.archivoTemp = null;
-        this.parrillaState.fetchParrilla(true);
+        this.bonificacionesState.fetchTablaBonificaciones(true);
       },
       error: () => this.message.error('Error al actualizar el registro'),
       complete: () => this.guardadoEstado.set(false),
@@ -156,21 +155,23 @@ export class CargaParrillaPromocionalComponent
   }
 
   descargarArchivo(rutaRelativa: string, entidadId: number): void {
-    this.archivoService.obtenerArchivo(rutaRelativa, entidadId).subscribe((blob) => {
-      const a = document.createElement('a');
-      const url = window.URL.createObjectURL(blob);
-      a.href = url;
-      a.download = this.parrilla?.nombreArchivo ?? ''; 
-      a.click();
-      window.URL.revokeObjectURL(url);
-    });
+    this.archivoService
+      .obtenerArchivo(rutaRelativa, entidadId)
+      .subscribe((blob) => {
+        const a = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = this.tablaBonificacion?.nombreArchivo ?? '';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
   }
 
   eliminarArchivo(): void {
-    this.parrillaService.eliminarArchivo().subscribe({
+    this.bonificacionesService.eliminarArchivo().subscribe({
       next: () => {
         this.message.success('Archivo eliminado correctamente');
-        this.parrillaState.fetchParrilla(true);
+        this.bonificacionesState.fetchTablaBonificaciones(true);
       },
       error: () => {
         this.message.error('Error al eliminar archivo');
@@ -182,7 +183,7 @@ export class CargaParrillaPromocionalComponent
     const formData = new FormData();
     formData.append('File', item.file as unknown as File);
 
-    return this.parrillaService.uploadTempArchivo(formData).subscribe({
+    return this.bonificacionesService.uploadTempArchivo(formData).subscribe({
       next: (response: ArchivoTemporalGuardadoDTO) => {
         this.archivoTemp = response;
         item.onSuccess!(response, item.file!, response);

@@ -16,7 +16,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private excludedUrls = ['/login']; 
   constructor(private authService: AuthService, private router: Router) {}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (this.isExcludedUrl(req.url)) {
       return next.handle(req);
     }
@@ -37,7 +37,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     return next.handle(authReq).pipe(
-      catchError((error: any) => {
+      catchError((error: unknown) => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
           this.authService.logout();
           this.router.navigate(['/login']);
@@ -61,6 +61,7 @@ export class AuthInterceptor implements HttpInterceptor {
       const exp = payload.exp * 1000;
       return Date.now() > exp;
     } catch (e) {
+      console.log(e);
       return true; 
     }
   }

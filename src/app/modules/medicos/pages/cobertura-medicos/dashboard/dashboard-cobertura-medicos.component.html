@@ -62,6 +62,15 @@
   <button nz-button (click)="open()" nzType="default">
     <nz-icon nzType="filter" />Filtros
   </button>
+  <nz-divider nzType="vertical"></nz-divider>
+  <button
+    [disabled]="data.length === 0"
+    nz-button
+    (click)="exportarExcel()"
+    nzType="default"
+  >
+    <nz-icon nzType="download" />Exportar
+  </button>
 </div>
 
 <nz-divider></nz-divider>
@@ -85,7 +94,14 @@
       (regionesChange)="onRegionesSeleccionadasChange($event)"
       [seccionesSeleccionadas]="seccionesSeleccionadas"
       (seccionesSeleccionadasChange)="onSeccionesSeleccionadasChange($event)"
-            [secciones$]="secciones$"
+      [secciones$]="secciones$"
+      [fuerzas$]="fuerzas$"
+      [fuerzasSeleccionadas]="fuerzasSeleccionadas"
+      (fuerzasSeleccionadasChange)="onFuerzasSeleccionadasChange($event)"
+      [seccionesVisibles]="seccionesVisibles"
+      [seccionesKeys]="seccionesKeys"
+      [seccionesLabels]="seccionesLabels"
+      (dropEvent)="dropSeccion($event)"
     >
     </app-filtros-cobertura-medicos>
   </ng-container>
@@ -94,5 +110,8 @@
 <app-tabla-cobertura-medicos
   [data]="data"
   [isLoading]="isLoading"
+    [seccionesKeys]="seccionesKeys"
+  [seccionesLabels]="seccionesLabels"
+  [seccionesVisibles]="seccionesVisibles"
   [sortFns]="sortFns"
 ></app-tabla-cobertura-medicos>

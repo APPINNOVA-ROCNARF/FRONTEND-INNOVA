@@ -39,5 +39,5 @@ export interface ResumenCoberturaClientes {
   porcentaje_Cobro_CONTA: number;
   porcentaje_Cobro_CLIZ: number;
 
-  [key: string]: string | number;
+  [key: string]: string | number | any; 
 }

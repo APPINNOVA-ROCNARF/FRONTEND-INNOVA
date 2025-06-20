@@ -47,31 +47,58 @@ import { AsesoresStateService } from '../../../../../shared/services/asesores-se
   styleUrl: './dashboard-viaticos.component.less',
 })
 export class AdministrarViaticosComponent implements OnInit {
+  // permisos
   canEdit = true;
   canDelete = true;
 
-  solicitudViatico!: Signal<SolicitudViatico[]>;
-  estadisticas!: Signal<EstadisticaSolicitudViatico | null>;
-  loading$!: Signal<boolean>;
-  isMobile$: Observable<boolean>;
+  // señal para el ciclo seleccionado
+  cicloSeleccionado = signal<number | null>(null);
 
-  // Ciclos
+  // datos derivados
+  solicitudViatico = computed<SolicitudViatico[]>(() => {
+    const id = this.cicloSeleccionado();
+    return id !== null
+      ? this.solicitudState.solicitudViatico$(id)()
+      : [];
+  });
 
-  cicloSeleccionado: number | null = null;
+  loading$ = computed<boolean>(() => {
+    const id = this.cicloSeleccionado();
+    return id !== null
+      ? this.solicitudState.getSolicitudViaticosLoading(id)()
+      : false;
+  });
 
+  estadisticas = computed<EstadisticaSolicitudViatico | null>(() => {
+    const id = this.cicloSeleccionado();
+    return id !== null
+      ? this.solicitudState.estadisticaSolicitudViatico$(id)()
+      : null;
+  });
+
+  // filtros
+  representantesSeleccionados = signal<string[]>([]);
+  estadosSeleccionados = signal<string[]>([]);
+
+  // computado de lista filtrada
+  solicitudesFiltradas = computed<SolicitudViatico[]>(() => {
+    const data = this.solicitudViatico();
+    const reps = this.representantesSeleccionados();
+    const estados = this.estadosSeleccionados();
+    return data.filter((item) => {
+      const okRep = reps.length === 0 || reps.includes(item.usuarioNombre);
+      const okEst = estados.length === 0 || estados.includes(item.estado);
+      return okRep && okEst;
+    });
+  });
+
+  // otros streams y configuraciones
   ciclos$!: Observable<CicloSelectDTO[]>;
   ciclosLoading$!: Signal<boolean>;
   cicloOpciones$!: Observable<{ label: string; value: number }[]>;
 
-  // Asesores
-
   asesores$!: Observable<UsuarioAppSelect[]>;
   asesoresLoading$!: Signal<boolean>;
-
-  // Filtros
-
-representantesSeleccionados = signal<string[]>([]);
-estadosSeleccionados = signal<string[]>([]);
 
   sortFns: Record<
     string,
@@ -86,103 +113,55 @@ estadosSeleccionados = signal<string[]>([]);
     public router: Router,
     public route: ActivatedRoute
   ) {
-    this.isMobile$ = this.uiService.isMobile$;
+    this.ciclosLoading$ = this.cicloState.getCiclosLoading();
+    this.asesoresLoading$ = this.asesoresState.getAsesoresLoading();
   }
 
   ngOnInit(): void {
+    // fetch inicial
     this.asesores$ = this.asesoresState.asesores$;
-    this.asesoresLoading$ = this.asesoresState.getAsesoresLoading();
     this.asesoresState.fetchAsesores();
 
     this.ciclos$ = this.cicloState.ciclos$;
-    this.ciclosLoading$ = this.cicloState.getCiclosLoading();
     this.cicloState.fetchCiclos();
 
+    // auto-selección de ciclo activo
     this.ciclos$.subscribe((ciclos) => {
-      const cicloActivo = ciclos.find((c) => c.estado);
-      if (cicloActivo) {
-        this.cicloSeleccionado = cicloActivo.id;
-        this.onCicloChange();
+      const activo = ciclos.find(c => c.estado);
+      if (activo) {
+        this.onCicloChange(activo.id);
       }
     });
 
+    // opciones para select
     this.cicloOpciones$ = this.ciclos$.pipe(
-      map((ciclos) =>
-        ciclos.map((c) => ({
-          label: c.nombre,
-          value: c.id,
-        }))
-      )
+      map(ciclos => ciclos.map(c => ({ label: c.nombre, value: c.id })))
     );
 
-    this.sortFns['usuarioNombre'] = (a, b) => {
-      console.log('Ordenando:', a.usuarioNombre, b.usuarioNombre);
-      return String(a.usuarioNombre ?? '').localeCompare(
-        String(b.usuarioNombre ?? '')
-      );
-    };
+    // funciones de ordenamiento
+    this.sortFns['usuarioNombre'] = (a, b) =>
+      String(a.usuarioNombre ?? '').localeCompare(String(b.usuarioNombre ?? ''));
 
-    this.sortFns['fechaRegistro'] = (a, b) => {
-      const fechaA = a.fechaRegistro ? new Date(a.fechaRegistro).getTime() : 0;
-      const fechaB = b.fechaRegistro ? new Date(b.fechaRegistro).getTime() : 0;
+    this.sortFns['fechaRegistro'] = (a, b) =>
+      new Date(a.fechaRegistro ?? '').getTime() - new Date(b.fechaRegistro ?? '').getTime();
 
-      return fechaA - fechaB;
-    };
+    this.sortFns['fechaModificacion'] = (a, b) =>
+      new Date(a.fechaModificacion ?? '').getTime() - new Date(b.fechaModificacion ?? '').getTime();
 
-    this.sortFns['fechaModificacion'] = (a, b) => {
-      const fechaA = a.fechaRegistro ? new Date(a.fechaRegistro).getTime() : 0;
-      const fechaB = b.fechaRegistro ? new Date(b.fechaRegistro).getTime() : 0;
-
-      return fechaA - fechaB;
-    };
-
-    this.sortFns['monto'] = (a, b) => {
-      const montoA = a.monto ?? 0;
-      const montoB = b.monto ?? 0;
-
-      return montoA - montoB;
-    };
+    this.sortFns['monto'] = (a, b) => (a.monto ?? 0) - (b.monto ?? 0);
   }
 
-  solicitudesFiltradas = computed(() => {
-  const data = this.solicitudViatico(); // señal reactiva
-  const reps = this.representantesSeleccionados();
-  const estados = this.estadosSeleccionados();
-
-  return data.filter((item) => {
-    const cumpleRepresentante =
-      reps.length === 0 || reps.includes(item.usuarioNombre);
-    const cumpleEstado = 
-      estados.length === 0 || estados.includes(item.estado);
-
-    return cumpleRepresentante && cumpleEstado;
-  });
-});
-
-  onCicloChange(): void {
-    if (!this.cicloSeleccionado) return;
-
-    this.solicitudViatico = this.solicitudState.solicitudViatico$(
-      this.cicloSeleccionado
-    );
-    this.loading$ = this.solicitudState.getSolicitudViaticosLoading(
-      this.cicloSeleccionado
-    );
-    this.estadisticas = this.solicitudState.estadisticaSolicitudViatico$(
-      this.cicloSeleccionado
-    );
-
-    this.solicitudState.fetchSolicitudViaticos(this.cicloSeleccionado);
-    this.solicitudState.fetchEstadisticaSolicitudViatico(
-      this.cicloSeleccionado
-    );
+  onCicloChange(id: number): void {
+    this.cicloSeleccionado.set(id);
+    this.solicitudState.fetchSolicitudViaticos(id);
+    this.solicitudState.fetchEstadisticaSolicitudViatico(id);
   }
 
-onRepresentantesSeleccionadosChange(nombres: string[]) {
-  this.representantesSeleccionados.set(nombres);
-}
+  onRepresentantesSeleccionadosChange(nombres: string[]) {
+    this.representantesSeleccionados.set(nombres);
+  }
 
-onEstadosSeleccionadosChange(estados: string[]) {
-  this.estadosSeleccionados.set(estados);
-}
+  onEstadosSeleccionadosChange(estados: string[]) {
+    this.estadosSeleccionados.set(estados);
+  }
 }

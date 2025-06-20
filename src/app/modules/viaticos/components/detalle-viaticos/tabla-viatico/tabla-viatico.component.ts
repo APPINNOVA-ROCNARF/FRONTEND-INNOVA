@@ -1,7 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+} from '@angular/core';
 import { NzTableModule } from 'ng-zorro-antd/table';
-import { CampoRechazado, Vehiculo, Viatico } from '../../../interfaces/viatico-api-response';
+import {
+  CampoRechazado,
+  Vehiculo,
+  Viatico,
+} from '../../../interfaces/viatico-api-response';
 import { NzImageService } from 'ng-zorro-antd/image';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -10,16 +20,23 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { EstadoViaticoPipe } from "../../../pipes/estado-viatico.pipe";
+import { EstadoViaticoPipe } from '../../../pipes/estado-viatico.pipe';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { VehiculoModalComponent } from '../modal-vehiculo/vehiculo-modal.component';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { CategoriaColorPipe } from "../../../pipes/categoria-color.pipe";
+import { CategoriaColorPipe } from '../../../pipes/categoria-color.pipe';
 import { CamposRechazadoModalComponent } from '../modal-campos-devueltos/campo-rechazado-modal.component';
 import { ArchivoService } from '../../../../../core/services/archivo-service/archivo.service';
+import { ViaticoService } from '../../../services/viatico/viatico.service';
+
 @Component({
   selector: 'app-tabla-viatico',
   standalone: true,
@@ -38,7 +55,7 @@ import { ArchivoService } from '../../../../../core/services/archivo-service/arc
     NzInputModule,
     EstadoViaticoPipe,
     ReactiveFormsModule,
-    CategoriaColorPipe
+    CategoriaColorPipe,
   ],
   templateUrl: './tabla-viatico.component.html',
   styleUrl: './tabla-viatico.component.less',
@@ -67,7 +84,11 @@ export class TablaViaticoComponent {
   @Output() aprobarMasivo = new EventEmitter<number[]>();
   @Output() rechazar = new EventEmitter<number>();
   @Output() devolver = new EventEmitter<number>();
-  @Output() editar = new EventEmitter<{ id: number; nombreProveedor: string; numeroFactura: string }>();
+  @Output() editar = new EventEmitter<{
+    id: number;
+    nombreProveedor: string;
+    numeroFactura: string;
+  }>();
   @Output() historial = new EventEmitter<number>();
   listOfCurrentPageData: Viatico[] = [];
 
@@ -80,25 +101,34 @@ export class TablaViaticoComponent {
   setEditId: number | null = null;
   editForms = new Map<number, FormGroup>();
 
-
   camposDevueltos: CampoRechazado[] = [];
   viaticoSeleccionado: Viatico | null = null;
   modalCamposVisible = false;
 
-isPreviewActive = false;
+  facturasVistasMap = new Map<number, boolean>();
 
 
   constructor(
     private imageService: NzImageService,
     private archivoService: ArchivoService,
     private modal: NzModalService,
+    private viaticoService: ViaticoService,
     private fb: FormBuilder
-  ) { }
+  ) {}
 
-  previewImagen(rutaRelativa: string): void {
-    this.isPreviewActive = !this.isPreviewActive; 
-    const urlCompleta = this.archivoService.getUrlAbsoluta(rutaRelativa);
-    this.imageService.preview([{ src: urlCompleta, alt: 'Factura' }]);
+  previewImagen(rutaRelativa: string, facturaId: number): void {
+    this.facturasVistasMap.set(facturaId, true);
+    
+    this.archivoService.verFactura(rutaRelativa, facturaId).subscribe({
+      next: (blob: Blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+
+        this.imageService.preview([{ src: objectUrl, alt: 'Factura' }]);
+      },
+      error: (err) => {
+        console.error('Error al obtener la imagen protegida:', err);
+      },
+    });
   }
 
   verVehiculo(vehiculo: Vehiculo): void {
@@ -106,11 +136,11 @@ isPreviewActive = false;
       nzTitle: 'Información del Vehículo',
       nzContent: VehiculoModalComponent,
       nzData: vehiculo,
-      nzFooter: null
+      nzFooter: null,
     });
   }
 
-    trackById(_: number, item: Viatico) {
+  trackById(_: number, item: Viatico) {
     return item.id;
   }
 
@@ -157,13 +187,14 @@ isPreviewActive = false;
   editarViatico(v: Viatico): void {
     this.setEditId = v.id;
 
-    this.editForms.set(v.id, this.fb.group({
-      nombreProveedor: [v.nombreProveedor],
-      numeroFactura: [v.numeroFactura]
-    }));
+    this.editForms.set(
+      v.id,
+      this.fb.group({
+        nombreProveedor: [v.nombreProveedor],
+        numeroFactura: [v.numeroFactura],
+      })
+    );
   }
-
-
 
   guardarEdicion(v: Viatico): void {
     const form = this.editForms.get(v.id);
@@ -177,12 +208,11 @@ isPreviewActive = false;
     this.editar.emit({
       id: v.id,
       nombreProveedor,
-      numeroFactura
+      numeroFactura,
     });
 
     this.cancelarEdicion();
   }
-
 
   cancelarEdicion(): void {
     if (this.setEditId !== null) {
@@ -191,16 +221,28 @@ isPreviewActive = false;
     this.setEditId = null;
   }
 
+  onCurrentPageDataChange(viaticos: Viatico[]): void {
+    this.listOfCurrentPageData = viaticos;
 
+    const ids = viaticos
+      .map((v) => v.facturaId)
+      .filter((id) => !this.facturasVistasMap.has(id)); // Solo los no consultados
 
+    if (ids.length === 0) return;
 
-  onCurrentPageDataChange(listOfCurrentPageData: Viatico[]): void {
-    this.listOfCurrentPageData = listOfCurrentPageData;
+    this.viaticoService.FacturaVista(ids).subscribe((res) => {
+      Object.entries(res).forEach(([id, visto]) => {
+        this.facturasVistasMap.set(+id, visto as boolean);
+      });
+    });
   }
 
   onAllChecked(value: boolean): void {
     this.listOfCurrentPageData.forEach((item) => {
-      if (item.estadoViatico !== 'Aprobado' && item.estadoViatico !== 'Borrador') {
+      if (
+        item.estadoViatico !== 'Aprobado' &&
+        item.estadoViatico !== 'Borrador'
+      ) {
         this.updateCheckedSet(item.id, value);
       }
     });
@@ -216,10 +258,17 @@ isPreviewActive = false;
   }
 
   refreshCheckedStatus(): void {
-    const itemsValidos = this.listOfCurrentPageData.filter(item => item.estadoViatico !== 'Aprobado' && item.estadoViatico !== 'Borrador');
+    const itemsValidos = this.listOfCurrentPageData.filter(
+      (item) =>
+        item.estadoViatico !== 'Aprobado' && item.estadoViatico !== 'Borrador'
+    );
 
-    this.checked = itemsValidos.length > 0 && itemsValidos.every(item => this.setOfCheckedId.has(item.id));
-    this.indeterminate = itemsValidos.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+    this.checked =
+      itemsValidos.length > 0 &&
+      itemsValidos.every((item) => this.setOfCheckedId.has(item.id));
+    this.indeterminate =
+      itemsValidos.some((item) => this.setOfCheckedId.has(item.id)) &&
+      !this.checked;
 
     this.mostrarBarraAcciones = this.setOfCheckedId.size > 0;
   }
@@ -254,10 +303,9 @@ isPreviewActive = false;
       nzContent: CamposRechazadoModalComponent,
       nzData: viatico,
       nzBodyStyle: {
-        padding: '10px'
+        padding: '10px',
       },
-      nzFooter: null
+      nzFooter: null,
     });
   }
-
 }
