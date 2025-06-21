@@ -7,7 +7,7 @@
 
   <div class="avatar-container">
     <a nz-dropdown nzTrigger="click" [nzDropdownMenu]="userMenu" nzPlacement="bottomRight">
-      <span class="avatar-name">Administrador</span>
+      <span class="avatar-name">{{userEmail}}</span>
       <i nz-icon nzType="down"></i>
     </a>
     <nz-dropdown-menu #userMenu="nzDropdownMenu">

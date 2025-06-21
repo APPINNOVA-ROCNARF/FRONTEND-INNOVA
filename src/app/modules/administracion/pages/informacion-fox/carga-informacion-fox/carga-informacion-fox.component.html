@@ -21,13 +21,31 @@
 <nz-card nzSize="small">
   <nz-upload
     nzType="drag"
+    [nzCustomRequest]="customUploadReq"
+    [nzRemove]="handleRemove"
+    [nzBeforeUpload]="beforeUpload"
+    [nzShowUploadList]="{
+      showRemoveIcon: true,
+      showDownloadIcon: false
+    }"
+    [nzFileList]="uploadList"
+    (nzChange)="handleChange($event)"
   >
     <p class="ant-upload-drag-icon">
       <nz-icon nzType="cloud-sync" />
     </p>
-    <p class="ant-upload-text">Haz click o arrastra el archivo .zip aquí para iniciar</p>
-    <p class="ant-upload-hint">
-      Formato soportado: ZIP (.zip)
+    <p class="ant-upload-text">
+      Haz click o arrastra el archivo .zip aquí para iniciar
     </p>
+    <p class="ant-upload-hint">Formato soportado: ZIP (.zip)</p>
   </nz-upload>
 </nz-card>
+
+<div *ngIf="archivosTemp.length > 0">
+  <h4>Archivos DBF extraídos:</h4>
+  <ul>
+    <li *ngFor="let archivo of archivosTemp">
+      {{ archivo.nombreOriginal }} - <code>{{ archivo.rutaTemporal }}</code>
+    </li>
+  </ul>
+</div>

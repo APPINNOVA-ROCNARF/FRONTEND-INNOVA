@@ -24,10 +24,12 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrl: './header.component.less',
 })
 export class HeaderComponent {
-  @Input() isMobile: boolean = false;
+  @Input() isMobile = false;
 
   isCollapsed$: Observable<boolean>;
   isMobile$: Observable<boolean>;
+
+  userEmail  = "";
 
   constructor(
     private uiService: UiService,
@@ -37,6 +39,7 @@ export class HeaderComponent {
   ) {
     this.isCollapsed$ = this.uiService.sidebarOpen$;
     this.isMobile$ = this.uiService.isMobile$;
+    this.userEmail = this.authService.getUserFromToken()?.email ?? "";
   }
 
   toggleCollapse() {
