@@ -41,11 +41,44 @@
   </nz-upload>
 </nz-card>
 
-<div *ngIf="archivosTemp.length > 0">
-  <h4>Archivos DBF extraídos:</h4>
-  <ul>
-    <li *ngFor="let archivo of archivosTemp">
-      {{ archivo.nombreOriginal }} - <code>{{ archivo.rutaTemporal }}</code>
-    </li>
-  </ul>
+<div *ngIf="archivosTemp.length > 0" class="file-list-container">
+  <h4 class="section-title">Archivos DBF extraídos:</h4>
+
+  <div class="virtual-scroll-container">
+    <cdk-virtual-scroll-viewport
+      itemSize="76"
+      class="file-viewport"
+      [style.height.px]="getViewportHeight()"
+    >
+      <div *cdkVirtualFor="let archivo of archivosTemp" class="file-item">
+        <!-- Icono del archivo -->
+        <div class="file-icon">
+          <i nz-icon nzType="file-text"></i>
+        </div>
+
+        <!-- Información del archivo -->
+        <div class="file-info">
+          <div class="file-name">{{ archivo.nombreOriginal }}</div>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-container">
+          <nz-progress
+            [nzPercent]="100"
+            nzStatus="success"
+            [nzShowInfo]="false"
+            nzSize="small"
+          >
+          </nz-progress>
+        </div>
+
+        <!-- Acciones -->
+        <div class="file-actions">
+          <button nz-button nzType="text" nzSize="small" nzDanger>
+            <i nz-icon nzType="delete"></i>
+          </button>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
 </div>

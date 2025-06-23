@@ -15,6 +15,10 @@ import { InformacionFoxService } from '../../../services/informacion-fox/informa
 import { ArchivoTemporalGuardadoDTO } from '../../../interfaces/informacion-fox-response';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzListModule } from 'ng-zorro-antd/list';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-carga-informacion-fox',
@@ -26,7 +30,12 @@ import { CommonModule } from '@angular/common';
     NzUploadModule,
     NzIconModule,
     NzCardModule,
-    CommonModule
+    CommonModule,
+    NzListModule,
+    NzAvatarModule,
+    NzProgressModule,
+    NzIconModule,
+    ScrollingModule,
   ],
   templateUrl: './carga-informacion-fox.component.html',
   styleUrl: './carga-informacion-fox.component.less',
@@ -40,27 +49,42 @@ export class CargaInformacionFoxComponent {
     private message: NzMessageService
   ) {}
 
- customUploadReq = (item: NzUploadXHRArgs): Subscription => {
-  const formData = new FormData();
-  formData.append('File', item.file as unknown as File);
+  customUploadReq = (item: NzUploadXHRArgs): Subscription => {
+    const formData = new FormData();
+    formData.append('File', item.file as unknown as File);
 
-  return this.foxService.uploadTempArchivo(formData).subscribe({
-    next: (response: ArchivoTemporalGuardadoDTO[] | ArchivoTemporalGuardadoDTO) => {
-      // Asegurar que es un array (caso .zip)
-      const archivos = Array.isArray(response) ? response : [response];
+    return this.foxService.uploadTempArchivo(formData).subscribe({
+      next: (
+        response: ArchivoTemporalGuardadoDTO[] | ArchivoTemporalGuardadoDTO
+      ) => {
+        // Asegurar que es un array (caso .zip)
+        const archivos = Array.isArray(response) ? response : [response];
 
-      archivos.forEach((archivo) => {
-        this.archivosTemp.push(archivo);
-      });
+        archivos.forEach((archivo) => {
+          this.archivosTemp.push(archivo);
+        });
 
-      item.onSuccess!(response, item.file!, response);
-    },
-    error: (error) => {
-      console.error('Error al subir archivo:', error);
-      item.onError!(error, item.file!);
-    },
-  });
-};
+        item.onSuccess!(response, item.file!, response);
+      },
+      error: (error) => {
+        console.error('Error al subir archivo:', error);
+        item.onError!(error, item.file!);
+      },
+    });
+  };
+
+  getViewportHeight(): number {
+    const maxHeight = 400; // Altura máxima del contenedor
+    const itemHeight = 100; // Altura de cada item (incluye gap)
+    const maxItems = Math.floor(maxHeight / itemHeight);
+
+    // Si hay menos items que el máximo, ajusta la altura
+    if (this.archivosTemp.length <= maxItems) {
+      return this.archivosTemp.length * itemHeight;
+    }
+
+    return maxHeight;
+  }
 
   handleRemove = (file: NzUploadFile): boolean => {
     if (file.response && file.response.nombreOriginal) {
@@ -99,4 +123,10 @@ export class CargaInformacionFoxComponent {
 
     return true;
   };
+
+  handleRemoveByNombre(nombre: string): void {
+    this.archivosTemp = this.archivosTemp.filter(
+      (a) => a.nombreOriginal !== nombre
+    );
+  }
 }

@@ -1,0 +1,154 @@
+.file-list-container {
+    margin-top: 24px;
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 8px;
+  }
+  
+  .section-title {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #262626;
+  }
+  
+  .virtual-scroll-container {
+    border-radius: 6px;
+    background: transparent;
+  }
+  
+  .file-viewport {
+    background: transparent;
+  }
+  
+  .file-viewport .cdk-virtual-scroll-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .file-item-wrapper {
+    height: 100px; /* Altura fija para virtualización */
+    flex-shrink: 0;
+  }
+  
+  .file-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+  }
+  
+  .file-item:hover {
+    border-color: #d9d9d9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+    background: #f6f6f6;
+    border-radius: 6px;
+  }
+  
+  .file-icon i {
+    font-size: 20px;
+    color: #1890ff;
+  }
+  
+  .file-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .file-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #262626;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .file-status {
+    font-size: 12px;
+    color: #52c41a;
+    font-weight: 400;
+  }
+  
+  .file-percentage {
+    font-size: 14px;
+    color: #262626;
+    font-weight: 500;
+    margin-right: 16px;
+    min-width: 40px;
+    text-align: right;
+  }
+  
+  .file-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .file-actions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  .file-actions button:hover {
+    background: #fff2f0;
+    color: #ff4d4f;
+  }
+  
+  .progress-bar-full {
+    margin: 0 16px -4px 16px;
+    background: white;
+  }
+  
+  .progress-bar-full .ant-progress {
+    margin: 0;
+  }
+  
+  .progress-bar-full .ant-progress-line {
+    width: 100%;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .file-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .file-percentage {
+      align-self: flex-end;
+      margin-right: 0;
+    }
+    
+    .file-actions {
+      align-self: flex-end;
+    }
+    
+    .progress-bar-container {
+      padding: 0 16px 16px 16px;
+    }
+  }
