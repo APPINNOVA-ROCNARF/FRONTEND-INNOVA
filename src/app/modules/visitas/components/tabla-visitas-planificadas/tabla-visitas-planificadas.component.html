@@ -1,0 +1,341 @@
+<nz-table
+  #table
+  [nzData]="data"
+  [nzLoading]="isLoading"
+  [nzFrontPagination]="false"
+  [nzShowPagination]="false"
+  nzSize="small"
+  nzBordered="true"
+  [nzScroll]="{ x: getTableWidth(), y: '600px' }"
+>
+  <thead>
+    <tr>
+      <th nzLeft nzColumnKey="seccion" rowspan="3">Sección</th>
+      <th nzLeft nzColumnKey="representante" nzWidth="250px" rowspan="3">
+        Representante
+      </th>
+      <th nzColumnKey="region" rowspan="3">Región</th>
+      <th nzColumnKey="fuerza" rowspan="3">Fuerza</th>
+      <th nzColumnKey="fechaPlanificada" nzWidth="150px" rowspan="3">
+        Fecha Planificada
+      </th>
+      <th nzColumnKey="fechaEjecutada" nzWidth="150px" rowspan="3">
+        Fecha Ejecutada
+      </th>
+      <th nzColumnKey="nombreCliente" nzWidth="200px" rowspan="3">Cliente</th>
+      <th nzColumnKey="estado" rowspan="3">Estado</th>
+      <th nzColumnKey="revisita" rowspan="3">Revisita</th>
+      <th nzColumnKey="visitaSinGestion" rowspan="3">Sin Gestión</th>
+      <th
+        nzColumnKey="observacion"
+        *ngIf="showObservacion"
+        nzWidth="300px"
+        rowspan="3"
+      >
+        Observación
+      </th>
+      <th nzColumnKey="acompanante" *ngIf="showAcompanado" rowspan="3">
+        Acompañante
+      </th>
+
+      <th colspan="8" *ngIf="showClienteZ">Clientes Z</th>
+
+      <th colspan="4" *ngIf="showMedico">Médicos</th>
+
+      <th colspan="16" *ngIf="showClienteGenerico">Clientes</th>
+    </tr>
+    <tr>
+      <ng-container *ngIf="showClienteZ">
+        <th colspan="2">Cajas Vacias</th>
+        <th colspan="2">Visita Promocional</th>
+        <th colspan="2">Punto Contacto</th>
+        <th colspan="2">Entrega de Premios</th>
+      </ng-container>
+
+      <ng-container *ngIf="showMedico">
+        <th colspan="2">Visita Promocional</th>
+        <th colspan="2">Punto Contacto</th>
+      </ng-container>
+
+      <ng-container *ngIf="showClienteGenerico">
+        <th colspan="2">Cajas Vacias</th>
+        <th colspan="2">Siembra Productos</th>
+        <th colspan="2">Visita Promocional</th>
+        <th colspan="2">Punto Contacto</th>
+        <th colspan="2">Entrega de Premios</th>
+        <th colspan="2">Devolución</th>
+        <th colspan="2">Pedido</th>
+        <th colspan="2">Cobro</th>
+      </ng-container>
+    </tr>
+    <tr>
+      <ng-container *ngIf="showClienteZ">
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+      </ng-container>
+
+      <ng-container *ngIf="showMedico">
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+      </ng-container>
+
+      <ng-container *ngIf="showClienteGenerico">
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+      </ng-container>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of table.data">
+      <td nzLeft>{{ row.seccion }}</td>
+      <td nzLeft>{{ row.representante }}</td>
+      <td>{{ row.region }}</td>
+      <td>{{ row.fuerza }}</td>
+      <td>{{ row.fechaPlanificada | date : "short" }}</td>
+      <td>{{ row.fechaEjecutada | date : "short" }}</td>
+      <td>{{ row.nombreCliente }}</td>
+      <td>
+        <ng-container *ngIf="row.estado | estadoTag as tag">
+          <nz-tag [nzColor]="tag.color">
+            {{ tag.label }}
+          </nz-tag>
+        </ng-container>
+      </td>
+      <td>{{ row.revisita }}</td>
+      <td>{{ row.visitaSinGestion }}</td>
+      <td *ngIf="showObservacion">{{ row.observacion }}</td>
+      <td *ngIf="showAcompanado">{{ row.acompanante }}</td>
+
+      <ng-container *ngIf="showClienteZ">
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteZCajasVaciasPlanificado === ''
+          }"
+        >
+          {{ row.clienteZCajasVaciasPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteZCajasVaciasEjecutado === ''
+          }"
+        >
+          {{ row.clienteZCajasVaciasEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteZVisitaPromocionalPlanificado === ''
+          }"
+        >
+          {{ row.clienteZVisitaPromocionalPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteZVisitaPromocionalEjecutado === ''
+          }"
+        >
+          {{ row.clienteZVisitaPromocionalEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteZPuntoContactoPlanificado === ''
+          }"
+        >
+          {{ row.clienteZPuntoContactoPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteZPuntoContactoEjecutado === ''
+          }"
+        >
+          {{ row.clienteZPuntoContactoEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteZEntregaPremiosPlanificado === ''
+          }"
+        >
+          {{ row.clienteZEntregaPremiosPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteZEntregaPremiosEjecutado === ''
+          }"
+        >
+          {{ row.clienteZEntregaPremiosEjecutado }}
+        </td>
+      </ng-container>
+
+      <ng-container *ngIf="showMedico">
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.medicoVisitaPromocionalPlanificado === ''
+          }"
+        >
+          {{ row.medicoVisitaPromocionalPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.medicoVisitaPromocionalEjecutado === ''
+          }"
+        >
+          {{ row.medicoVisitaPromocionalEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.medicoPuntoContactoPlanificado === ''
+          }"
+        >
+          {{ row.medicoPuntoContactoPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.medicoPuntoContactoEjecutado === ''
+          }"
+        >
+          {{ row.medicoPuntoContactoEjecutado }}
+        </td>
+      </ng-container>
+
+      <ng-container *ngIf="showClienteGenerico">
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteCajasVaciasPlanificado === ''
+          }"
+        >
+          {{ row.clienteCajasVaciasPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteCajasVaciasEjecutado === ''
+          }"
+        >
+          {{ row.clienteCajasVaciasEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteSiembraProductosPlanificado === ''
+          }"
+        >
+          {{ row.clienteSiembraProductosPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteSiembraProductosEjecutado === ''
+          }"
+        >
+          {{ row.clienteSiembraProductosEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteVisitaPromocionalPlanificado === ''
+          }"
+        >
+          {{ row.clienteVisitaPromocionalPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteVisitaPromocionalEjecutado === ''
+          }"
+        >
+          {{ row.clienteVisitaPromocionalEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clientePuntoContactoPlanificado === ''
+          }"
+        >
+          {{ row.clientePuntoContactoPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clientePuntoContactoEjecutado === ''
+          }"
+        >
+          {{ row.clientePuntoContactoEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteEntregaPremiosPlanificado === ''
+          }"
+        >
+          {{ row.clienteEntregaPremiosPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteEntregaPremiosEjecutado === ''
+          }"
+        >
+          {{ row.clienteEntregaPremiosEjecutado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteDevolucionPlanificado === ''
+          }"
+        >
+          {{ row.clienteDevolucionPlanificado }}
+        </td>
+        <td
+          [ngClass]="{
+            'no-aplica-cell': row.clienteDevolucionEjecutado === ''
+          }"
+        >
+          {{ row.clienteDevolucionEjecutado }}
+        </td>
+        <td
+          [ngClass]="{ 'no-aplica-cell': row.clientePedidoPlanificado === '' }"
+        >
+          {{ row.clientePedidoPlanificado }}
+        </td>
+        <td [ngClass]="{ 'no-aplica-cell': row.clientePedidoEjecutado === '' }">
+          {{ row.clientePedidoEjecutado }}
+        </td>
+        <td
+          [ngClass]="{ 'no-aplica-cell': row.clienteCobroPlanificado === '' }"
+        >
+          {{ row.clienteCobroPlanificado }}
+        </td>
+        <td [ngClass]="{ 'no-aplica-cell': row.clienteCobroEjecutado === '' }">
+          {{ row.clienteCobroEjecutado }}
+        </td>
+      </ng-container>
+    </tr>
+  </tbody>
+</nz-table>
+<nz-divider></nz-divider>
+<nz-pagination
+  [nzPageIndex]="pageIndex"
+  [nzPageSize]="pageSize"
+  [nzTotal]="totalItems"
+  [nzShowTotal] ="rangeTemplate"
+  [nzPageSizeOptions]="[10, 20, 50, 100]"
+  (nzPageIndexChange)="onPageIndexChange($event)"
+  (nzPageSizeChange)="onPageSizeChange($event)"
+  nzShowSizeChanger
+  nzShowQuickJumper
+>
+</nz-pagination>
+ <ng-template  #rangeTemplate let-range="range" let-total>
+      <span class="info-tabla">Mostrando {{ range[0] }}-{{ range[1] }} de {{ total }} resultados</span>
+    </ng-template>

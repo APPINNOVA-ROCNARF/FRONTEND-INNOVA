@@ -1,7 +1,7 @@
 export interface ConsolidadoMedico {
   seccion: string;
   representante: string;
-  region: string,
+  region: string;
   fuerzaVenta: string;
   totalMed: number;
   totalEfect: number;
@@ -27,6 +27,5 @@ export interface ConsolidadoMedico {
   pcEfect: number;
   pcPot: number;
   pcPuntos: number;
-    [key: string]: string | number;
-
+  [key: string]: string | number;
 }

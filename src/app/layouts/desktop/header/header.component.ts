@@ -9,6 +9,7 @@ import { UiService } from '../../../core/services/ui-service/ui.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 @Component({
   selector: 'app-header',
@@ -19,6 +20,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
     NzLayoutModule,
     NzDropDownModule,
     NzAvatarModule,
+    NzDividerModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.less',

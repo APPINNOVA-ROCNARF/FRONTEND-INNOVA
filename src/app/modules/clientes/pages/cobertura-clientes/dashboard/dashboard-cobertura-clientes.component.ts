@@ -112,6 +112,13 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
     total: true,
   };
 
+  seccionesVisibles: Record<string, boolean> = {
+    CLACT: true,
+    CLINC: true,
+    CONTA: true,
+    CLIZ: true,
+  };
+
   sortFns: Record<
     string,
     (a: ResumenCoberturaClientes, b: ResumenCoberturaClientes) => number
@@ -239,12 +246,6 @@ export class DashboardCoberturaClientesComponent implements OnInit, OnDestroy {
     this.filtrarData();
   }
 
-  seccionesVisibles: Record<string, boolean> = {
-    CLACT: true,
-    CLINC: true,
-    CONTA: true,
-    CLIZ: true,
-  };
 
   dropSeccion(event: CdkDragDrop<string[]>) {
     moveItemInArray(

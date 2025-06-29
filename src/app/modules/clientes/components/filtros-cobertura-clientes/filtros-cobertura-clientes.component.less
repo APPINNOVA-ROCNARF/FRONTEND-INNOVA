@@ -31,8 +31,88 @@
   display: block !important;
 }
 
-.titulo-collapse {
-  font-weight:600;
-  font-size: medium;
-  color: rgb(70, 70, 70)
+
+.filters-form {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #e8e8e8;
+}
+
+.filter-panel {
+  margin-bottom: 8px;
+}
+
+.filter-panel ::ng-deep .ant-collapse-header {
+  padding: 16px 0 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.filter-panel ::ng-deep .ant-collapse-content-box {
+  padding: 20px 0 !important;
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-content {
+  display: grid;
+  gap: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #595959;
+  margin: 0;
+}
+
+.filter-select {
+  width: 100%;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkbox-item {
+  font-size: 13px;
+  color: #595959;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.checkbox-item:hover {
+  color: #1DABB3;
+}
+
+.apply-button {
+  margin-top: 24px;
+  height: 44px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.12);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filters-form {
+    padding: 16px;
+  }
+  
+  .filter-content {
+    gap: 16px;
+  }
 }

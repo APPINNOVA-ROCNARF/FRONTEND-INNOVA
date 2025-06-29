@@ -3,8 +3,7 @@
   {{ pageIndex * pageSize > data.length ? data.length : pageIndex * pageSize }}
   de {{ data.length }} resultados
 </div>
-
-<div style="overflow-x: auto; max-width: 100%">
+<div style="overflow-x: auto; min-width: 100%">
   <nz-table
     #tabla
     [nzData]="data"
@@ -29,7 +28,7 @@
         </th>
         <th
           rowspan="3"
-          [width]="200"
+          nzWidth="200px"
           [nzShowSort]="true"
           [nzSortFn]="sortFns['representante']"
           nzLeft
@@ -40,7 +39,7 @@
           rowspan="3"
           [nzShowSort]="true"
           [nzSortFn]="sortFns['region']"
-          [style.width.px]="120"
+          nzWidth="120px"
         >
           Región
         </th>
@@ -48,7 +47,7 @@
           rowSpan="3"
           [nzShowSort]="true"
           [nzSortFn]="sortFns['fuerza']"
-          [style.width.px]="120"
+          nzWidth="120xp"
         >
           Fuerza
         </th>

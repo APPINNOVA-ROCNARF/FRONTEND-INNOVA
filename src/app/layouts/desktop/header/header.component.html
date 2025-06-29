@@ -13,11 +13,11 @@
     <nz-dropdown-menu #userMenu="nzDropdownMenu">
       <ul nz-menu>
         <li nz-menu-item>
-          <span class="menu-item-text">Mi Perfil</span>
+          <span class="menu-item-text"><nz-icon nzType="profile"/><nz-divider nzType="vertical"></nz-divider> Mi Perfil</span>
         </li>
         <li nz-menu-divider></li>
         <li nz-menu-item>
-          <span class="menu-item-text" (click)="logout()">Cerrar Sesión</span>
+          <span class="menu-item-text" (click)="logout()"><nz-icon nzType="logout"/><nz-divider nzType="vertical"></nz-divider> Cerrar Sesión</span>
         </li>
       </ul>
     </nz-dropdown-menu>

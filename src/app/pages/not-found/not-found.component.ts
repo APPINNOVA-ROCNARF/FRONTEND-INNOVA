@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NzResultModule } from 'ng-zorro-antd/result';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { AuthService } from '../../core/auth/services/auth.service';
@@ -34,7 +34,7 @@ import { Router } from '@angular/router';
     `,
   ],
 })
-export class NotFoundComponent {
+export class NotFoundComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {

@@ -2,31 +2,6 @@
   <nz-row [nzGutter]="16" style="white-space: nowrap; min-width: 1000px">
     <nz-col [nzSpan]="5">
       <nz-form-item>
-        <nz-form-label><strong>Nombres</strong></nz-form-label>
-        <nz-form-control>
-          <nz-select
-            nzShowSearch
-            nzAllowClear
-            [nzMaxTagCount]="2"
-            nzMode="multiple"
-            [(ngModel)]="selectedNombre"
-            name="nombre"
-            (ngModelChange)="onChange('nombre')"
-            nzPlaceHolder="Seleccionar nombres"
-            style="width: 100%"
-          >
-            <nz-option
-              *ngFor="let item of nombres"
-              [nzValue]="item.nombre"
-              [nzLabel]="item.nombre"
-            ></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-    </nz-col>
-
-    <nz-col [nzSpan]="5">
-      <nz-form-item>
         <nz-form-label><strong>Marcas</strong></nz-form-label>
         <nz-form-control>
           <nz-select
@@ -42,6 +17,31 @@
           >
             <nz-option
               *ngFor="let item of marcas"
+              [nzValue]="item.nombre"
+              [nzLabel]="item.nombre"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-col>
+
+    <nz-col [nzSpan]="5">
+      <nz-form-item>
+        <nz-form-label><strong>Nombres</strong></nz-form-label>
+        <nz-form-control>
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            [nzMaxTagCount]="2"
+            nzMode="multiple"
+            [(ngModel)]="selectedNombre"
+            name="nombre"
+            (ngModelChange)="onChange('nombre')"
+            nzPlaceHolder="Seleccionar nombres"
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let item of nombres"
               [nzValue]="item.nombre"
               [nzLabel]="item.nombre"
             ></nz-option>

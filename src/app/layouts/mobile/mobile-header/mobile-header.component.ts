@@ -8,11 +8,12 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { UiService } from '../../../core/services/ui-service/ui.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { Router } from '@angular/router';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
 
 @Component({
   selector: 'app-mobile-header',
   standalone: true,
-  imports: [NzIconModule, CommonModule, NzLayoutModule, NzDropDownModule, NzAvatarModule],
+  imports: [NzTypographyModule, NzIconModule, CommonModule, NzLayoutModule, NzDropDownModule, NzAvatarModule],
   templateUrl: './mobile-header.component.html',
   styleUrl: './mobile-header.component.less'
 })

@@ -1,0 +1,188 @@
+<div class="download-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <nz-card nzHoverable class="app-info-card">
+      <div class="app-header">
+        <div class="app-icon">
+          <nz-avatar
+            nzSize="large"
+            nzIcon="mobile"
+            [nzSrc]="appInfo.icon"
+          ></nz-avatar>
+        </div>
+        <div class="app-details">
+          <h2>{{ appInfo.name }}</h2>
+          <p class="app-description">{{ appInfo.description }}</p>
+          <div class="app-meta">
+            <nz-tag nzColor="blue">v{{ appInfo.version }}</nz-tag>
+            <nz-tag nzColor="green">{{ appInfo.size }}</nz-tag>
+            <nz-tag nzColor="orange"
+              >Android {{ appInfo.minAndroidVersion }}+</nz-tag
+            >
+          </div>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+
+  <!-- Download Section -->
+  <div class="download-section">
+    <nz-card class="download-card">
+      <div class="download-content">
+        <nz-steps
+          [nzCurrent]="currentStep"
+          nzDirection="vertical"
+          nzSize="small"
+        >
+          <nz-step
+            nzTitle="Verificar compatibilidad"
+            nzDescription="Asegúrate de que tu dispositivo tenga Android {{
+              appInfo.minAndroidVersion
+            }} o superior"
+          >
+            <ng-template #nzIcon>
+              <i nz-icon nzType="check-circle" nzTheme="outline"></i>
+            </ng-template>
+          </nz-step>
+          <nz-step
+            nzTitle="Habilitar fuentes desconocidas"
+            nzDescription="Ve a Configuración > Seguridad > Permitir fuentes desconocidas"
+          >
+            <ng-template #nzIcon>
+              <i nz-icon nzType="setting" nzTheme="outline"></i>
+            </ng-template>
+          </nz-step>
+          <nz-step
+            nzTitle="Descargar e instalar"
+            nzDescription="Descarga el archivo APK y ábrelo para instalar"
+          >
+            <ng-template #nzIcon>
+              <i nz-icon nzType="download" nzTheme="outline"></i>
+            </ng-template>
+          </nz-step>
+        </nz-steps>
+      </div>
+    </nz-card>
+  </div>
+
+  <!-- Action Section -->
+  <div class="action-section">
+    <nz-card class="action-card">
+      <div class="download-actions">
+        <div class="primary-download">
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            [nzLoading]="isDownloading"
+            (click)="downloadApk()"
+            class="download-btn"
+          >
+            <i nz-icon nzType="download" nzTheme="outline"></i>
+            <span *ngIf="!isDownloading">Descargar APK</span>
+            <span *ngIf="isDownloading">Descargando...</span>
+          </button>
+          <p class="download-info">
+            <i nz-icon nzType="info-circle" nzTheme="outline"></i>
+            Descarga directa y segura
+          </p>
+        </div>
+
+        <nz-divider nzType="vertical" class="divider"></nz-divider>
+
+        <div class="alternative-options">
+          <h4>Opciones alternativas</h4>
+          <div class="alt-buttons">
+            <button
+              nz-button
+              nzType="default"
+              (click)="openQRCode()"
+              class="alt-btn"
+            >
+              <i nz-icon nzType="qrcode" nzTheme="outline"></i>
+              Código QR
+            </button>
+            <button
+              nz-button
+              nzType="default"
+              (click)="shareLink()"
+              class="alt-btn"
+            >
+              <i nz-icon nzType="share-alt" nzTheme="outline"></i>
+              Compartir
+            </button>
+          </div>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+
+  <!-- Features Section -->
+  <div class="features-section">
+    <nz-card nzTitle="Historial de versiones">
+      <div class="changelog-content">
+        <nz-timeline nzMode="left">
+          <nz-timeline-item
+            *ngFor="let version of appInfo.changelog; let i = index"
+            [nzColor]="i === 0 ? 'green' : 'blue'"
+          >
+            <ng-template #latestVersionDot>
+              <i
+                nz-icon
+                nzType="crown"
+                nzTheme="fill"
+                style="color: #52c41a"
+              ></i>
+            </ng-template>
+
+            <div class="version-header">
+              <h4>
+                Versión {{ version.version }}
+                <nz-tag *ngIf="i === 0" nzColor="green">Actual</nz-tag>
+              </h4>
+              <span class="version-date">{{ version.date }}</span>
+            </div>
+
+            <div class="version-changes">
+              <div
+                *ngFor="let category of version.changes"
+                class="change-category"
+              >
+                <h5>
+                  <i
+                    nz-icon
+                    nzTheme="outline"
+                  ></i>
+
+                </h5>
+                <ul class="changes-list">
+                  <li *ngFor="let change of category.items">{{ change }}</li>
+                </ul>
+              </div>
+            </div>
+          </nz-timeline-item>
+        </nz-timeline>
+      </div>
+    </nz-card>
+  </div>
+</div>
+
+<!-- QR Code Modal -->
+<nz-modal
+  [(nzVisible)]="isQRVisible"
+  nzTitle="Escanea para descargar"
+  [nzFooter]="null"
+  (nzOnCancel)="closeQRCode()"
+>
+  <ng-container *nzModalContent>
+    <div class="qr-content">
+      <div class="qr-placeholder">
+        <i nz-icon nzType="qrcode" style="font-size: 120px; color: #1890ff"></i>
+      </div>
+      <p class="qr-instruction">
+        Escanea este código QR con tu dispositivo móvil para descargar la
+        aplicación directamente
+      </p>
+    </div>
+  </ng-container>
+</nz-modal>

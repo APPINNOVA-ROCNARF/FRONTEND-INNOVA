@@ -76,7 +76,7 @@ export const ADMINISTRACION_ROUTES: Routes = [
       },
     ],
   },
-    {
+  {
     path: 'informacion-fox',
     loadComponent: () =>
       import('./pages/informacion-fox/informacion-fox-main').then(
@@ -89,6 +89,23 @@ export const ADMINISTRACION_ROUTES: Routes = [
           import(
             './pages/informacion-fox/carga-informacion-fox/carga-informacion-fox.component'
           ).then((c) => c.CargaInformacionFoxComponent),
+        title: 'Información FOX',
+      },
+    ],
+  },
+  {
+    path: 'version',
+    loadComponent: () =>
+      import('./pages/version/version-main').then(
+        (c) => c.VersionMainComponent
+      ),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import(
+            './pages/version/version-app/version-app.component'
+          ).then((c) => c.VersionAppComponent),
         title: 'Información FOX',
       },
     ],

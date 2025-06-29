@@ -1,0 +1,156 @@
+<div class="filters-form">
+  <nz-collapse nzBordered="false" nzGhost>
+
+    <nz-collapse-panel
+      [nzHeader]="nzHeaderCampos"
+      [nzShowArrow]="true"
+      [nzActive]="true"
+      class="filter-panel"
+    >
+      <ng-template #nzHeaderCampos>
+        <span class="panel-title">Campos</span>
+      </ng-template>
+      
+      <div class="filter-content">
+        <div class="filter-group">
+          <span class="filter-label">Secciones</span>
+          <nz-select
+            [nzOptions]="seccionesOptions"
+            nzShowSearch
+            [(ngModel)]="seccionesSeleccionadas"
+            nzAllowClear
+            [nzMaxTagCount]="3"
+            nzMode="multiple"
+            nzPlaceHolder="Seleccionar secciones"
+            class="filter-select"
+          >
+          </nz-select>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Representante</span>
+          <nz-select
+            [nzOptions]="representanteOptions"
+            nzShowSearch
+            [(ngModel)]="representantesSeleccionados"
+            nzAllowClear
+            [nzMaxTagCount]="3"
+            nzMode="multiple"
+            nzPlaceHolder="Seleccionar representante"
+            class="filter-select"
+          >
+          </nz-select>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Regiones</span>
+          <nz-select
+            [(ngModel)]="regionesSeleccionadas"
+            nzAllowClear
+            nzPlaceHolder="Seleccionar regiones"
+            nzMode="multiple"
+            class="filter-select"
+          >
+            <nz-option
+              *ngFor="let region of regiones"
+              [nzValue]="region"
+              [nzLabel]="region"
+            ></nz-option>
+          </nz-select>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Fuerzas</span>
+          <nz-select
+            nzShowSearch
+            nzAllowClear
+            nzMode="multiple"
+            [(ngModel)]="fuerzasSeleccionadas"
+            name="fuerzas"
+            nzPlaceHolder="Seleccionar fuerzas"
+            class="filter-select"
+            [nzOptions]="fuerzasOptions"
+          >
+          </nz-select>
+        </div>
+      </div>
+    </nz-collapse-panel>
+
+    <nz-collapse-panel 
+      [nzHeader]="nzHeaderCampos1" 
+      nzActive="true"
+      class="filter-panel"
+    >
+      <ng-template #nzHeaderCampos1>
+        <span class="panel-title">Tipos</span>
+      </ng-template>
+      
+      <div class="checkbox-group">
+        <span nz-checkbox
+          [ngModel]="clienteZ"
+          (ngModelChange)="clienteZChange.emit($event)"
+          class="checkbox-item"
+        >
+          Cliente Z
+        </span>
+
+        <span nz-checkbox
+          [ngModel]="medico"
+          (ngModelChange)="medicoChange.emit($event)"
+          class="checkbox-item"
+        >
+          Médico
+        </span>
+
+        <span nz-checkbox
+          [ngModel]="clienteGenerico"
+          (ngModelChange)="clienteGenericoChange.emit($event)"
+          class="checkbox-item"
+        >
+          Cliente Genérico
+        </span>
+      </div>
+    </nz-collapse-panel>
+
+    <nz-collapse-panel 
+      [nzHeader]="nzHeaderCampos2" 
+      nzActive="true"
+      class="filter-panel"
+    >
+      <ng-template #nzHeaderCampos2>
+        <span class="panel-title">Detalles</span>
+      </ng-template>
+      
+      <div class="checkbox-group">
+        <span nz-checkbox
+          [ngModel]="observacion"
+          (ngModelChange)="observacionChange.emit($event)"
+          class="checkbox-item"
+        >
+          Observación
+        </span>
+
+        <span nz-checkbox
+          [ngModel]="acompanado"
+          (ngModelChange)="acompanadoChange.emit($event)"
+          class="checkbox-item"
+        >
+          Acompañado
+        </span>
+      </div>
+    </nz-collapse-panel>
+
+  </nz-collapse>
+
+  <button 
+    nzBlock 
+    nz-button 
+    nzType="primary" 
+    (click)="aplicar()" 
+    nzSize="large" 
+    class="apply-button"
+  >
+    Aplicar Filtros
+  </button>
+
+</div>

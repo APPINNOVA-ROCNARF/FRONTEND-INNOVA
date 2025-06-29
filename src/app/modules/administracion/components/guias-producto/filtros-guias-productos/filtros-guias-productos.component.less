@@ -1,0 +1,88 @@
+.filter-container {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.custom-select {
+  width: 100%;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: flex-end;
+  height: 100%;
+  padding-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    justify-content: stretch;
+    padding-top: 8px;
+  }
+  
+  .filter-btn,
+  .clear-btn {
+    flex: 1;
+  }
+}
+
+.filter-btn {
+  min-width: 80px;
+}
+
+.clear-btn {
+  min-width: 70px;
+}
+
+.filter-summary {
+  margin-top: 8px;
+}
+
+.summary-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.summary-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  color: #595959;
+  margin-right: 8px;
+}
+
+.clear-all-link {
+  color: #1890ff;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.clear-all-link:hover {
+  text-decoration: underline;
+}
+
+/* Mejorar el aspecto de los tags en los selects múltiples */
+::ng-deep .ant-select-selection-item {
+  background: #f0f0f0 !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 4px;
+}
+
+::ng-deep .ant-select-selection-item-content {
+  color: #262626 !important;
+}

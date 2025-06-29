@@ -1,0 +1,240 @@
+.download-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .header-section {
+      margin-bottom: 24px;
+    }
+
+    .app-info-card {
+      background: linear-gradient(135deg, #0097a6 0%, #00727c 100%);
+      border: none;
+      color: white;
+    }
+
+    .app-info-card :deep(.ant-card-body) {
+      padding: 32px;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .app-icon {
+      flex-shrink: 0;
+    }
+
+    .app-icon :deep(.ant-avatar) {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 32px;
+    }
+
+    .app-details h2 {
+      color: white;
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .app-description {
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0 0 16px 0;
+      font-size: 16px;
+    }
+
+    .app-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .download-section {
+      margin-bottom: 24px;
+    }
+
+    .download-content {
+      padding: 16px;
+    }
+
+    .action-section {
+      margin-bottom: 24px;
+    }
+
+    .download-actions {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 24px;
+    }
+
+    .primary-download {
+      text-align: center;
+    }
+
+    .download-btn {
+      height: 50px;
+      padding: 0 32px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
+    }
+
+    .download-info {
+      margin: 12px 0 0 0;
+      color: #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .divider {
+      height: 80px;
+    }
+
+    .alternative-options h4 {
+      margin: 0 0 16px 0;
+      color: #333;
+    }
+
+    .alt-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .alt-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+    }
+
+    .features-section {
+      margin-bottom: 24px;
+    }
+
+    .changelog-content {
+      padding: 20px 0;
+    }
+
+    .version-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .version-header h4 {
+      margin: 0;
+      color: #333;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .version-date {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .version-changes {
+      margin-left: 0;
+    }
+
+    .change-category {
+      margin-bottom: 16px;
+    }
+
+    .change-category h5 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px 0;
+      color: #555;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .changes-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .changes-list li {
+      padding: 4px 0;
+      color: #666;
+      position: relative;
+      padding-left: 16px;
+    }
+
+    .changes-list li:before {
+      content: "•";
+      color: #1890ff;
+      position: absolute;
+      left: 0;
+      top: 4px;
+    }
+
+    .security-section {
+      margin-bottom: 24px;
+    }
+
+    .qr-content {
+      text-align: center;
+      padding: 24px;
+    }
+
+    .qr-placeholder {
+      margin-bottom: 24px;
+    }
+
+    .qr-instruction {
+      color: #666;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .download-container {
+        padding: 16px;
+      }
+
+      .app-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+      }
+
+      .download-actions {
+        flex-direction: column;
+        gap: 24px;
+        padding: 20px;
+      }
+
+      .divider {
+        display: none;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }

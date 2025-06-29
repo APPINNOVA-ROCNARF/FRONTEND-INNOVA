@@ -10,15 +10,17 @@ import {
   NzUploadModule,
   NzUploadXHRArgs,
 } from 'ng-zorro-antd/upload';
-import { Subscription } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { InformacionFoxService } from '../../../services/informacion-fox/informacion-fox.service';
-import { ArchivoTemporalGuardadoDTO } from '../../../interfaces/informacion-fox-response';
+import { ArchivoTemporalGuardadoDTO, DBFResultadoResponse } from '../../../interfaces/informacion-fox-response';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { NzStepsModule } from 'ng-zorro-antd/steps';
+import { FileSizePipe } from '../../../Pipes/size.pipe';
 
 @Component({
   selector: 'app-carga-informacion-fox',
@@ -36,6 +38,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     NzProgressModule,
     NzIconModule,
     ScrollingModule,
+    NzStepsModule,
+    FileSizePipe,
   ],
   templateUrl: './carga-informacion-fox.component.html',
   styleUrl: './carga-informacion-fox.component.less',
@@ -43,6 +47,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 export class CargaInformacionFoxComponent {
   archivosTemp: ArchivoTemporalGuardadoDTO[] = [];
   uploadList: NzUploadFile[] = [];
+
+  stepActual = 0;
+  procesando = false;
 
   constructor(
     private foxService: InformacionFoxService,
@@ -57,11 +64,11 @@ export class CargaInformacionFoxComponent {
       next: (
         response: ArchivoTemporalGuardadoDTO[] | ArchivoTemporalGuardadoDTO
       ) => {
-        // Asegurar que es un array (caso .zip)
         const archivos = Array.isArray(response) ? response : [response];
 
         archivos.forEach((archivo) => {
           this.archivosTemp.push(archivo);
+          this.stepActual = 1;
         });
 
         item.onSuccess!(response, item.file!, response);
@@ -72,6 +79,58 @@ export class CargaInformacionFoxComponent {
       },
     });
   };
+
+  cancelarCarga(): void {
+    this.archivosTemp = [];
+    this.uploadList = [];
+    this.stepActual = 0;
+    this.procesando = false;
+  }
+
+async confirmarCarga(): Promise<void> {
+  if (this.procesando) return;
+  this.procesando = true;
+  this.stepActual = 2;
+  
+  for (const archivo of this.archivosTemp) {
+    archivo.progress = 0;
+    archivo.status   = 'normal';
+
+    try {
+      // Convierte el Observable en Promise y espera su resolución
+      const res = await lastValueFrom(
+        this.foxService.procesarArchivo(archivo.nombreOriginal, archivo.rutaTemporal)
+      ) as DBFResultadoResponse;
+
+      archivo.progress = 100;
+      archivo.registrosInsertados = res.registrosInsertados ?? 0;
+
+      if (res.exito) {
+        archivo.status = 'success';
+        this.message.success(`${archivo.nombreOriginal} procesado correctamente.`);
+      } else {
+        archivo.status = 'exception';
+        this.message.error(`${archivo.nombreOriginal} falló: ${res.mensaje}`);
+      }
+
+    } catch (err) {
+      archivo.progress = 100;
+      archivo.status   = 'exception';
+      this.message.error(`${archivo.nombreOriginal} error : `+ err);
+    }
+  }
+
+  this.procesando = false;
+}
+
+getEstadoConfirmacionStep(): 'wait' | 'process' | 'finish' {
+  if (this.procesando) return 'process';
+
+  const todosProcesados = this.archivosTemp.length > 0 &&
+    this.archivosTemp.every(a => a.status === 'success' || a.status === 'exception');
+
+  return todosProcesados ? 'finish' : 'wait';
+}
 
   getViewportHeight(): number {
     const maxHeight = 400; // Altura máxima del contenedor

@@ -1,0 +1,139 @@
+<!-- resumen-visita-planificada.component.html -->
+<nz-table
+  #table
+  [nzData]="data"
+  nzSize="small"
+  nzBordered="true"
+  [nzPageSize]="25"
+  [nzLoading]="isLoading"
+  [nzScroll]="{ x: getTableWidth(), y: '600px' }"
+>
+  <thead>
+    <tr>
+      <th nzLeft nzColumnKey="Seccion" rowspan="3">Sección</th>
+      <th nzLeft nzColumnKey="Representante" rowspan="3" nzWidth="200px">
+        Representante
+      </th>
+      <th nzColumnKey="Region" rowspan="3">Región</th>
+      <th nzColumnKey="Fuerza" rowspan="3">Fuerza</th>
+
+      <th colspan="8" *ngIf="showClienteZ">Clientes Z</th>
+
+      <th colspan="4" *ngIf="showMedico">Médicos</th>
+
+      <th colspan="16" *ngIf="showClienteGenerico">Clientes</th>
+    </tr>
+    <tr>
+      <!-- Cliente Z -->
+      <ng-container *ngIf="showClienteZ">
+        <th colspan="2">Cajas Vacias</th>
+        <th colspan="2">Visita Promocional</th>
+        <th colspan="2">Punto Contacto</th>
+        <th colspan="2">Entrega de Premios</th>
+      </ng-container>
+
+      <!-- Médico -->
+      <ng-container *ngIf="showMedico">
+        <th colspan="2">Visita Promocional</th>
+        <th colspan="2">Punto Contacto</th>
+      </ng-container>
+
+      <!-- Cliente genérico -->
+      <ng-container *ngIf="showClienteGenerico">
+        <th colspan="2">Cajas Vacias</th>
+        <th colspan="2">Siembra Productos</th>
+        <th colspan="2">Visita Promocional</th>
+        <th colspan="2">Punto Contacto</th>
+        <th colspan="2">Entrega de Premios</th>
+        <th colspan="2">Devolución</th>
+        <th colspan="2">Pedido</th>
+        <th colspan="2">Cobro</th>
+      </ng-container>
+    </tr>
+    <tr>
+      <ng-container *ngIf="showClienteZ">
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+      </ng-container>
+
+      <ng-container *ngIf="showMedico">
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+      </ng-container>
+
+      <ng-container *ngIf="showClienteGenerico">
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+        <th>Planificado</th>
+        <th>Ejecutado</th>
+      </ng-container>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of table.data">
+      <td nzLeft>{{ item.seccion }}</td>
+      <td nzLeft>{{ item.representante }}</td>
+      <td>{{ item.region }}</td>
+      <td>{{ item.fuerza }}</td>
+
+      <!-- Cliente Z -->
+      <ng-container *ngIf="showClienteZ">
+        <td>{{ item.clienteZ_CajasVacias_Planificado }}</td>
+        <td>{{ item.clienteZ_CajasVacias_Ejecutado }}</td>
+        <td>{{ item.clienteZ_VisitaPromocional_Planificado }}</td>
+        <td>{{ item.clienteZ_VisitaPromocional_Ejecutado }}</td>
+        <td>{{ item.clienteZ_PuntoContacto_Planificado }}</td>
+        <td>{{ item.clienteZ_PuntoContacto_Ejecutado }}</td>
+        <td>{{ item.clienteZ_EntregaPremios_Planificado }}</td>
+        <td>{{ item.clienteZ_EntregaPremios_Ejecutado }}</td>
+      </ng-container>
+      <!-- Médico -->
+      <ng-container *ngIf="showMedico">
+        <td>{{ item.medico_VisitaPromocional_Planificado }}</td>
+        <td>{{ item.medico_VisitaPromocional_Ejecutado }}</td>
+        <td>{{ item.medico_PuntoContacto_Planificado }}</td>
+        <td>{{ item.medico_PuntoContacto_Ejecutado }}</td>
+      </ng-container>
+
+      <!-- Cliente genérico -->
+      <ng-container *ngIf="showClienteGenerico">
+        <td>{{ item.cliente_CajasVacias_Planificado }}</td>
+        <td>{{ item.cliente_CajasVacias_Ejecutado }}</td>
+        <td>{{ item.cliente_SiembraProductos_Planificado }}</td>
+        <td>{{ item.cliente_SiembraProductos_Ejecutado }}</td>
+        <td>{{ item.cliente_VisitaPromocional_Planificado }}</td>
+        <td>{{ item.cliente_VisitaPromocional_Ejecutado }}</td>
+        <td>{{ item.cliente_PuntoContacto_Planificado }}</td>
+        <td>{{ item.cliente_PuntoContacto_Ejecutado }}</td>
+        <td>{{ item.cliente_EntregaPremios_Planificado }}</td>
+        <td>{{ item.cliente_EntregaPremios_Ejecutado }}</td>
+        <td>{{ item.cliente_Devolucion_Planificado }}</td>
+        <td>{{ item.cliente_Devolucion_Ejecutado }}</td>
+        <td>{{ item.cliente_Pedido_Planificado }}</td>
+        <td>{{ item.cliente_Pedido_Ejecutado }}</td>
+        <td>{{ item.cliente_Cobro_Planificado }}</td>
+        <td>{{ item.cliente_Cobro_Ejecutado }}</td>
+      </ng-container>
+    </tr>
+  </tbody>
+</nz-table>

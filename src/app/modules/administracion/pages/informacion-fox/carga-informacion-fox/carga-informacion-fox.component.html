@@ -18,7 +18,27 @@
 
 <nz-divider></nz-divider>
 
-<nz-card nzSize="small">
+<nz-steps [nzCurrent]="stepActual" class="espacio">
+  <nz-step
+    nzTitle="Cargar archivo"
+    nzDescription="Seleccione el archivo a cargar."
+    [nzStatus]="stepActual > 0 ? 'finish' : 'process'"
+  ></nz-step>
+  <nz-step
+    nzTitle="Validar información"
+    nzDescription="Validar que todos los archivos estén presentes"
+    [nzStatus]="
+      stepActual > 1 ? 'finish' : stepActual === 1 ? 'process' : 'wait'
+    "
+  ></nz-step>
+  <nz-step
+    nzTitle="Finalizado"
+    nzDescription="Proceso terminado"
+    [nzStatus]="getEstadoConfirmacionStep()"
+  ></nz-step>
+</nz-steps>
+
+<nz-card nzSize="small" *ngIf="archivosTemp.length === 0">
   <nz-upload
     nzType="drag"
     [nzCustomRequest]="customUploadReq"
@@ -42,43 +62,66 @@
 </nz-card>
 
 <div *ngIf="archivosTemp.length > 0" class="file-list-container">
-  <h4 class="section-title">Archivos DBF extraídos:</h4>
+  <h4 class="section-title">Archivos extraídos:</h4>
 
   <div class="virtual-scroll-container">
     <cdk-virtual-scroll-viewport
-      itemSize="76"
+      itemSize="100"
       class="file-viewport"
       [style.height.px]="getViewportHeight()"
     >
       <div *cdkVirtualFor="let archivo of archivosTemp" class="file-item">
-        <!-- Icono del archivo -->
         <div class="file-icon">
           <i nz-icon nzType="file-text"></i>
         </div>
-
-        <!-- Información del archivo -->
-        <div class="file-info">
+        <div class="file-info" style="flex: 1">
           <div class="file-name">{{ archivo.nombreOriginal }}</div>
-        </div>
-
-        <!-- Barra de progreso -->
-        <div class="progress-container">
+          <div class="file-size">{{ archivo.size | fileSize }}</div>
+          <div class="file-result" *ngIf="archivo.registrosInsertados !== 0">
+            <span style="font-size: 13px; color: #555">
+              {{ archivo.registrosInsertados }} registros insertados
+            </span>
+          </div>
           <nz-progress
-            [nzPercent]="100"
-            nzStatus="success"
-            [nzShowInfo]="false"
+            [nzPercent]="archivo.progress || 0"
+            [nzStatus]="archivo.status || 'normal'"
             nzSize="small"
-          >
-          </nz-progress>
+            style="margin-top: 4px"
+          ></nz-progress>
         </div>
-
-        <!-- Acciones -->
         <div class="file-actions">
-          <button nz-button nzType="text" nzSize="small" nzDanger>
+          <button
+            nz-button
+            nzType="text"
+            nzSize="small"
+            [disabled]="procesando"
+            (click)="handleRemoveByNombre(archivo.nombreOriginal)"
+          >
             <i nz-icon nzType="delete"></i>
           </button>
         </div>
       </div>
     </cdk-virtual-scroll-viewport>
+
+    <div class="action-buttons" style="margin-top: 16px" *ngIf="stepActual !== 3">
+      <button
+        nz-button
+        nzSize="large"
+        nzType="default"
+        (click)="cancelarCarga()"
+      >
+        Cancelar
+      </button>
+      <button
+        nz-button
+        nzSize="large"
+        nzType="primary"
+        [disabled]="procesando"
+        style="margin-left: 8px"
+        (click)="confirmarCarga()"
+      >
+        Confirmar
+      </button>
+    </div>
   </div>
 </div>

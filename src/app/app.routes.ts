@@ -33,6 +33,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'visitas',
+        loadChildren: () =>
+          import('./modules/visitas/visitas.routes').then(
+            (m) => m.VISITAS_ROUTES
+          ),
+      },
+      {
         path: 'usuarios',
         loadChildren: () =>
           import('./modules/usuarios/usuarios.routes').then(
